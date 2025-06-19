@@ -24,7 +24,7 @@ location /greenlight {
     proxy_set_header Connection "";
     
     # Set Headers
-    add_header Content-Security-Policy "default-src 'self'; script-src 'self'; connect-src 'self'; img-src 'self'; style-src 'self'; frame-ancestors 'self'; form-action 'self'; worker-src 'self'";
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self'; connect-src 'self'; img-src 'self' blob: data:; style-src 'self'; frame-ancestors 'self'; form-action 'self'; worker-src 'self'";
     add_header Strict-Transport-Security "max-age=31556952; includeSubDomains";
     add_header X-Content-Type-Options "nosniff";
     add_header Cache-Control "max-age=0, private, must-revalidate";
