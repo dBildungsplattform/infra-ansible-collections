@@ -277,7 +277,7 @@ services:
       - LOG_LEVEL={{ scalelite_greenlight_log_level }}
       - DATABASE_URL=postgres://greenlight-v3:${POSTGRES_GREENLIGHT_V3_PASSWORD}@db:5432/greenlight-v3
       - REDIS_URL=redis://${GREENLIGHT_REDIS_USER}:${GREENLIGHT_REDIS_SECRET}@redis-greenlight:6379
-      - CLAMAV_SCANNING={{ scalelite_clamav_enabled }}
+      - CLAMAV_SCANNING={{ scalelite_clamav_enabled | string | lower }}
       - CLAMAV_DAEMONIZE=true
 {% if scalelite_greenlight_phone_number is defined %}
       - VOICE_BRIDGE_PHONE_NUMBER={{ scalelite_greenlight_phone_number }}
@@ -344,7 +344,7 @@ services:
       - LOG_LEVEL={{ scalelite_greenlight_log_level }}
       - DATABASE_URL=postgres://greenlight-{{ instance.name }}-v3:${POSTGRES_GREENLIGHT_{{ instance.name|upper }}_V3_PASSWORD}@db:5432/greenlight-{{ instance.name }}-v3
       - REDIS_URL=redis://${GREENLIGHT_REDIS_{{ instance.name | upper }}_USER}:${GREENLIGHT_REDIS_{{ instance.name | upper }}_SECRET}@redis-{{ instance.name}}:6379
-      - CLAMAV_SCANNING={{ scalelite_clamav_enabled }}
+      - CLAMAV_SCANNING={{ scalelite_clamav_enabled | string | lower }}
       - CLAMAV_DAEMONIZE=true
 {% if instance.phone_number is defined %}
       - VOICE_BRIDGE_PHONE_NUMBER={{ instance.phone_number }}
