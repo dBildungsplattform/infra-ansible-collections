@@ -1,1 +1,120 @@
 ---
+# https://docs.ionos.com/ansible/
+
+- name: Create group
+  ionoscloudsdk.ionoscloud.group:
+    token: "{{ ionos_token | default(omit) }}"
+    name: "{{ ionos_s3_user_group_name }}"
+    s3_privilege: true
+
+- name: Create an 1Password item (if not existent) with email & generated password for dcd login and dummy s3_credentials section
+  dbildungscloud.onepwd.create_s3_item:
+    credentials: "{{ op_credentials }}"
+    vault: "{{ instance_vault }}"
+    SECRET_NAME: "{{ s3_credentials_secret_name }}"
+    USER_EMAIL: "{{ ionos_s3_user_email }}"
+    LOGIN_URL: https://dcd.ionos.com/latest
+    session_shorthand: ansible-run
+
+- name: Create user for IONOS DCD
+  ionoscloudsdk.ionoscloud.user:
+    token: "{{ ionos_token | default(omit) }}"
+    # once created, ansible doesn't update name - use GUI
+    firstname: "{{ ionos_s3_user_firstname }}"
+    lastname: "{{ ionos_s3_user_lastname }}"
+    email: "{{ ionos_s3_user_email }}"
+    user_password: "{{ ionos_s3_user_password }}"
+    administrator: false
+  register: ionos_user
+
+  # separate because user cant be added to group in first step, state: update is needed
+- name: Add user to group in IONOS DCD
+  ionoscloudsdk.ionoscloud.user:
+    token: "{{ ionos_token | default(omit) }}"
+    user: "{{ ionos_s3_user_email }}"
+    groups:
+    - {{ ionos_s3_user_group_name }}
+    state: update
+  changed_when: false
+
+- name: Create an s3key for IONOS DCD
+  ionoscloudsdk.ionoscloud.s3key:
+    token: "{{ ionos_token | default(omit) }}"
+    user: "{{ ionos_user.user.id }}"
+    idempotency: True
+  register: s3_key
+
+- name: Create a bucket
+  amazon.aws.s3_bucket:
+    aws_access_key: "{{ s3_key.s3key.id }}"
+    aws_secret_key: "{{ s3_key.s3key.properties.secret_key }}"
+    state: present
+    region: "{{ s3_region }}"
+    s3_url: "{{ s3_url }}"
+    versioning: "{{ s3_bucket_versioning | default(omit, false)  }}"
+    policy: "{{ s3_bucket_policy | default(omit, 'null') }}"
+    name: "{{ s3_bucket_name }}"
+
+- name: Configure a S3 lifecycle rules to delete incomplete S3 Multipart Upload
+  community.aws.s3_lifecycle:
+    aws_access_key: "{{ s3_key.s3key.id }}"
+    aws_secret_key:  "{{ s3_key.s3key.properties.secret_key }}"
+    name: "{{ s3_bucket_name }}"
+    abort_incomplete_multipart_upload_days: 1
+    state: present
+    status: enabled
+    rule_id: "delete incomplete S3 Multipart Upload"
+    endpoint_url: "{{ s3_url }}"
+    region: "{{ s3_region }}"
+
+# Prior to release 5.0.0 this module was called community.aws.aws_s3_cors. The usage did not change.
+# Using community.aws 2.3.0 needs to be updated to s3_cors with community.aws update (latest version now 9.1.0)
+- name: Add CORS Settings on web access IONOS S3 Buckets
+#  community.aws.s3_cors:
+  community.aws.aws_s3_cors:
+    aws_access_key: "{{ s3_key.s3key.id }}"
+    aws_secret_key:  "{{ s3_key.s3key.properties.secret_key }}"
+    endpoint_url: "{{ s3_url }}"
+    region: "{{ s3_region }}"
+    name: "{{ s3_bucket_name }}"
+    state: present
+    rules:
+      - allowed_origins: {{ s3_allowed_origins | to_yaml | indent(10) }}
+        allowed_methods: {{ s3_allowed_methods | to_yaml | indent(10) }}
+        allowed_headers: {{ s3_allowed_headers | to_yaml | indent(10) }}
+        expose_headers: {{ s3_expose_headers | to_yaml | indent(10) }}
+        max_age_seconds: {{ s3_max_age_seconds }}
+  when: s3_cors_settings | default(false)
+
+  # Storing the access key, access secret, bucket_name and url in one 1PW item.
+- name: Edit S3 Credentials in 1Password
+  dbildungscloud.onepwd.update_s3_values_of_item:
+    credentials: "{{ op_credentials }}"
+    vault: "{{ instance_vault }}"
+    BUCKET_NAME: "{% if s3_bucket_name is not defined %}none{% else %}{{ s3_bucket_name }}{% endif %}"
+    SECRET_NAME: "{{ s3_credentials_secret_name }}"
+    ACCESS_KEY: "{{ s3_key.s3key.id }}"
+    ACCESS_SECRET: "{{ s3_key.s3key.properties.secret_key }}"
+    # provide name of the section in which s3 credentials are saved
+    SECTION: "{{ s3_credentials_section_name }}"
+    ENDPOINT_URL: "{{ s3_url }}"
+    OVERWRITE: true
+    session_shorthand: ansible-run
+  when: s3_migration_enabled is false
+
+- name: Configure a lifecycle rules on the bucket to delete items with matching prefix after specified time
+  community.aws.s3_lifecycle:
+    aws_access_key: "{{ s3_key.s3key.id }}"
+    aws_secret_key:  "{{ s3_key.s3key.properties.secret_key }}"
+    name: "{{ s3_bucket_name }}"
+    expiration_days: "{{ s3_lifecycle_rule.rule_expiration_days  | default(omit, '') }}"
+    noncurrent_version_expiration_days: "{{ s3_lifecycle_rule.rule_noncurrent_version_expiration_days  | default(omit, '') }}"
+    prefix: "{{ s3_lifecycle_rule.rule_prefix | default(omit, '')}}"
+    state: present
+    status: enabled
+    rule_id: "{{ s3_lifecycle_rule.rule_name}}"
+    endpoint_url: "{{ s3_url }}"
+    region: "{{ s3_region }}"
+  loop: "{{ s3_lifecycle_rules }}"
+  loop_control:
+    loop_var: s3_lifecycle_rule
