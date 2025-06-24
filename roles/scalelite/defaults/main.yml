@@ -193,6 +193,8 @@ scalelite_metrics_basic_auth_username: metrics-user
 # scalelite_metrics_basic_auth_password:
 scalelite_security_txt: |
   # Security.txt content
+scalelite_robots_txt: |
+  # Robots.txt content
 
 scalelite_autoscaler_user_id: 65534
 scalelite_autoscaler_group_id: 65534

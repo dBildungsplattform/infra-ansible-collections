@@ -53,8 +53,6 @@ owasp_hostname: "{{ inventory_hostname }}"
 owasp_letsencrypt_folder: /etc/letsencrypt
 owasp_metrics_basic_auth_username: metrics-user
 # owasp_metrics_basic_auth_password:
-owasp_security_txt: |
-  # Security.txt content
 
 owasp_node_exporter_textfile_directory: /node-exporter-textfiles/
 owasp_node_exporter_user_id: 65534
