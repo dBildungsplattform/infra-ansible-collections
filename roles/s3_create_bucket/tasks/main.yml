@@ -25,7 +25,7 @@
     email: "{{ ionos_s3_user_email }}"
     user_password: "{{ ionos_s3_user_password }}"
     administrator: false
-  register: ionos_user
+  register: reg_ionos_user
 
   # separate because user cant be added to group in first step, state: update is needed
 - name: Add user to group in IONOS DCD
@@ -40,14 +40,14 @@
 - name: Create an s3key for IONOS DCD
   ionoscloudsdk.ionoscloud.s3key:
     token: "{{ ionos_token | default(omit) }}"
-    user: "{{ ionos_user.user.id }}"
+    user: "{{ reg_ionos_user.user.id }}"
     idempotency: True
-  register: s3_key
+  register: reg_s3_key
 
 - name: Create a bucket
   amazon.aws.s3_bucket:
-    aws_access_key: "{{ s3_key.s3key.id }}"
-    aws_secret_key: "{{ s3_key.s3key.properties.secret_key }}"
+    aws_access_key: "{{ reg_s3_key.s3key.id }}"
+    aws_secret_key: "{{ reg_s3_key.s3key.properties.secret_key }}"
     state: present
     region: "{{ s3_region }}"
     s3_url: "{{ s3_url }}"
@@ -57,8 +57,8 @@
 
 - name: Configure a S3 lifecycle rules to delete incomplete S3 Multipart Upload
   community.aws.s3_lifecycle:
-    aws_access_key: "{{ s3_key.s3key.id }}"
-    aws_secret_key:  "{{ s3_key.s3key.properties.secret_key }}"
+    aws_access_key: "{{ reg_s3_key.s3key.id }}"
+    aws_secret_key:  "{{ reg_s3_key.s3key.properties.secret_key }}"
     name: "{{ s3_bucket_name }}"
     abort_incomplete_multipart_upload_days: 1
     state: present
@@ -72,8 +72,8 @@
 - name: Add CORS Settings on web access IONOS S3 Buckets
 #  community.aws.s3_cors:
   community.aws.aws_s3_cors:
-    aws_access_key: "{{ s3_key.s3key.id }}"
-    aws_secret_key:  "{{ s3_key.s3key.properties.secret_key }}"
+    aws_access_key: "{{ reg_s3_key.s3key.id }}"
+    aws_secret_key:  "{{ reg_s3_key.s3key.properties.secret_key }}"
     endpoint_url: "{{ s3_url }}"
     region: "{{ s3_region }}"
     name: "{{ s3_bucket_name }}"
@@ -88,24 +88,34 @@
 
   # Storing the access key, access secret, bucket_name and url in one 1PW item.
 - name: Edit S3 Credentials in 1Password
-  dbildungscloud.onepwd.update_s3_values_of_item:
+  dbildungscloud.onepwd.item:
     credentials: "{{ op_credentials }}"
     vault: "{{ instance_vault }}"
-    BUCKET_NAME: "{% if s3_bucket_name is not defined %}none{% else %}{{ s3_bucket_name }}{% endif %}"
-    SECRET_NAME: "{{ s3_credentials_secret_name }}"
-    ACCESS_KEY: "{{ s3_key.s3key.id }}"
-    ACCESS_SECRET: "{{ s3_key.s3key.properties.secret_key }}"
-    # provide name of the section in which s3 credentials are saved
-    SECTION: "{{ s3_credentials_section_name }}"
-    ENDPOINT_URL: "{{ s3_url }}"
-    OVERWRITE: true
     session_shorthand: ansible-run
+    name: "{{ s3_credentials_secret_name }}"
+    fields: 
+      - name: "{{ s3_bucket_name_op_filed_name}}"
+        type: text
+        value: "{{ s3_bucket_name }}"
+        section: "{{ s3_credentials_section_name }}"
+      - name: "{{ s3_access_key_op_filed_name}}"
+        type: text
+        value: "{{ reg_s3_key.s3key.id }}"
+        section: "{{ s3_credentials_section_name }}"
+      - name: "{{ s3_access_secret_op_filed_name}}"
+        type: password
+        value: "{{ reg_s3_key.s3key.properties.secret_key }}"
+        section: "{{ s3_credentials_section_name }}"
+      - name: "{{ s3_url_op_fild_name }}"
+        type: text
+        value: "{{ s3_url }}"
+        section: "{{ s3_credentials_section_name }}"
   when: s3_migration_enabled is false
 
 - name: Configure a lifecycle rules on the bucket to delete items with matching prefix after specified time
   community.aws.s3_lifecycle:
-    aws_access_key: "{{ s3_key.s3key.id }}"
-    aws_secret_key:  "{{ s3_key.s3key.properties.secret_key }}"
+    aws_access_key: "{{ reg_s3_key.s3key.id }}"
+    aws_secret_key:  "{{ reg_s3_key.s3key.properties.secret_key }}"
     name: "{{ s3_bucket_name }}"
     expiration_days: "{{ s3_lifecycle_rule.rule_expiration_days  | default(omit, '') }}"
     noncurrent_version_expiration_days: "{{ s3_lifecycle_rule.rule_noncurrent_version_expiration_days  | default(omit, '') }}"
