@@ -1,0 +1,44 @@
+# Short name of the tenant
+bbb_tenant: tenant
+# Short name of the instance
+bbb_instance_name: "bbb-{{ bbb_tenant }}"
+# Domain under which the BBB servers are
+bbb_domain_name: bbb.example.com
+# Address of the scalelite server
+scalelite_host: "{{ bbb_domain_name }}"
+# Address of the freeswitch server
+freeswitch_host: "freeswitch.{{ bbb_domain_name }}"
+# True if using the exporters from the EBBBA BBB role with metrics under /mon/node
+# and /mon/bbb otherwise /metrics on port 9100 is used
+bbb_ebbba_exporters: true
+# True if the coturn exporter is enabled on port 9642 /metrics
+bbb_turn_server_exporter_enabled: true
+# True if the freeswitch node exporter is enabled
+bbb_freeswitch_server_node_exporter_enabled: true
+# True if the coturn cadvisor is enabled
+bbb_turn_server_cadvisor_enabled: true
+# True if the freeswitch cadvisor is enabled
+bbb_freeswitch_server_cadvisor_enabled: true
+# true if cAdvisor is enabled on the Scalelite server on port 9300 /metrics
+scalelite_cadvisor_enabled: false
+# true if cAdvisor is enabled on the owasp server on port 9301 /metrics
+owasp_cadvisor_enabled: false
+# true if postgresexporter is enabled on the Scalelite server on port 9188 /metrics
+scalelite_postgresexporter_enabled: false
+# Name of the Kubernetes secret containing the basic auth credentials for the exporters
+bbb_node_exporter_basic_auth_secret_name: "{{ bbb_instance_name }}-node-exporter-basic-auth"
+# Name of the Kubernetes secret containing the IONOS credentials
+bbb_ionos_basic_auth_secret_name: "{{ bbb_instance_name }}-ionos"
+bbb_ionos_basic_auth_secret_key: password
+# The role will add the BBB scrape configs to this list, can be used by the kube-prometheus-stack
+# Helm chart by mapping it to prometheus.prometheusSpec.additionalScrapeConfigs
+prometheus_additionalScrapeConfigs: []
+# The role will add the secret as a volume to prometheus_volumes and a corresponding volume
+# mount to prometheus_volumeMounts, can be added to the kube-prometheus-stack Helm chart
+# by mapping it to prometheus.prometheusSpec.volumes and prometheus.prometheusSpec.volumeMounts
+prometheus_volumes: []
+prometheus_volumeMounts: []
+# Only monitor the BBB servers but not Scalelite or TURN
+bbb_servers_only: false
+bbb_monitoring_scrape_interval: 10s
+bbb_monitoring_scrape_timeout: 5s

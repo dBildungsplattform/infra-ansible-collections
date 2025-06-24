@@ -1,0 +1,8 @@
+---
+bbb_prometheus_basic_auth:
+  username:
+    name: prometheus-exporter-basic-auth-credentials  
+    key: exporter-user  
+  password:
+    name: prometheus-exporter-basic-auth-credentials  
+    key: node-exporter-password 

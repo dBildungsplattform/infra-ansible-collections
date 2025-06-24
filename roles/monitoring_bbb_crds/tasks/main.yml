@@ -1,0 +1,25 @@
+---
+- name: Create freeswitch Node-Exporter
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    definition:
+      apiVersion: monitoring.coreos.com/v1alpha1
+      kind: ScrapeConfig
+      metadata:
+        name: "{{ bbb_instance_name }}-freeswitch"
+        namespace: monitoring
+      spec:
+        basicAuth: "{{ bbb_prometheus_basic_auth }}"
+        relabel_configs: "{{ bbb_prometheus_freeswitch_relabel_configs }}"
+        staticConfigs:
+          # Static config for Galera node-exporter
+          - labels:
+              group: galera
+              job: "{{ bbb_instance_name }}-freeswitch"
+              __scrape_interval__: "{{ bbb_monitoring_scrape_interval }}"
+              __scrape_timeout__: "{{ bbb_monitoring_scrape_timeout }}"                                      
+            targets:
+              - "{{ freeswitch_host }}:9100"
