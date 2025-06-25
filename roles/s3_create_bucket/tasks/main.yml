@@ -7,6 +7,31 @@
     name: "{{ ionos_s3_user_group_name }}"
     s3_privilege: true
 
+- name: Create an 1Password item (if not existent) with email & generated password for dcd login and dummy s3_credentials section
+  dbildungscloud.onepwd.create_s3_item:
+    credentials: "{{ op_credentials }}"
+    vault: "{{ instance_vault }}"
+    SECRET_NAME: "{{ s3_credentials_secret_name }}"
+    USER_EMAIL: "{{ ionos_s3_user_email }}"
+    LOGIN_URL: https://dcd.ionos.com/latest
+    session_shorthand: ansible-run
+
+- name: Create an 1Password item (if not existent) with email & generated password for dcd login
+  throttle: 1
+  dbildungscloud.onepwd.item:
+    credentials: "{{ op_credentials }}"
+    vault: "{{ instance_vault }}"
+    name: "{{ s3_credentials_secret_name }}"
+    overwrite: False
+    session_shorthand: ansible-run
+    fields:
+      - name: "{{ ionos_s3_user_email_op_filed_name}}"
+        type: text
+        value: "{{ ionos_s3_user_email }}"
+      - name: "{{ ionos_s3_login_url_op_filed_name}}"
+        type: text
+        value: "{{ ionos_s3_login_url }}"
+
 - name: Create user for IONOS DCD
   ionoscloudsdk.ionoscloud.user:
     token: "{{ ionos_token | default(omit) }}"
@@ -92,38 +117,7 @@
     region: "{{ s3_region }}"
   loop: "{{ s3_lifecycle_rules }}"
   loop_control:
-    loop_var: s3_lifecycle_rule
-
-- name: Create an 1Password item (if not existent) with email & generated password for dcd login and dummy s3_credentials section
-  dbildungscloud.onepwd.create_s3_item:
-    credentials: "{{ op_credentials }}"
-    vault: "{{ instance_vault }}"
-    SECRET_NAME: "{{ s3_credentials_secret_name }}"
-    USER_EMAIL: "{{ ionos_s3_user_email }}"
-    LOGIN_URL: https://dcd.ionos.com/latest
-    session_shorthand: ansible-run
-
-- name: Create an 1Password item (if not existent) with email & generated password for dcd login
-  throttle: 1
-  dbildungscloud.onepwd.item:
-    credentials: "{{ op_credentials }}"
-    vault: "{{ instance_vault }}"
-    name: "{{ s3_credentials_secret_name }}"
-    overwrite: False
-    session_shorthand: ansible-run
-    fields:
-      - name: "{{ ionos_s3_user_email_op_filed_name}}"
-        type: text
-        value: "{{ ionos_s3_user_email }}"
-        section: "{{ s3_credentials_section_name }}"
-      - name: "{{ s3_bucket_name_op_filed_name}}"
-        type: text
-        value: "{{ s3_bucket_name }}"
-        section: "{{ s3_credentials_section_name }}"
-      - name: username
-        type: text
-        value: admin
-  tags: wazuh
+    loop_var: s3_lifecycle_rules
 
   # Storing the access key, access secret, bucket_name and url in one 1PW item.
 - name: Edit S3 Credentials in 1Password
