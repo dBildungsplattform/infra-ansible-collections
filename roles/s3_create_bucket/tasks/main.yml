@@ -7,15 +7,6 @@
     name: "{{ ionos_s3_user_group_name }}"
     s3_privilege: true
 
-- name: Create an 1Password item (if not existent) with email & generated password for dcd login and dummy s3_credentials section
-  dbildungscloud.onepwd.create_s3_item:
-    credentials: "{{ op_credentials }}"
-    vault: "{{ instance_vault }}"
-    SECRET_NAME: "{{ s3_credentials_secret_name }}"
-    USER_EMAIL: "{{ ionos_s3_user_email }}"
-    LOGIN_URL: https://dcd.ionos.com/latest
-    session_shorthand: ansible-run
-
 - name: Create user for IONOS DCD
   ionoscloudsdk.ionoscloud.user:
     token: "{{ ionos_token | default(omit) }}"
@@ -86,6 +77,54 @@
         max_age_seconds: {{ s3_max_age_seconds }}
   when: s3_cors_settings | default(false)
 
+- name: Configure a lifecycle rules on the bucket to delete items with matching prefix after specified time
+  community.aws.s3_lifecycle:
+    aws_access_key: "{{ reg_s3_key.s3key.id }}"
+    aws_secret_key:  "{{ reg_s3_key.s3key.properties.secret_key }}"
+    name: "{{ s3_bucket_name }}"
+    expiration_days: "{{ s3_lifecycle_rule.rule_expiration_days  | default(omit, '') }}"
+    noncurrent_version_expiration_days: "{{ s3_lifecycle_rule.rule_noncurrent_version_expiration_days  | default(omit, '') }}"
+    prefix: "{{ s3_lifecycle_rule.rule_prefix | default(omit, '')}}"
+    state: present
+    status: enabled
+    rule_id: "{{ s3_lifecycle_rule.rule_name}}"
+    endpoint_url: "{{ s3_url }}"
+    region: "{{ s3_region }}"
+  loop: "{{ s3_lifecycle_rules }}"
+  loop_control:
+    loop_var: s3_lifecycle_rule
+
+- name: Create an 1Password item (if not existent) with email & generated password for dcd login and dummy s3_credentials section
+  dbildungscloud.onepwd.create_s3_item:
+    credentials: "{{ op_credentials }}"
+    vault: "{{ instance_vault }}"
+    SECRET_NAME: "{{ s3_credentials_secret_name }}"
+    USER_EMAIL: "{{ ionos_s3_user_email }}"
+    LOGIN_URL: https://dcd.ionos.com/latest
+    session_shorthand: ansible-run
+
+- name: Create an 1Password item (if not existent) with email & generated password for dcd login
+  throttle: 1
+  dbildungscloud.onepwd.item:
+    credentials: "{{ op_credentials }}"
+    vault: "{{ instance_vault }}"
+    name: "{{ s3_credentials_secret_name }}"
+    overwrite: False
+    session_shorthand: ansible-run
+    fields:
+      - name: "{{ ionos_s3_user_email_op_filed_name}}"
+        type: text
+        value: "{{ ionos_s3_user_email }}"
+        section: "{{ s3_credentials_section_name }}"
+      - name: "{{ s3_bucket_name_op_filed_name}}"
+        type: text
+        value: "{{ s3_bucket_name }}"
+        section: "{{ s3_credentials_section_name }}"
+      - name: username
+        type: text
+        value: admin
+  tags: wazuh
+
   # Storing the access key, access secret, bucket_name and url in one 1PW item.
 - name: Edit S3 Credentials in 1Password
   dbildungscloud.onepwd.item:
@@ -111,20 +150,3 @@
         value: "{{ s3_url }}"
         section: "{{ s3_credentials_section_name }}"
   when: s3_migration_enabled is false
-
-- name: Configure a lifecycle rules on the bucket to delete items with matching prefix after specified time
-  community.aws.s3_lifecycle:
-    aws_access_key: "{{ reg_s3_key.s3key.id }}"
-    aws_secret_key:  "{{ reg_s3_key.s3key.properties.secret_key }}"
-    name: "{{ s3_bucket_name }}"
-    expiration_days: "{{ s3_lifecycle_rule.rule_expiration_days  | default(omit, '') }}"
-    noncurrent_version_expiration_days: "{{ s3_lifecycle_rule.rule_noncurrent_version_expiration_days  | default(omit, '') }}"
-    prefix: "{{ s3_lifecycle_rule.rule_prefix | default(omit, '')}}"
-    state: present
-    status: enabled
-    rule_id: "{{ s3_lifecycle_rule.rule_name}}"
-    endpoint_url: "{{ s3_url }}"
-    region: "{{ s3_region }}"
-  loop: "{{ s3_lifecycle_rules }}"
-  loop_control:
-    loop_var: s3_lifecycle_rule
