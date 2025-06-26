@@ -159,7 +159,11 @@
   copy:
     dest: "{{ scalelite_docker_volumes_folder }}/clamav/clamd.conf"
     mode: '0444'
-    content: "ConcurrentDatabaseReload no"
+    content: |
+      LogFile /var/log/clamav/clamd.log
+      LogTime yes
+      TCPSocket 3310
+      ConcurrentDatabaseReload no
   when: scalelite_clamav_enabled
 
 - name: Certbot
