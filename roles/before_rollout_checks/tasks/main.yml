@@ -14,10 +14,10 @@
       fail_msg: "Only single stage rollout allowed"
   - name: Check that only one project is selected
     vars: 
-      stages: "{{ ansible_play_hosts_all | map('extract', hostvars, 'project') | list | unique }}"
+      projects: "{{ ansible_play_hosts_all | map('extract', hostvars, 'project') | list | unique }}"
     run_once: true
     ansible.builtin.assert:
       that:
-        - stages | length == 1
+        - projects | length == 1
       fail_msg: "Only single project rollout allowed"
     
