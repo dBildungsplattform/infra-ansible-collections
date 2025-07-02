@@ -5,7 +5,7 @@
   ionoscloudsdk.ionoscloud.s3key:
     token: "{{ ionos_token | default(omit) }}"
     user: "{{ s3_ionos_user }}"
-    idempotency: True
+    idempotency: true
   register: reg_s3_key
 
 - name: Create a bucket
@@ -19,7 +19,7 @@
     policy: "{{ s3_bucket_policy | default(omit, 'null') }}"
     name: "{{ s3_bucket_name }}"
 
-- name: Configure a S3 lifecycle rules to delete incomplete S3 Multipart Upload
+- name: Configure a S3 lifecycle rule to delete incomplete S3 Multipart Upload
   community.aws.s3_lifecycle:
     aws_access_key: "{{ reg_s3_key.s3key.id }}"
     aws_secret_key:  "{{ reg_s3_key.s3key.properties.secret_key }}"
@@ -58,16 +58,16 @@
     expiration_days: "{{ s3_lifecycle_rule.rule_expiration_days  | default(omit, '') }}"
     noncurrent_version_expiration_days: "{{ s3_lifecycle_rule.rule_noncurrent_version_expiration_days  | default(omit, '') }}"
     prefix: "{{ s3_lifecycle_rule.rule_prefix | default(omit, '')}}"
-    state: present
+    state: "present"
     status: enabled
-    rule_id: "{{ s3_lifecycle_rule.rule_name}}"
+    rule_id: "{{ s3_lifecycle_rule.rule_name }}"
     endpoint_url: "{{ s3_url }}"
     region: "{{ s3_region }}"
   loop: "{{ s3_lifecycle_rules }}"
   loop_control:
     loop_var: s3_lifecycle_rule
 
-  # Storing the access key, access secret, bucket_name and url in one 1PW item.
+# Store the access key, access secret, bucket_name and url in one 1PW item.
 - name: Edit S3 Credentials in 1Password
   dbildungscloud.onepwd.item:
     credentials: "{{ op_credentials }}"
