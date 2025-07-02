@@ -12,10 +12,10 @@
   amazon.aws.s3_bucket:
     aws_access_key: "{{ reg_s3_key.s3key.id }}"
     aws_secret_key: "{{ reg_s3_key.s3key.properties.secret_key }}"
-    state: present
+    state: "present"
     region: "{{ s3_region }}"
     s3_url: "{{ s3_url }}"
-    versioning: "{{ s3_bucket_versioning | default(omit, false)  }}"
+    versioning: "{{ s3_bucket_versioning | default(omit, false) }}"
     policy: "{{ s3_bucket_policy | default(omit, 'null') }}"
     name: "{{ s3_bucket_name }}"
 
@@ -25,8 +25,8 @@
     aws_secret_key:  "{{ reg_s3_key.s3key.properties.secret_key }}"
     name: "{{ s3_bucket_name }}"
     abort_incomplete_multipart_upload_days: 1
-    state: present
-    status: enabled
+    state: "present"
+    status: "enabled"
     rule_id: "delete incomplete S3 Multipart Upload"
     endpoint_url: "{{ s3_url }}"
     region: "{{ s3_region }}"
@@ -41,7 +41,7 @@
     endpoint_url: "{{ s3_url }}"
     region: "{{ s3_region }}"
     name: "{{ s3_bucket_name }}"
-    state: present
+    state: "present"
     rules:
       - allowed_origins: {{ s3_allowed_origins | to_yaml | indent(10) }}
         allowed_methods: {{ s3_allowed_methods | to_yaml | indent(10) }}
@@ -57,9 +57,9 @@
     name: "{{ s3_bucket_name }}"
     expiration_days: "{{ s3_lifecycle_rule.rule_expiration_days  | default(omit, '') }}"
     noncurrent_version_expiration_days: "{{ s3_lifecycle_rule.rule_noncurrent_version_expiration_days  | default(omit, '') }}"
-    prefix: "{{ s3_lifecycle_rule.rule_prefix | default(omit, '')}}"
+    prefix: "{{ s3_lifecycle_rule.rule_prefix | default(omit, '') }}"
     state: "present"
-    status: enabled
+    status: "enabled"
     rule_id: "{{ s3_lifecycle_rule.rule_name }}"
     endpoint_url: "{{ s3_url }}"
     region: "{{ s3_region }}"
@@ -75,20 +75,20 @@
     session_shorthand: ansible-run
     name: "{{ s3_1pw_target.item }}"
     fields: 
-      - name: "{{ s3_1pw_target.bucket_name_op_filed_name}}"
-        type: text
+      - name: "{{ s3_1pw_target.bucket_name_1pw_field_name }}"
+        type: "text"
         value: "{{ s3_1pw_target.bucket_name }}"
         section: "{{ s3_1pw_target.credentials_section_name }}"
-      - name: "{{ s3_1pw_target.access_key_op_filed_name}}"
-        type: text
+      - name: "{{ s3_1pw_target.access_key_1pw_field_name}}"
+        type: "text"
         value: "{{ reg_s3_key.s3key.id }}"
         section: "{{ s3_1pw_target.credentials_section_name }}"
-      - name: "{{ s3_1pw_target.access_secret_op_filed_name}}"
-        type: password
+      - name: "{{ s3_1pw_target.access_secret_1pw_field_name }}"
+        type: "password"
         value: "{{ reg_s3_key.s3key.properties.secret_key }}"
         section: "{{ s3_1pw_target.credentials_section_name }}"
-      - name: "{{ s3_1pw_target.url_op_fild_name }}"
-        type: text
+      - name: "{{ s3_1pw_target.url_1pw_field_name }}"
+        type: "text"
         value: "{{ s3_1pw_target.url }}"
         section: "{{ s3_1pw_target.credentials_section_name }}"
   loop: "{{ s3_1pw_targets }}"
