@@ -50,7 +50,7 @@
         max_age_seconds: {{ s3_max_age_seconds }}
   when: s3_cors_settings | default(false)
 
-- name: Configure a lifecycle rules on the bucket to delete items with matching prefix after specified time
+- name: Configure lifecycle rules on the bucket that delete items when they match a rule-specific prefix and exceed the rule-specific expiration time
   community.aws.s3_lifecycle:
     aws_access_key: "{{ reg_s3_key.s3key.id }}"
     aws_secret_key:  "{{ reg_s3_key.s3key.properties.secret_key }}"
