@@ -1,0 +1,8 @@
+s3_allowed_origins:
+  - "https://*"
+s3_allowed_methods:
+  - GET
+s3_allowed_headers:
+  - "*"
+s3_expose_headers: []
+s3_max_age_seconds: 3000
