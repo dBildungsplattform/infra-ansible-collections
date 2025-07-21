@@ -1,3 +1,9 @@
+s3_ionos_user: "s3-user"
+s3_region: "eu-central-2"
+s3_url: "https://s3-eu-central-2.ionoscloud.com"
+s3_bucket_versioning: "false"
+s3_bucket_policy: null
+s3_bucket_name: "data"
 s3_allowed_origins:
   - "https://*"
 s3_allowed_methods:
@@ -6,3 +12,15 @@ s3_allowed_headers:
   - "*"
 s3_expose_headers: []
 s3_max_age_seconds: 3000
+s3_lifecycle_rules: []
+#  - rule_name: "delete-rule"
+#    rule_expiration_days: 7
+#    rule_noncurrent_version_expiration_days: 9
+#    rule_prefix: ""
+
+      expiration_days: "{{ s3_lifecycle_rule.rule_expiration_days  | default(omit, '') }}"
+    noncurrent_version_expiration_days: "{{ s3_lifecycle_rule.rule_noncurrent_version_expiration_days  | default(omit, '') }}"
+    prefix: "{{ s3_lifecycle_rule.rule_prefix | default(omit, '') }}"
+    state: "present"
+    status: "enabled"
+    rule_id: "{{ s3_lifecycle_rule.rule_name }}"
