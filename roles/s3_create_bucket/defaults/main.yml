@@ -13,14 +13,7 @@ s3_allowed_headers:
 s3_expose_headers: []
 s3_max_age_seconds: 3000
 s3_lifecycle_rules: []
-#  - rule_name: "delete-rule"
+#  - rule_name: "name-rule"
 #    rule_expiration_days: 7
 #    rule_noncurrent_version_expiration_days: 9
 #    rule_prefix: ""
-
-      expiration_days: "{{ s3_lifecycle_rule.rule_expiration_days  | default(omit, '') }}"
-    noncurrent_version_expiration_days: "{{ s3_lifecycle_rule.rule_noncurrent_version_expiration_days  | default(omit, '') }}"
-    prefix: "{{ s3_lifecycle_rule.rule_prefix | default(omit, '') }}"
-    state: "present"
-    status: "enabled"
-    rule_id: "{{ s3_lifecycle_rule.rule_name }}"
