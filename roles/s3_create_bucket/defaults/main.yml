@@ -18,6 +18,8 @@ s3_create_bucket_lifecycle_rules: []
 #    rule_expiration_days: 7
 #    rule_noncurrent_version_expiration_days: 9
 #    rule_prefix: ""
+
+# sets the 1pw vaults and their respective item fields
 s3_create_bucket_1pw_targets: []
 #  - credentials_section_name: ""
 #    bucket_name_1pw_field_name: ""
