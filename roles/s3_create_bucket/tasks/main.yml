@@ -4,94 +4,94 @@
 - name: Create an s3key for IONOS DCD
   ionoscloudsdk.ionoscloud.s3key:
     token: "{{ ionos_token | default(omit) }}"
-    user: "{{ s3_ionos_user }}"
+    user: "{{ s3_create_bucket_ionos_user }}"
     idempotency: true
-  register: reg_s3_key
+  register: s3_create_bucket_r_s3_key
 
 - name: Create a bucket
   amazon.aws.s3_bucket:
-    aws_access_key: "{{ reg_s3_key.s3key.id }}"
-    aws_secret_key: "{{ reg_s3_key.s3key.properties.secret_key }}"
+    aws_access_key: "{{ s3_create_bucket_r_s3_key.s3key.id }}"
+    aws_secret_key: "{{ s3_create_bucket_r_s3_key.s3key.properties.secret_key }}"
     state: "present"
-    region: "{{ s3_region }}"
-    s3_url: "{{ s3_url }}"
-    versioning: "{{ s3_bucket_versioning | default(omit, false) }}"
-    policy: "{{ s3_bucket_policy | default(omit, 'null') }}"
-    name: "{{ s3_bucket_name }}"
+    region: "{{ s3_create_bucket_region }}"
+    s3_url: "{{ s3_create_bucket_url }}"
+    versioning: "{{ s3_create_bucket_bucket_versioning | default(omit) }}"
+    policy: "{{ s3_create_bucket_bucket_policy | default(omit) }}"
+    name: "{{ s3_create_bucket_bucket_name }}"
 
 - name: Configure a S3 lifecycle rule to delete incomplete S3 Multipart Upload
   community.aws.s3_lifecycle:
-    aws_access_key: "{{ reg_s3_key.s3key.id }}"
-    aws_secret_key:  "{{ reg_s3_key.s3key.properties.secret_key }}"
-    name: "{{ s3_bucket_name }}"
+    aws_access_key: "{{ s3_create_bucket_r_s3_key.s3key.id }}"
+    aws_secret_key: "{{ s3_create_bucket_r_s3_key.s3key.properties.secret_key }}"
+    name: "{{ s3_create_bucket_bucket_name }}"
     abort_incomplete_multipart_upload_days: 1
     state: "present"
     status: "enabled"
     rule_id: "delete incomplete S3 Multipart Upload"
-    endpoint_url: "{{ s3_url }}"
-    region: "{{ s3_region }}"
+    endpoint_url: "{{ s3_create_bucket_url }}"
+    region: "{{ s3_create_bucket_region }}"
 
 # Prior to release 5.0.0 this module was called community.aws.aws_s3_cors. The usage did not change.
 # Using community.aws 2.3.0 needs to be updated to s3_cors with community.aws update (latest version now 9.1.0)
 - name: Add CORS Settings on web access IONOS S3 Buckets
 #  community.aws.s3_cors:
   community.aws.aws_s3_cors:
-    aws_access_key: "{{ reg_s3_key.s3key.id }}"
-    aws_secret_key:  "{{ reg_s3_key.s3key.properties.secret_key }}"
-    endpoint_url: "{{ s3_url }}"
-    region: "{{ s3_region }}"
-    name: "{{ s3_bucket_name }}"
+    aws_access_key: "{{ s3_create_bucket_r_s3_key.s3key.id }}"
+    aws_secret_key: "{{ s3_create_bucket_r_s3_key.s3key.properties.secret_key }}"
+    endpoint_url: "{{ s3_create_bucket_url }}"
+    region: "{{ s3_create_bucket_region }}"
+    name: "{{ s3_create_bucket_bucket_name }}"
     state: "present"
     rules:
-      - allowed_origins: {{ s3_allowed_origins | to_yaml | indent(10) }}
-        allowed_methods: {{ s3_allowed_methods | to_yaml | indent(10) }}
-        allowed_headers: {{ s3_allowed_headers | to_yaml | indent(10) }}
-        expose_headers: {{ s3_expose_headers | to_yaml | indent(10) }}
-        max_age_seconds: {{ s3_max_age_seconds }}
-  when: s3_cors_settings | default(false)
+      - allowed_origins: "{{ s3_create_bucket_allowed_origins }}"
+        allowed_methods: "{{ s3_create_bucket_allowed_methods }}"
+        allowed_headers: "{{ s3_create_bucket_allowed_headers }}"
+        expose_headers: "{{ s3_create_bucket_expose_headers }}"
+        max_age_seconds: "{{ s3_create_bucket_max_age_seconds }}"
+  when: s3_create_bucket_cors_settings
 
 - name: Configure lifecycle rules on the bucket that delete items when they match a rule-specific prefix and exceed the rule-specific expiration time
   community.aws.s3_lifecycle:
-    aws_access_key: "{{ reg_s3_key.s3key.id }}"
-    aws_secret_key:  "{{ reg_s3_key.s3key.properties.secret_key }}"
-    name: "{{ s3_bucket_name }}"
-    expiration_days: "{{ s3_lifecycle_rule.rule_expiration_days  | default(omit, '') }}"
-    noncurrent_version_expiration_days: "{{ s3_lifecycle_rule.rule_noncurrent_version_expiration_days  | default(omit, '') }}"
-    prefix: "{{ s3_lifecycle_rule.rule_prefix | default(omit, '') }}"
+    aws_access_key: "{{ s3_create_bucket_r_s3_key.s3key.id }}"
+    aws_secret_key: "{{ s3_create_bucket_r_s3_key.s3key.properties.secret_key }}"
+    name: "{{ s3_create_bucket_bucket_name }}"
+    expiration_days: "{{ s3_create_bucket_lifecycle_rule.rule_expiration_days | default(omit) }}"
+    noncurrent_version_expiration_days: "{{ s3_lifecycle_rule.rule_noncurrent_version_expiration_days | default(omit) }}"
+    prefix: "{{ s3_create_bucket_lifecycle_rule.rule_prefix | default(omit) }}"
     state: "present"
     status: "enabled"
-    rule_id: "{{ s3_lifecycle_rule.rule_name }}"
-    endpoint_url: "{{ s3_url }}"
-    region: "{{ s3_region }}"
-  loop: "{{ s3_lifecycle_rules }}"
+    rule_id: "{{ s3_create_bucket_lifecycle_rule.rule_name }}"
+    endpoint_url: "{{ s3_create_bucket_url }}"
+    region: "{{ s3_create_bucket_region }}"
+  loop: "{{ s3_create_bucket_lifecycle_rules }}"
   loop_control:
-    loop_var: s3_lifecycle_rule
+    loop_var: s3_create_bucket_lifecycle_rule
 
 # Store the access key, access secret, bucket_name and url in one 1PW item.
 - name: Edit S3 Credentials in 1Password
   dbildungscloud.onepwd.item:
     credentials: "{{ op_credentials }}"
-    vault: "{{ s3_1pw_target.vault }}"
+    vault: "{{ s3_create_bucket_1pw_target.vault }}"
     session_shorthand: ansible-run
-    name: "{{ s3_1pw_target.item }}"
-    fields: 
-      - name: "{{ s3_1pw_target.bucket_name_1pw_field_name }}"
+    name: "{{ s3_create_bucket_1pw_target.item }}"
+    fields:
+      - name: "{{ s3_create_bucket_1pw_target.bucket_name_1pw_field_name }}"
         type: "text"
-        value: "{{ s3_1pw_target.bucket_name }}"
-        section: "{{ s3_1pw_target.credentials_section_name }}"
-      - name: "{{ s3_1pw_target.access_key_1pw_field_name}}"
+        value: "{{ s3_create_bucket_1pw_target.bucket_name }}"
+        section: "{{ s3_create_bucket_1pw_target.credentials_section_name }}"
+      - name: "{{ s3_create_bucket_1pw_target.access_key_1pw_field_name }}"
         type: "text"
-        value: "{{ reg_s3_key.s3key.id }}"
-        section: "{{ s3_1pw_target.credentials_section_name }}"
-      - name: "{{ s3_1pw_target.access_secret_1pw_field_name }}"
+        value: "{{ s3_create_bucket_r_s3_key.s3key.id }}"
+        section: "{{ s3_create_bucket_1pw_target.credentials_section_name }}"
+      - name: "{{ s3_create_bucket_1pw_target.access_secret_1pw_field_name }}"
         type: "password"
-        value: "{{ reg_s3_key.s3key.properties.secret_key }}"
-        section: "{{ s3_1pw_target.credentials_section_name }}"
-      - name: "{{ s3_1pw_target.url_1pw_field_name }}"
+        value: "{{ s3_create_bucket_r_s3_key.s3key.properties.secret_key }}"
+        section: "{{ s3_create_bucket_1pw_target.credentials_section_name }}"
+      - name: "{{ s3_create_bucket_1pw_target.url_1pw_field_name }}"
         type: "text"
-        value: "{{ s3_1pw_target.url }}"
-        section: "{{ s3_1pw_target.credentials_section_name }}"
-  loop: "{{ s3_1pw_targets }}"
+        value: "{{ s3_create_bucket_1pw_target.url }}"
+        section: "{{ s3_create_bucket_1pw_target.credentials_section_name }}"
+  loop: "{{ s3_create_bucket_1pw_targets }}"
   loop_control:
-    loop_var: s3_1pw_target
-  when: s3_one_password_enable | bool 
+    loop_var: s3_create_bucket_1pw_target
+  when: s3_create_bucket_one_password_enable | bool

@@ -1,18 +1,19 @@
-s3_ionos_user: "s3-user"
-s3_region: "eu-central-2"
-s3_url: "https://s3-eu-central-2.ionoscloud.com"
-s3_bucket_versioning: "false"
-s3_bucket_policy: null
-s3_bucket_name: "data"
-s3_allowed_origins:
+s3_create_bucket_ionos_user: "s3-user"
+s3_create_bucket_region: "eu-central-2"
+s3_create_bucket_url: "https://{{ s3_create_bucket_region }}.ionoscloud.com"
+s3_create_bucket_bucket_versioning: false
+s3_create_bucket_bucket_policy: null
+s3_create_bucket_bucket_name: "data"
+s3_create_bucket_cors_settings: false
+s3_create_bucket_allowed_origins:
   - "https://*"
-s3_allowed_methods:
+s3_create_bucket_allowed_methods:
   - GET
-s3_allowed_headers:
+s3_create_bucket_allowed_headers:
   - "*"
-s3_expose_headers: []
-s3_max_age_seconds: 3000
-s3_lifecycle_rules: []
+s3_create_bucket_expose_headers: []
+s3_create_bucket_max_age_seconds: 3000
+s3_create_bucket_lifecycle_rules: []
 #  - rule_name: "name-rule"
 #    rule_expiration_days: 7
 #    rule_noncurrent_version_expiration_days: 9
