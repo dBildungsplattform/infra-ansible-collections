@@ -1,0 +1,40 @@
+- name: "Assert that mandatory parameters are defined and have the correct type"
+  ignore_errors: false
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "s3_create_bucket_ionos_user is string"
+      - "s3_create_bucket_region is string"
+      - "s3_create_bucket_url is url"
+      - "s3_create_bucket_bucket_versioning is boolean"
+      - "s3_create_bucket_bucket_policy is string"
+      - "s3_create_bucket_bucket_name | regex_search(r'^[a-z0-9][a-z0-9-_.]{1,61}[a-z0-9]$')"
+      - "s3_create_bucket_cors_settings is boolean"
+      - "s3_create_bucket_allowed_origins | type_debug == 'list'"
+      - "s3_create_bucket_allowed_methods | type_debug == 'list'"
+      - "s3_create_bucket_allowed_headers | type_debug == 'list'"
+      - "s3_create_bucket_expose_headers | type_debug == 'list'"
+      - "s3_create_bucket_max_age_seconds is integer"
+
+- name: "Assert that livecycle rules are correct"
+  ignore_errors: false
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "item.rule_name is string"
+      - "item.rule_expiration_days is integer"
+      - "item.rule_noncurrent_version_expiration_days is integer"
+      - "item.rule_prefix is string"
+  loop: "{{ s3_create_bucket_lifecycle_rules }}"
+
+- name: "Assert that vault items are correct"
+  ignore_errors: false
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "item.credentials_section_name is string"
+      - "item.bucket_name_1pw_field_name is string"
+      - "item.access_key_1pw_field_name is string"
+      - "item.access_secret_1pw_field_name is string"
+      - "item.url_1pw_field_name is string"
+  loop: "{{ s3_create_bucket_1pw_targets }}"
