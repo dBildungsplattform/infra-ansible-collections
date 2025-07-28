@@ -1,6 +1,6 @@
-s3_create_bucket_ionos_user: "s3-user"
+s3_create_bucket_ionos_user: ""
 s3_create_bucket_region: "eu-central-2"
-s3_create_bucket_url: "https://{{ s3_create_bucket_region }}.ionoscloud.com"
+s3_create_bucket_url: "https://s3.{{ s3_create_bucket_region }}.ionoscloud.com"
 s3_create_bucket_bucket_versioning: false
 s3_create_bucket_bucket_policy: "null" # "null" as string sets the policy to absent
 s3_create_bucket_bucket_name: "data"
