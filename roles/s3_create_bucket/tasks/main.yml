@@ -91,4 +91,4 @@
   loop_control:
     loop_var: s3_create_bucket_1pw_target
   when:
-    - s3_create_bucket_1pw_targets | length > 1
+    - s3_create_bucket_1pw_targets | length > 0
