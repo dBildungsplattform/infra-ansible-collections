@@ -10,13 +10,13 @@
 
 - name: "Create bucket '{{ s3_create_bucket_bucket_name }}'"
   amazon.aws.s3_bucket:
-    aws_access_key: "{{ s3_create_bucket_r_s3_key.s3key.id }}"
-    aws_secret_key: "{{ s3_create_bucket_r_s3_key.s3key.properties.secret_key }}"
+    access_key: "{{ s3_create_bucket_r_s3_key.s3key.id }}"
+    secret_key: "{{ s3_create_bucket_r_s3_key.s3key.properties.secret_key }}"
     state: "present"
     region: "{{ s3_create_bucket_region }}"
     endpoint_url: "{{ s3_create_bucket_url }}"
-    versioning: "{{ s3_create_bucket_bucket_versioning | default(omit) }}"
-    policy: "{{ s3_create_bucket_bucket_policy | default('null') }}"
+    #versioning: "{{ s3_create_bucket_bucket_versioning }}"
+    #policy: "{{ s3_create_bucket_bucket_policy }}"
     name: "{{ s3_create_bucket_bucket_name }}"
 
 - name: "Configure a S3 lifecycle rule to delete incomplete S3 Multipart Upload"
