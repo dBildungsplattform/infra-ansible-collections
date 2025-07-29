@@ -35,6 +35,8 @@
     quiet: true
     that:
       - "item.vault is string"
+      - "item.item is string"
+      - "item.url is url"
       - "item.credentials_section_name is string"
       - "item.bucket_name_1pw_field_name is string"
       - "item.access_key_1pw_field_name is string"
