@@ -3,7 +3,7 @@
 
 - name: "Create an s3key for IONOS DCD"
   ionoscloudsdk.ionoscloud.s3key:
-    token: "{{ s3_create_bucket_ionos_token | default(ionos_token) }}"
+    token: "{{ s3_create_bucket_ionos_token | default(ionos_token, true) }}"
     user: "{{ s3_create_bucket_ionos_user | default(ionos_username | default(omit)) }}"
     idempotency: true
   register: s3_create_bucket_r_s3_key
