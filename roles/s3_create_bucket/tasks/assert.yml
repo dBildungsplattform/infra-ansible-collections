@@ -3,7 +3,8 @@
   ansible.builtin.assert:
     quiet: true
     that:
-      - "s3_create_bucket_ionos_user is string"
+      - "s3_create_bucket_ionos_token | default(ionos_token) is string"
+      - "s3_create_bucket_ionos_user | default(ionos_username) is string"
       - "s3_create_bucket_region is string"
       - "s3_create_bucket_url is url"
       - "s3_create_bucket_bucket_versioning is boolean"
@@ -16,7 +17,7 @@
       - "s3_create_bucket_expose_headers | type_debug == 'list'"
       - "s3_create_bucket_max_age_seconds is integer"
 
-- name: "Assert that livecycle rules are correct"
+- name: "Assert that livecycle rules are defined and have the correct type"
   ignore_errors: false
   ansible.builtin.assert:
     quiet: true
@@ -27,7 +28,7 @@
       - "item.rule_prefix is string"
   loop: "{{ s3_create_bucket_lifecycle_rules }}"
 
-- name: "Assert that vault items are correct"
+- name: "Assert that vault items are defined and have the correct type"
   ignore_errors: false
   ansible.builtin.assert:
     quiet: true

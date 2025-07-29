@@ -3,7 +3,7 @@
 
 - name: "Create an s3key for IONOS DCD"
   ionoscloudsdk.ionoscloud.s3key:
-    token: "{{ ionos_token | default(omit) }}"
+    token: "{{ s3_create_bucket_ionos_token | default(ionos_token) }}"
     user: "{{ s3_create_bucket_ionos_user | default(ionos_username | default(omit)) }}"
     idempotency: true
   register: s3_create_bucket_r_s3_key
@@ -15,8 +15,8 @@
     state: "present"
     region: "{{ s3_create_bucket_region }}"
     endpoint_url: "{{ s3_create_bucket_url }}"
-    #versioning: "{{ s3_create_bucket_bucket_versioning }}"
-    #policy: "{{ s3_create_bucket_bucket_policy }}"
+    versioning: "{{ s3_create_bucket_bucket_versioning }}"
+    policy: "{{ s3_create_bucket_bucket_policy }}"
     name: "{{ s3_create_bucket_bucket_name }}"
 
 - name: "Configure a S3 lifecycle rule to delete incomplete S3 Multipart Upload"
