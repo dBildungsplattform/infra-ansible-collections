@@ -1,0 +1,23 @@
+---
+gitlab_agent_chart_repo_name: "gitlab-io"
+gitlab_agent_chart_repo_url: "https://charts.gitlab.io"
+gitlab_agent_chart_name: "gitlab-agent"
+gitlab_agent_chart_version: "2.17.1"
+
+gitlab_agent_image_repository: "registry.gitlab.com/gitlab-org/cluster-integration/gitlab-agent"
+gitlab_agent_image_name: "agentk"
+gitlab_agent_image_tag: "v18.2.1"
+gitlab_agent_image_pull_policy: "IfNotPresent"
+gitlab_agent_image_pull_secrets: []
+
+gitlab_agent_replicas: 2
+
+gitlab_agent_instances:
+  - kas_address: ""
+    token: "" # token or secret_name has to be defined
+    secret_name: ""
+    release_name: ""
+    namespace: ""
+    rbac_create: true
+    rbac_role: "cluster-admin" # optional, defaults to ''
+    state: "present" # optional, defaults to 'present'

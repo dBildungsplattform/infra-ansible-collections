@@ -1,0 +1,27 @@
+---
+- ansible.builtin.import_tasks: "assert.yml"
+
+- name: "Add gitlab chart repo"
+  kubernetes.core.helm_repository:
+    name: "{{ gitlab_agent_chart_repo_name }}"
+    repo_url: "{{ gitlab_agent_chart_repo_url }}"
+  check_mode: false
+  changed_when: false
+
+
+- name: "Install Gitlab Agents"
+  kubernetes.core.helm:
+    name: "{{ item.release_name }}"
+    release_namespace: "{{ item.namespace }}"
+    create_namespace: true
+    chart_ref: "{{ gitlab_agent_chart_repo_name }}/{{ gitlab_agent_chart_name }}"
+    update_repo_cache: true
+    wait: true
+    wait_timeout: 10m
+    chart_version: "{{ gitlab_agent_chart_version }}"
+    kubeconfig: "{{ kubeconfig | default(omit) }}"
+    state: "{{ item.state | default('present') }}"
+    values: "{{ lookup('template', 'values.yml.j2') | from_yaml }}"
+  loop_control:
+    label: "{{ item.namespace }}/{{ item.release_name }}"
+  loop: "{{ gitlab_agent_instances }}"
