@@ -12,12 +12,12 @@ gitlab_agent_image_pull_secrets: []
 
 gitlab_agent_replicas: 2
 
-gitlab_agent_instances:
-  - kas_address: ""
-    token: "" # token or secret_name has to be defined
-    secret_name: ""
-    release_name: ""
-    namespace: ""
-    rbac_create: true
-    rbac_role: "cluster-admin" # optional, defaults to ''
-    state: "present" # optional, defaults to 'present'
+gitlab_agent_instances: []
+#  - kas_address: ""
+#    token: "" # token or secret_name has to be defined
+#    secret_name: ""
+#    release_name: ""
+#    namespace: ""
+#    rbac_create: true
+#    rbac_role: "cluster-admin" # optional, defaults to ''
+#    state: "present" # optional, defaults to 'present'
