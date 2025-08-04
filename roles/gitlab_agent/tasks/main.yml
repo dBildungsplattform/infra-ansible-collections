@@ -1,5 +1,6 @@
 ---
-- ansible.builtin.import_tasks: "assert.yml"
+- name: "Import asserts"
+  ansible.builtin.import_tasks: "assert.yml"
 
 - name: "Add gitlab chart repo"
   kubernetes.core.helm_repository:
