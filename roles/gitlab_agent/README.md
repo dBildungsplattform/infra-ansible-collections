@@ -1,6 +1,6 @@
 
 # Token creation
-
+Follow these steps in GitLab to create a token:
 * Gitlab-Repository -> Operate -> Kubernetes clusters
 * Connect a cluster
 * Select a Name
