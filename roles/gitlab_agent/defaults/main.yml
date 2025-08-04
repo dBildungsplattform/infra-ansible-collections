@@ -21,3 +21,6 @@ gitlab_agent_instances: []
 #    rbac_create: true
 #    rbac_role: "cluster-admin" # optional, defaults to ''
 #    state: "present" # optional, defaults to 'present'
+#    service_account_create: true # optional, defaults to true
+#    service_account_annotations: {} # optional, defaults to {}
+#    service_account_name: "" # optional, defaults to '' (empty -> generated via helm)

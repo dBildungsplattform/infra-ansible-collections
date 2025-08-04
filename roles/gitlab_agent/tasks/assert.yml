@@ -28,6 +28,9 @@
       - "item.rbac_create is boolean"
       - "item.rbac_role | default('') is string"
       - "item.state | default('present') is string"
+      - "item.service_account_create | default(true) is boolean"
+      - "item.service_account_annotations | default({}) is mapping"
+      - "item.service_account_name | default('') is string"
   loop_control:
     label: "{{ item.namespace }}/{{ item.release_name }}"
   loop: "{{ gitlab_agent_instances }}"
