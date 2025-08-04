@@ -9,6 +9,8 @@ imagePullSecrets:
   - {{ item }}
 {% endfor %}
 
+replicas: {{ gitlab_agent_replicas }}
+
 config:
   kasAddress: "{{ item.kas_address }}"
   token: "{{ item.token | default('') }}"
