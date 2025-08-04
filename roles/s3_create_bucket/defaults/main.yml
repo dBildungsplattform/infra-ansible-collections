@@ -1,4 +1,4 @@
-s3_create_bucket_ionos_user: ""
+s3_create_bucket_owner: ""
 s3_create_bucket_ionos_token: ""
 s3_create_bucket_region: "eu-central-2"
 s3_create_bucket_url: "https://s3.{{ s3_create_bucket_region }}.ionoscloud.com"

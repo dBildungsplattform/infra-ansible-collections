@@ -4,8 +4,8 @@
     quiet: true
     that:
       - "lookup('community.general.collection_version', 'amazon.aws') is version('9.0', '>=')"
-      - "s3_create_bucket_ionos_token | default(ionos_token) is string"
-      - "s3_create_bucket_ionos_user | default(ionos_username) is string"
+      - "s3_create_bucket_ionos_token | default(ionos_token, true) is string"
+      - "s3_create_bucket_owner is string"
       - "s3_create_bucket_region is string"
       - "s3_create_bucket_url is url"
       - "s3_create_bucket_bucket_versioning is boolean"
