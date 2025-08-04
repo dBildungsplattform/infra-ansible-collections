@@ -1,0 +1,35 @@
+---
+image:
+  repository: "{{ gitlab_agent_image_repository}}/{{ gitlab_agent_image_name }}"
+  pullPolicy: "{{ gitlab_agent_image_pull_policy }}"
+  tag: "{{ gitlab_agent_image_tag }}"
+
+imagePullSecrets:
+{% for item in gitlab_agent_image_pull_secrets %}
+  - {{ item }}
+{% endfor %}
+
+replicas: {{ gitlab_agent_replicas }}
+
+config:
+  kasAddress: "{{ item.kas_address }}"
+  token: "{{ item.token | default('') }}"
+  secretName: "{{ item.secret_name | default('') }}"
+
+podAnnotations: []
+serviceMonitor:
+  enabled: true
+
+serviceAccount:
+  create: {{ item.service_account_create | default(true) }}
+  annotations: {{ item.service_account_annotations | default({}) }}
+  name: {{ item.service_account_name | default('') }}
+
+rbac:
+  create: {{ item.rbac_create }}
+  useExistingRole: {{ item.rbac_role | default('') }}
+
+ingress:
+  enabled: false
+ingress-nginx:
+  enabled: false
