@@ -8,6 +8,10 @@ auth_param basic program /usr/lib/squid/basic_ncsa_auth /etc/squid/htpasswd
 auth_param basic realm {{ realm }}
 auth_param basic credentialsttl {{ credential_refresh_interval }}
 
+# Deny URN explicitly (CVE-2025-54574)   
+acl URN proto URN
+http_access deny URN
+
 # Only requests with the CONNECT method to the specified domains and ports from authenticated users are allowed
 acl dest_ports port {{ allowed_dest_ports }}
 acl authenticated proxy_auth REQUIRED
