@@ -1,0 +1,36 @@
+---
+
+- name: "Assert that mandatory parameters are defined and have the correct type"
+  ignore_errors: false
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "gitlab_agent_chart_repo_name is string"
+      - "gitlab_agent_chart_repo_url is url"
+      - "gitlab_agent_chart_name is string"
+      - "gitlab_agent_chart_version is string"
+      - "gitlab_agent_image_repository is string"
+      - "gitlab_agent_image_name is string"
+      - "gitlab_agent_image_tag is string"
+      - "gitlab_agent_image_pull_policy is in ['Always', 'IfNotPresent', 'Never']"
+      - "gitlab_agent_image_pull_secrets is sequence"
+      - "gitlab_agent_replicas is integer"
+
+- name: "Assert that mandatory instance parameters are defined and have the correct type"
+  ignore_errors: false
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "item.kas_address is url"
+      - "item.token is string or item.secret_name is string"
+      - "item.release_name is string"
+      - "item.namespace is string"
+      - "item.rbac_create is boolean"
+      - "item.rbac_role | default('') is string"
+      - "item.state | default('present') is string"
+      - "item.service_account_create | default(true) is boolean"
+      - "item.service_account_annotations | default({}) is mapping"
+      - "item.service_account_name | default('') is string"
+  loop_control:
+    label: "{{ item.namespace }}/{{ item.release_name }}"
+  loop: "{{ gitlab_agent_instances }}"

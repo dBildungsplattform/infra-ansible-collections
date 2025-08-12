@@ -1,11 +1,14 @@
 ---
 # We need to run Nginx without SSL at first since we don't have certificates yet
-- name: Copy Nginx Scalelite config without SSL
+- name: Copy Nginx config without SSL
   vars:
     certbot_only: true
   template:
-    src: nginx/scalelite.conf.j2
-    dest: "{{ scalelite_docker_volumes_folder }}/nginx/scalelite.conf"
+    src: "{{ item }}.j2"
+    dest: "{{ scalelite_docker_volumes_folder }}/{{ item }}"
+  loop:
+    - "nginx/scalelite.conf"
+    - "nginx/nodeexporter.conf"
 
 - name: Docker-compose up
   community.docker.docker_compose_v2:
@@ -72,6 +75,9 @@
 
 - name: Copy original Nginx Scalelite config after creating certificates
   template:
-    src: nginx/scalelite.conf.j2
-    dest: "{{ scalelite_docker_volumes_folder }}/nginx/scalelite.conf"
+    src: "{{ item }}.j2"
+    dest: "{{ scalelite_docker_volumes_folder }}/{{ item }}"
+  loop:
+    - "nginx/scalelite.conf"
+    - "nginx/nodeexporter.conf"
   notify: Restart scalelite-nginx

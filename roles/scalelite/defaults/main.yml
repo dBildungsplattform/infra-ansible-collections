@@ -155,6 +155,7 @@ scalelite_modsec_after: |
   SecRule REQUEST_URI "@contains /greenlight/api/v1/admin/site_settings"        "id:1009, phase:1, pass, nolog,   allow"
   SecRule REQUEST_URI "@contains /greenlight/api/v1/admin/rooms_configurations" "id:1010, phase:1, pass, nolog,   allow"
   SecRule REQUEST_URI "@contains /greenlight/api/v1/admin/users"                "id:1011, phase:1, pass, nolog,   allow"
+  SecRule REQUEST_URI "@contains /greenlight/api/v1/admin/invitations"          "id:1012, phase:1, pass, nolog,   allow"
   SecAction "id:980145,phase:5,pass,t:none,log,noauditlog, msg:'Incoming and Outgoing Score: %{TX.ANOMALY_SCORE} %{TX.OUTBOUND_ANOMALY_SCORE}'"
   SecRuleRemoveById 980130
 
@@ -193,6 +194,8 @@ scalelite_metrics_basic_auth_username: metrics-user
 # scalelite_metrics_basic_auth_password:
 scalelite_security_txt: |
   # Security.txt content
+scalelite_robots_txt: |
+  # Robots.txt content
 
 scalelite_autoscaler_user_id: 65534
 scalelite_autoscaler_group_id: 65534

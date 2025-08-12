@@ -88,10 +88,10 @@
     group: "{{ server_monitoring_nginx_group_id }}"
   when: server_monitoring_nginx_enabled
 
-- name: Install Python Passlib
-  pip:
-    name:
-      - passlib
+- name: Install python-passlib
+  package:
+    name: python3-passlib
+    state: present
   when: server_monitoring_install_docker
 
 - name: Copy basic auth user

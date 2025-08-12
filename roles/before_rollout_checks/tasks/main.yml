@@ -1,0 +1,23 @@
+---
+  - name: Terminate local run in non Check Mode to non infra instances
+    assert:
+      that: ansible_check_mode
+      fail_msg: 'Local rollouts to non infra instances that are not in check mode are not allowed. Use check mode or when in emergenycy, force the rollout by adding -e "{force_local_rollout: True}".'
+    when: awx_job_id is not defined and 'infra' not in group_names and not force_local_rollout | default(false)
+  - name: Check that only one stage is selected
+    vars: 
+      stages: "{{ ansible_play_hosts_all | map('extract', hostvars, 'stage') | list | unique }}"
+    run_once: true
+    ansible.builtin.assert:
+      that:
+        - stages | length == 1
+      fail_msg: "Only single stage rollout allowed"
+  - name: Check that only one project is selected
+    vars: 
+      projects: "{{ ansible_play_hosts_all | map('extract', hostvars, 'project') | list | unique }}"
+    run_once: true
+    ansible.builtin.assert:
+      that:
+        - projects | length == 1
+      fail_msg: "Only single project rollout allowed"
+    
