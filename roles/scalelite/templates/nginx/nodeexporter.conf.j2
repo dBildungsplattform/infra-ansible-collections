@@ -1,3 +1,4 @@
+{% if not ( certbot_only | default(false) ) %}
 {% for server in scalelite_nginx_metrics_endpoints %}
 server {
      server_name {{ server.name }};
@@ -24,3 +25,4 @@ server {
 	}
 }
 {% endfor %}
+{% endif %}
