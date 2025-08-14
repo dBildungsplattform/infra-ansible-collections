@@ -364,6 +364,16 @@ services:
 {% if scalelite_clamav_enabled %}
       - {{ scalelite_docker_volumes_folder }}/greenlight/clamd.conf:/etc/clamav/clamd.conf:r
 {% endif %}
+{ ## if (instance.bbb_greenlight_custom_login is defined and true) and instance.name = hh-fobi ## }
+{% if bbb_greenlight_custom_login is defined and true %}
+  {% if instance.name = "dp2" %}
+      - {{ scalelite_docker_volumes_folder }}/content_overlay_hh_fobi_json/de.json:/usr/src/app/app/assets/locales/de.json:r
+  {% else %}
+      - {{ scalelite_docker_volumes_folder }}/content_overlay_hh_noa_json/de.json:/usr/src/app/app/assets/locales/de.json:r
+  {% endif %}
+      - {{ scalelite_docker_volumes_folder }}/content_overlay_application_css/application.bootstrap.scss:/usr/src/app/app/assets/stylesheets/application.bootstrap.scss:r
+      - {{ scalelite_docker_volumes_folder }}/content_overlay_custon_css/custom.scss:/usr/src/app/app/assets/stylesheets/custom.scss:r
+{% endif %}
     healthcheck:
       test: ["CMD", "bash", "-c", "echo -n '' > /dev/tcp/127.0.0.1/3000"]
       interval: 30s
