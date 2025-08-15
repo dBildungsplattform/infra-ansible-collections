@@ -364,6 +364,9 @@ services:
 {% if scalelite_clamav_enabled %}
       - {{ scalelite_docker_volumes_folder }}/greenlight/clamd.conf:/etc/clamav/clamd.conf:r
 {% endif %}
+{% if instance.content_overlay is defined %}
+      - {{ scalelite_docker_volumes_folder }}/content_overlay_{{ instance.content_overlay }}_json/de.json:/usr/src/app/app/assets/locales/de.json:r
+{% endif %}
 {% if bbb_greenlight_custom_login is defined and true %}
       - {{ scalelite_docker_volumes_folder }}/content_overlay_application_css/application.bootstrap.scss:/usr/src/app/app/assets/stylesheets/application.bootstrap.scss:r
       - {{ scalelite_docker_volumes_folder }}/content_overlay_custon_css/custom.scss:/usr/src/app/app/assets/stylesheets/custom.scss:r
