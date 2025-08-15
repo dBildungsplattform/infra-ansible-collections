@@ -32,7 +32,7 @@
 - name: Create backup cronjob
   copy:
     content: |
-      0 1 * * * root /root/PrivacyIdea-backup.sh > /var/log/backup.log 2>&1 
+      0 1/8 * * * root /root/PrivacyIdea-backup.sh > /var/log/backup.log 2>&1 
     dest: /etc/cron.d/privacyidea-backup
     mode: "0600"
   when: stage == "prod" or stage == "staging" and is_last_node
