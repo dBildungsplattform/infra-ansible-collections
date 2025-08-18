@@ -1,69 +1,69 @@
 ---
-    - name: Add grafana chart repo
-      kubernetes.core.helm_repository:
-        name: grafana
-        repo_url: "https://grafana.github.io/helm-charts"
-      check_mode: false
-      changed_when: false
-      tags:
-        - loki
-        - loki-legacy
-      when: loki_legacy_enabled or loki_s3_enabled
-      # If a task has no always or never tags, then the when condition will be evaluated to determine if the task should run.
+- name: Add grafana chart repo
+  kubernetes.core.helm_repository:
+    name: grafana
+    repo_url: "https://grafana.github.io/helm-charts"
+  check_mode: false
+  changed_when: false
+  tags:
+    - loki
+    - loki-legacy
+  when: loki_legacy_enabled or loki_s3_enabled
+  # If a task has no always or never tags, then the when condition will be evaluated to determine if the task should run.
 
-    # Legacy Loki
-    - name: Install legacy Loki
-      kubernetes.core.helm:
-        name: loki
-        chart_ref: grafana/loki-distributed
-        update_repo_cache: true
-        wait: true
-        wait_timeout: 10m
-        chart_version: "{{ loki_legacy_chart_version }}"
-        kubeconfig: "{{ kubeconfig }}"
-        release_namespace: monitoring
-        values:
-          "{{ loki_legacy_values }}"
-      tags:
-        - loki-legacy
-      when: loki_legacy_enabled
+# Legacy Loki
+- name: Install legacy Loki
+  kubernetes.core.helm:
+    name: loki
+    chart_ref: grafana/loki-distributed
+    update_repo_cache: true
+    wait: true
+    wait_timeout: 10m
+    chart_version: "{{ loki_legacy_chart_version }}"
+    kubeconfig: "{{ kubeconfig }}"
+    release_namespace: monitoring
+    values:
+      "{{ loki_legacy_values }}"
+  tags:
+    - loki-legacy
+  when: loki_legacy_enabled
 
-    - name: Install Loki
-      kubernetes.core.helm:
-        name: loki-s3
-        chart_ref: grafana/loki
-        update_repo_cache: true
-        wait: true
-        wait_timeout: 10m
-        chart_version: "{{ loki_chart_version }}"
-        kubeconfig: "{{ kubeconfig }}"
-        release_namespace: monitoring
-        values:
-          "{{ loki_values }}"
-      tags:
-        - loki
-      when: loki_s3_enabled
+- name: Install Loki
+  kubernetes.core.helm:
+    name: loki-s3
+    chart_ref: grafana/loki
+    update_repo_cache: true
+    wait: true
+    wait_timeout: 10m
+    chart_version: "{{ loki_chart_version }}"
+    kubeconfig: "{{ kubeconfig }}"
+    release_namespace: monitoring
+    values:
+      "{{ loki_values }}"
+  tags:
+    - loki
+  when: loki_s3_enabled
 
-    # For working secret transfer a 1password secret is needed (See https://docs.dbildungscloud.de/display/PROD/Loki)
-    # See https://docs.ansible.com/ansible/latest/collections/kubernetes/core/k8s_module.html
-    - name: Create loki http basic auth secret
-      kubernetes.core.k8s:
-        state: present
-        kubeconfig: "{{ kubeconfig }}"
-        proxy: "{{ proxy_url | default(omit, true) }}"
-        proxy_headers: "{{ proxy_headers | default(omit, true) }}"
-        definition:
-          apiVersion: onepassword.com/v1
-          kind: OnePasswordItem
-          metadata:
-            name: "{{ loki_ingres_basic_auth_secret_name }}"
-            namespace: monitoring
-            labels:
-              app: loki
-              release: loki
-          spec:
-            itemPath: "vaults/{{ vault }}/items/loki"
-      tags:
-        - loki
-        - loki-legacy
-      when: loki_legacy_enabled or loki_s3_enabled
+# For working secret transfer a 1password secret is needed (See https://docs.dbildungscloud.de/display/PROD/Loki)
+# See https://docs.ansible.com/ansible/latest/collections/kubernetes/core/k8s_module.html
+- name: Create loki http basic auth secret
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    definition:
+      apiVersion: onepassword.com/v1
+      kind: OnePasswordItem
+      metadata:
+        name: "{{ loki_ingres_basic_auth_secret_name }}"
+        namespace: monitoring
+        labels:
+          app: loki
+          release: loki
+      spec:
+        itemPath: "vaults/{{ vault }}/items/loki"
+  tags:
+    - loki
+    - loki-legacy
+  when: loki_legacy_enabled or loki_s3_enabled
