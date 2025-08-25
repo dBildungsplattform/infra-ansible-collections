@@ -166,6 +166,18 @@
       ConcurrentDatabaseReload no
   when: scalelite_clamav_enabled
 
+- name: Greenlight extra instances custom_locale
+  include_tasks: greenlight-locale.yml
+  args:
+    apply:
+      tags:
+        - test
+  loop: "{{ scalelite_greenlight_extra_instances.bbb_greenlight_custom_locale }}"
+  loop_control: 
+    label: "{{ item.overlay_name }}"
+  tags: test
+  ## debug
+
 - name: Certbot
   include_tasks: certbot.yml
 
