@@ -1,0 +1,132 @@
+---
+# Helm does not provide functionality to update custom resource definitions. This can result in the operator misbehaving
+#  when a release contains updates to the custom resource definitions. To avoid issues due to outdated or missing definitions,
+#  run the following command before updating an existing installation:
+- name: Install grafana-operator CRDs
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    namespace: "{{ grafana_namespace }}"
+    resource_definition: "{{ lookup('ansible.builtin.url', 'https://github.com/grafana/grafana-operator/releases/download/{{ grafana_operator_chart_version }}/crds.yaml', split_lines=False ) }}"
+    server_side_apply:
+      field_manager: ansible
+      force_conflicts: true
+  tags: grafana-operator
+
+- name: Install grafana-operator
+  kubernetes.core.helm:
+    name: grafana-operator
+    chart_ref: oci://ghcr.io/grafana/helm-charts/grafana-operator
+    update_repo_cache: true
+    wait: true
+    wait_timeout: 10m
+    chart_version: "{{ grafana_operator_chart_version }}"
+    kubeconfig: "{{ kubeconfig }}"
+    release_namespace: "{{ grafana_namespace }}"
+    values:
+      "{{ grafana_operator_values }}"
+  tags: grafana-operator
+
+- name: Create Grafana instance
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    namespace: "{{ grafana_namespace }}"
+    definition:  "{{ grafana_resource }}"
+  tags: grafana-operator
+
+- name: Create Grafana datasources
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    namespace: "{{ grafana_namespace }}"
+    definition: |
+      apiVersion: grafana.integreatly.org/v1beta1
+      kind: GrafanaDatasource
+      metadata:
+        name: "{{ item.name | lower }}"
+      spec:
+        instanceSelector:
+          matchLabels:
+            {{ grafana_label_selector }}
+        datasource:
+          access: proxy
+          name: "{{ item.name }}"
+          type: "{{ item.type }}"
+          url: "{{ item.url }}"
+          isDefault: {{ item.default | default(false) }}
+  loop: "{{ grafana_default_datasources }}"
+  tags: grafana-operator
+
+- name: Create Grafana Folders
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    namespace: "{{ grafana_namespace }}"
+    definition: |
+      apiVersion: grafana.integreatly.org/v1beta1
+      kind: GrafanaFolder
+      metadata:
+        name: {{ item.name }}
+      spec:
+        instanceSelector:
+          matchLabels:
+            {{ grafana_label_selector }}
+        title: {{ item.titel }}
+        permissions: |
+          {{ item.permissions | indent(width=4, first=False) }}
+  loop: "{{ grafana_default_folders }}"
+  tags: grafana-operator
+
+- name: Create Grafana Contactpoints
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    namespace: "{{ grafana_namespace }}"
+    definition: |
+      apiVersion: grafana.integreatly.org/v1beta1
+      kind: GrafanaContactPoint
+      metadata:
+        name: {{ item.name }}
+      spec:
+        name: {{ item.name }}
+        type: {{ item.type }}
+        instanceSelector:
+          matchLabels:
+            {{ grafana_label_selector }}
+        settings:
+          {{ item.settings }}
+  loop: "{{ grafana_default_contactpoints }}"
+  tags: grafana-operator
+
+- name: Create Grafana dashboards
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    namespace: "{{ grafana_namespace }}"
+    definition: |
+      apiVersion: grafana.integreatly.org/v1beta1
+      kind: GrafanaDashboard
+      metadata:
+        name: {{ item.name }}
+      spec:
+        instanceSelector:
+          matchLabels:
+            {{ grafana_label_selector }}
+        folder: {{  item.folder }}
+        json: >
+          {{ item.json | indent(width=4, first=False) }}
+  loop: "{{ grafana_default_dashboards }}"
+  tags: grafana-operator
