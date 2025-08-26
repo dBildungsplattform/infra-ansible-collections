@@ -45,7 +45,7 @@ export DATE=$( date "+%Y-%m-%d" )
 export DUMPFILE=privacyidea_dump_$DATE
 
 echo "===Desynchronizing the node==="
-
+date
 mysql_exec "SET GLOBAL wsrep_desync = ON;SET GLOBAL wsrep_on = OFF; SET GLOBAL net_read_timeout = 31536000; SET GLOBAL net_write_timeout = 31536000;  "
 
 check_success "Failed to desynchronize the node"
@@ -54,6 +54,8 @@ mysqldump --lock-tables=false --max-allowed-packet=1024M --quick --flush-logs {{
 check_success "Failed to create database dump"
 mysql_exec " SET GLOBAL net_write_timeout = 60; SET GLOBAL net_read_timeout = 30; SET GLOBAL wsrep_on = ON; SET GLOBAL wsrep_desync = OFF;"
 check_success "Failed to resynchronize the node"
+echo "===Node resynchronized and dump done==="
+date
 gzip $DUMPFILE.sql
 check_success "Failed to compress database dump"
 cd /etc/duply/default
