@@ -172,9 +172,12 @@
     apply:
       tags:
         - test
-  loop: "{{ scalelite_greenlight_extra_instances.bbb_greenlight_custom_locale }}"
-  loop_control: 
-    label: "{{ item.overlay_name }}"
+  loop: "{{ scalelite_greenlight_extra_instances | selectattr('bbb_greenlight_custom_locale', 'defined') | subelements('bbb_greenlight_custom_locale') }}"
+  # loop: "{{ scalelite_greenlight_extra_instances }}"
+  # # loop: "{{ scalelite_greenlight_extra_instances.greenlight_extra_instances }}"
+  # loop_control: 
+  # #   # label: "{{ item.overlay_name }}"
+  #   label: "{{ item.bbb_greenlight_custom_locale.overlay_name }}"
   tags: test
   ## debug
 
