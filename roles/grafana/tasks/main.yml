@@ -130,3 +130,40 @@
           {{ item.json | indent(width=4, first=False) }}
   loop: "{{ grafana_default_dashboards }}"
   tags: grafana-operator
+
+- name: Create Grafana notification-policy
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    namespace: "{{ grafana_namespace }}"
+    template: 'grafana-np.yml.j2'
+  when: not grafana_default_notification_policy.disabled
+  tags: grafana-operator
+
+- name: Create Grafana Mutes
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    namespace: "{{ grafana_namespace }}"
+    definition: |
+      apiVersion: grafana.integreatly.org/v1beta1
+      kind: GrafanaMuteTiming
+      metadata:
+        name: {{ item.name }}
+      spec:
+        instanceSelector:
+          matchLabels:
+            {{ grafana_label_selector }}
+        name: {{ item.name }}
+        editable: false
+        time_intervals:
+          - times:
+              - start_time: "{{ item.times.start }}"
+                end_time: "{{ item.times.end }}"
+            weekdays: {{ item.weekdays }}
+  loop: "{{ grafana_default_mutes }}"
+  tags: grafana-operator
