@@ -61,7 +61,7 @@
           type: "{{ item.type }}"
           url: "{{ item.url }}"
           isDefault: {{ item.default | default(false) }}
-  loop: "{{ grafana_default_datasources }}"
+  loop: "{{ grafana_combined_datasources }}"
   tags: grafana-operator
 
 - name: Create Grafana Folders
@@ -83,7 +83,7 @@
         title: {{ item.titel }}
         permissions: |
           {{ item.permissions | indent(width=4, first=False) }}
-  loop: "{{ grafana_default_folders }}"
+  loop: "{{ grafana_combined_folders }}"
   tags: grafana-operator
 
 - name: Create Grafana Contactpoints
@@ -106,7 +106,7 @@
             {{ grafana_label_selector }}
         settings:
           {{ item.settings }}
-  loop: "{{ grafana_default_contactpoints }}"
+  loop: "{{ grafana_combined_contactpoints }}"
   tags: grafana-operator
 
 - name: Create Grafana dashboards
@@ -128,7 +128,7 @@
         folder: {{  item.folder }}
         json: >
           {{ item.json | indent(width=4, first=False) }}
-  loop: "{{ grafana_default_dashboards }}"
+  loop: "{{ grafana_combined_dashboards }}"
   tags: grafana-operator
 
 - name: Create Grafana notification-policy
@@ -139,7 +139,7 @@
     proxy_headers: "{{ proxy_headers | default(omit, true) }}"
     namespace: "{{ grafana_namespace }}"
     template: 'grafana-np.yml.j2'
-  when: not grafana_default_notification_policy.disabled
+  when: not grafana_combined_notification_policy.disabled
   tags: grafana-operator
 
 - name: Create Grafana Mutes
@@ -165,5 +165,5 @@
               - start_time: "{{ item.times.start }}"
                 end_time: "{{ item.times.end }}"
             weekdays: {{ item.weekdays }}
-  loop: "{{ grafana_default_mutes }}"
+  loop: "{{ grafana_combined_mutes }}"
   tags: grafana-operator
