@@ -26,7 +26,7 @@ services:
       POSTGRES_GREENLIGHT_V3_PASSWORD: ${POSTGRES_GREENLIGHT_V3_PASSWORD}
       POSTGRES_EXPORTER_PASSWORD: ${POSTGRES_EXPORTER_PASSWORD}
 {% for instance in scalelite_greenlight_extra_instances %}
-      POSTGRES_GREENLIGHT_{{ instance.name|upper }}_V3_PASSWORD: ${POSTGRES_GREENLIGHT_{{ instance.name|upper }}_V3_PASSWORD}
+      POSTGRES_GREENLIGHT_{{ instance.name | upper | replace('-', '_') }}_V3_PASSWORD: ${POSTGRES_GREENLIGHT_{{ instance.name | replace('-', '_') }}_V3_PASSWORD}
 {% endfor %}
       PGDATA: /var/lib/postgresql/data
       POSTGRES_HOST: db
@@ -323,7 +323,7 @@ services:
       - {{ scalelite_docker_volumes_folder }}/redis_{{ instance.name }}_data/redis.conf:/usr/local/etc/redis.conf
     command: ["/usr/local/etc/redis.conf"]
     healthcheck:
-      test:  ["CMD-SHELL", "redis-cli --user '${GREENLIGHT_REDIS_{{ instance.name| upper }}_USER}' --pass '${GREENLIGHT_REDIS_{{ instance.name| upper }}_SECRET}' ping | grep 'PONG' || exit 1"]
+      test:  ["CMD-SHELL", "redis-cli --user '${GREENLIGHT_REDIS_{{ instance.name | replace('-', '_') }}_USER}' --pass '${GREENLIGHT_REDIS_{{ instance.name | replace('-', '_') }}_SECRET}' ping | grep 'PONG' || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
