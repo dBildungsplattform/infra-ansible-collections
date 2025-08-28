@@ -323,7 +323,7 @@ services:
       - {{ scalelite_docker_volumes_folder }}/redis_{{ instance.name }}_data/redis.conf:/usr/local/etc/redis.conf
     command: ["/usr/local/etc/redis.conf"]
     healthcheck:
-      test:  ["CMD-SHELL", "redis-cli --user '${GREENLIGHT_REDIS_{{ instance.name | replace('-', '_') }}_USER}' --pass '${GREENLIGHT_REDIS_{{ instance.name | replace('-', '_') }}_SECRET}' ping | grep 'PONG' || exit 1"]
+      test:  ["CMD-SHELL", "redis-cli --user '${GREENLIGHT_REDIS_{{ instance.name | upper | replace('-', '_') }}_USER}' --pass '${GREENLIGHT_REDIS_{{ instance.name | upper | replace('-', '_') }}_SECRET}' ping | grep 'PONG' || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
