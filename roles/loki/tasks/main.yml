@@ -8,7 +8,7 @@
   tags:
     - loki
     - loki-legacy
-  when: loki_legacy_enabled or loki_s3_enabled
+  when: loki_legacy_enabled | default (false) or loki_s3_enabled
   # If a task has no always or never tags, then the when condition will be evaluated to determine if the task should run.
 
 # Legacy Loki
@@ -66,4 +66,4 @@
   tags:
     - loki
     - loki-legacy
-  when: loki_legacy_enabled or loki_s3_enabled
+  when: loki_legacy_enabled | default (false) or loki_s3_enabled
