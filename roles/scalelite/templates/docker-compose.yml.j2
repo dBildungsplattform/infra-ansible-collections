@@ -26,7 +26,7 @@ services:
       POSTGRES_GREENLIGHT_V3_PASSWORD: ${POSTGRES_GREENLIGHT_V3_PASSWORD}
       POSTGRES_EXPORTER_PASSWORD: ${POSTGRES_EXPORTER_PASSWORD}
 {% for instance in scalelite_greenlight_extra_instances %}
-      POSTGRES_GREENLIGHT_{{ instance.name | upper | replace('-', '_') }}_V3_PASSWORD: ${POSTGRES_GREENLIGHT_{{ instance.name | replace('-', '_') }}_V3_PASSWORD}
+      POSTGRES_GREENLIGHT_{{ instance.name | upper | replace('-', '_') }}_V3_PASSWORD: ${POSTGRES_GREENLIGHT_{{ instance.name | upper | replace('-', '_') }}_V3_PASSWORD}
 {% endfor %}
       PGDATA: /var/lib/postgresql/data
       POSTGRES_HOST: db
@@ -343,7 +343,7 @@ services:
       - DEFAULT_LOCALE={{ scalelite_greenlight_default_locale }}
       - LOG_LEVEL={{ scalelite_greenlight_log_level }}
       - DATABASE_URL=postgres://greenlight-{{ instance.name }}-v3:${POSTGRES_GREENLIGHT_{{ instance.name|upper }}_V3_PASSWORD}@db:5432/greenlight-{{ instance.name }}-v3
-      - REDIS_URL=redis://${GREENLIGHT_REDIS_{{ instance.name | upper }}_USER}:${GREENLIGHT_REDIS_{{ instance.name | upper }}_SECRET}@redis-{{ instance.name}}:6379
+      - REDIS_URL=redis://${GREENLIGHT_REDIS_{{ instance.name | upper | replace('-', '_') }}_USER}:${GREENLIGHT_REDIS_{{ instance.name | upper | replace('-', '_') }}_SECRET}@redis-{{ instance.name}}:6379
       - CLAMAV_SCANNING={{ scalelite_clamav_enabled | string | lower }}
       - CLAMAV_DAEMONIZE=true
 {% if instance.phone_number is defined %}
