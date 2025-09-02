@@ -1,31 +1,31 @@
 ---
-# - name: "{{ instance }} {{ item.0.name }} {{ item }} - Apply Greenlight extra instances custom_locale"
-
 - name: debug
   ansible.builtin.debug:
     msg:
       - "debug"
-      - "instance {{ instance }}"
-      - "item {{ item }}"
-      - "item.name {{ item.name }}"
+      # - "instance {{ instance }}"
+      # - "item {{ item }}"
+      # - "item.name {{ item.name }}"
       - "item.0.name {{ item.0.name }}"
-      - "item.overlay_name {{ item.overlay_name }}"
+      # - "item.overlay_name {{ item.1.overlay_name }}"
+      - "item.1.overlay_name {{ item.1.overlay_name }}"
+      # - "item.overlay_name {{ item.1.bbb_greenlight_custom_locale.overlay_name }}"
 
-# - name: Load file content
-#   ansible.builtin.uri:
-#     url: "{{ source }}"
-#     return_content: true
-#   register: overlay_file
-# - set_fact:
-#     overlay_file: "{{ overlay_file | combine( {{ item.greenlight_custom_patch }} | from_json , recursive=true ) }}"
+- name: Load file content
+  ansible.builtin.uri:
+    url: "{{ item.1.source }}"
+    return_content: true
+  register: overlay_file
+- set_fact:
+    overlay_file: "{{ overlay_file | combine( item.1.greenlight_custom_patch | from_json, recursive=true ) }}"
 
-# - name: Create volume dir ## test if create dir needed
-# - ansible.builtin.file:
-#     path: "/docker_volumes/{{ item.0.name }}"
-#     state: directory
-#     mode: '644'
-# - ansible.builtin.copy:
-#     content: "{{ overlay_file | to_nice_json }}"
-#     dest: "/docker_volumes/{{ item.0.name }}/{{ item.overlay_name }}"
-#   notify: Restart scalelite-nginx
+- name: Create volume dir
+  ansible.builtin.file:
+    path: "/docker_volumes/content_overlay_{{ item.0.name }}_{{ item.1.overlay_name }}"
+    state: directory
+    mode: '644'
+- ansible.builtin.copy:
+    content: "{{ overlay_file | to_nice_json }}"
+    dest: "/docker_volumes/content_overlay_{{ item.0.name }}_{{ item.1.overlay_name }}/{{ item.1.overlay_name }}"
+  notify: Restart scalelite-nginx
   
