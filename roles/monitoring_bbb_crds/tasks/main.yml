@@ -1,0 +1,48 @@
+---
+- name: Create Node Exporter Secret
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    definition:
+      apiVersion: onepassword.com/v1
+      kind: OnePasswordItem
+      metadata:
+        name: "{{ bbb_node_exporter_basic_auth_secret_name }}"
+        namespace: monitoring
+      spec:
+        itemPath: "vaults/{{ bbb_vault }}/items/{{ bbb_node_exporter_basic_auth_secret_name }}"
+
+- name: Configure ScrapeConfig in Prometheus to fetch metrics from Galera nodes and PrivacyIDEA VMs
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    definition:
+      apiVersion: monitoring.coreos.com/v1alpha1
+      kind: ScrapeConfig
+      metadata:
+        name: galera-privacyidea-exporters-config
+        namespace: monitoring
+        labels:
+          release: application
+      spec:
+        basicAuth:
+          username:
+            name: "{{ bbb_node_exporter_basic_auth_secret_name }}"
+            key: username
+          password:
+            name: "{{ bbb_node_exporter_basic_auth_secret_name }}"
+            key: password
+        staticConfigs:
+          - jobName: "{{ bbb_instance_name }}-scalelite"
+            scheme: https
+            metricsPath: /metrics
+            scrapeInterval: "{{ bbb_monitoring_scrape_interval }}"
+            scrapeTimeout: "{{ bbb_monitoring_scrape_timeout }}"
+            relabelConfigs: "{{ bbb_prometheus_scalelite_relabel_configs }}"
+            staticConfigs:
+              - targets:
+                  - "{{ scalelite_host }}:9100"
