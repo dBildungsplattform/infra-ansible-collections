@@ -10,9 +10,17 @@
     restart: true
 
 - name: Restart scalelite-nginx
-  community.docker.docker_container:
-    name: scalelite-nginx
-    restart: true
+  community.docker.docker_compose_v2:
+    project_src: "{{ scalelite_docker_compose_folder }}"
+    state: restarted
+    services: scalelite-nginx
+
+# change for all BBB Restart scalelite- from docker restart to compose !!S
+
+# - name: Restart scalelite-nginx
+#   community.docker.docker_container:
+#     name: scalelite-nginx
+#     restart: true
 
 - name: Restart bbb-autoscaler
   community.docker.docker_container:
