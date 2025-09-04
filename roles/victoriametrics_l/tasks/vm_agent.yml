@@ -1,0 +1,55 @@
+
+---
+######################################### Victoriametrics Agent #######################################
+- name: Install configmap for config of Vmagent 
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    definition:
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: vmagent-configs
+        namespace: "{{ monitoring_namespace }}"
+      data:
+        relabelConfig.yml: 
+          "{{ relabelConfig_values | to_yaml }}"
+        relabelConfig-longterm.yml: 
+          "{{ relabelConfig_longterm_values | to_yaml }}"
+  when: victoriametrics_longterm_enabled 
+  register: task_install_configmap_vmagent_result
+  tags: 
+  - victoriametrics
+  - victoriametrics-l
+  - vmagent
+
+- name: Install Victoriametrics Agent Helm Chart
+  kubernetes.core.helm:
+    name: vmagent
+    chart_ref: "vm/victoria-metrics-agent"
+    update_repo_cache: true
+    wait: true
+    wait_timeout: 600s
+    chart_version: "{{ vmagent_chart_version }}"
+    kubeconfig: "{{ kubeconfig }}"
+    release_namespace: "{{ monitoring_namespace }}"
+    values:
+      "{{ vm_agent_values }}"
+  when: victoriametrics_longterm_enabled 
+  register: task_vmagent_helm_chart_result
+  tags: 
+  - victoriametrics
+  - victoriametrics-l
+  - vmagent
+
+- name: Restart Vmagent on change of configmap 
+  shell: /bin/bash -c "kubectl rollout restart deployment vmagent-victoria-metrics-agent -n {{ monitoring_namespace }}"
+  environment:
+    KUBECONFIG: "{{ kubeconfig }}"
+  when: victoriametrics_longterm_enabled and task_install_configmap_vmagent_result.changed and not task_vmagent_helm_chart_result.changed
+  tags: 
+  - victoriametrics
+  - victoriametrics-l
+  - vmagent
