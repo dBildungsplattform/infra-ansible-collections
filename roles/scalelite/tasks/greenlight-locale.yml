@@ -10,23 +10,27 @@
       # - "item.overlay_name {{ item.1.overlay_name }}"
       - "item.1.overlay_name {{ item.1.overlay_name }}"
       # - "item.overlay_name {{ item.1.bbb_greenlight_custom_locale.overlay_name }}"
+      - "item.1.greenlight_patch_rule: {{ item.1.greenlight_patch_rule }}"
 
 - name: Load file content
   ansible.builtin.uri:
     url: "{{ item.1.source }}"
     return_content: true
-  register: overlay_file
+  register: bbb_greenlight_overlay_file
 
-- set_fact:
-    overlay_file: "{{ greenlight_patch_rule }}"
+- name: apply patch
+  set_fact:
+    bbb_greenlight_overlay_file: bbb_greenlight_overlay_file | combine( item.1.greenlight_custom_patch | from_json, recursive=true )
+    # bbb_greenlight_overlay_file: "{{ item.1.greenlight_patch_rule }}"
 
-- name: Create volume dir
+- name: Create docker volume
   ansible.builtin.file:
     path: "/docker_volumes/content_overlay_{{ item.0.name }}_{{ item.1.overlay_name }}"
     state: directory
     mode: '644'
-- ansible.builtin.copy:
-    content: "{{ overlay_file | to_nice_json }}"
+
+- name: Save patched file in docker_volume
+  ansible.builtin.copy:
+    content: "{{ bbb_greenlight_overlay_file | to_nice_json }}"
     dest: "/docker_volumes/content_overlay_{{ item.0.name }}_{{ item.1.overlay_name }}/{{ item.1.overlay_name }}"
   notify: Restart scalelite-nginx
-  

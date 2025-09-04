@@ -364,11 +364,11 @@ services:
 {% if scalelite_clamav_enabled %}
       - {{ scalelite_docker_volumes_folder }}/greenlight/clamd.conf:/etc/clamav/clamd.conf:r
 {% endif %}
-{% for extra_instance in scalelite_greenlight_extra_instances %}
-{% for instance_custom_locale in extra_instance.bbb_greenlight_custom_locale %}
-      - {{ scalelite_docker_volumes_folder }}/content_overlay_{{ extra_instance.name }}_{{ instance_custom_locale.overlay_name }}/{{ instance_custom_locale.overlay_name }}:{{ instance_custom_locale.mountpath }}
+{% if instance.bbb_greenlight_custom_locale is defined %}
+{% for instance_custom_locale in instance.bbb_greenlight_custom_locale %}
+      - {{ scalelite_docker_volumes_folder }}/content_overlay_{{ instance.name }}_{{ instance_custom_locale.overlay_name }}/{{ instance_custom_locale.overlay_name }}:{{ instance_custom_locale.mountpath }}
 {% endfor %}
-{% endfor %}
+{% endif %}
     healthcheck:
       test: ["CMD", "bash", "-c", "echo -n '' > /dev/tcp/127.0.0.1/3000"]
       interval: 30s
