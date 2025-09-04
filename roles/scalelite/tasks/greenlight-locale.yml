@@ -16,8 +16,9 @@
     url: "{{ item.1.source }}"
     return_content: true
   register: overlay_file
+
 - set_fact:
-    overlay_file: "{{ overlay_file | combine( item.1.greenlight_custom_patch | from_json, recursive=true ) }}"
+    overlay_file: "{{ greenlight_patch_rule }}"
 
 - name: Create volume dir
   ansible.builtin.file:
