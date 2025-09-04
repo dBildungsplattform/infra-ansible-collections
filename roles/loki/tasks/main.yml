@@ -26,7 +26,7 @@
       "{{ loki_legacy_values }}"
   tags:
     - loki-legacy
-  when: loki_legacy_enabled
+  when: loki_legacy_enabled | default (false)
 
 - name: Install Loki
   kubernetes.core.helm:
