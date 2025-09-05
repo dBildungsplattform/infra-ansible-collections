@@ -169,15 +169,9 @@
 - name: Greenlight extra instances custom_locale
   include_tasks:
     file: greenlight-locale.yml
-    apply:
-      tags:
-        - test
   loop: "{{ scalelite_greenlight_extra_instances | selectattr('bbb_greenlight_custom_locale', 'defined') | subelements('bbb_greenlight_custom_locale') }}"
   loop_control:
     label: "{{ item.1 }}"
-  ## debug
-  tags:
-    - test
 
 - name: Certbot
   include_tasks: certbot.yml
