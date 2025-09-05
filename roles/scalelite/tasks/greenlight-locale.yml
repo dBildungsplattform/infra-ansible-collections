@@ -1,16 +1,4 @@
 ---
-- name: debug
-  ansible.builtin.debug:
-    msg:
-      - "debug"
-      # - "instance {{ instance }}"
-      # - "item {{ item }}"
-      # - "item.name {{ item.name }}"
-      - "item.0.name {{ item.0.name }}"
-      # - "item.overlay_name {{ item.1.overlay_name }}"
-      - "item.1.overlay_name {{ item.1.overlay_name }}"
-      # - "item.overlay_name {{ item.1.bbb_greenlight_custom_locale.overlay_name }}"
-
 - name: Load file content
   ansible.builtin.uri:
     url: "{{ item.1.source }}"
@@ -20,7 +8,7 @@
 
 - name: apply patch welcome json
   set_fact:
-    bbb_greenlight_overlay_file: "{{ bbb_greenlight_overlay_file | combine(item.1.greenlight_custom_patch | from_json, recursive=true | to_nice_json) }}"
+    bbb_greenlight_overlay_file: "{{ bbb_greenlight_overlay_file | combine(item.1.greenlight_custom_patch) }}"
   when: item.1.bbb_greenlight_overlay_type  == "json"
 
 - name: Create docker volume
