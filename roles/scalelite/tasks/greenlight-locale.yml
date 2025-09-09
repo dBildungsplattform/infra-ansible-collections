@@ -5,9 +5,13 @@
     return_content: true
   register: bbb_greenlight_overlay_file
 
+- name: tidy json
+  set_fact:
+    bbb_greenlight_overlay_file: "{{ ( bbb_greenlight_overlay_file | to_json | from_json).content }}"
+
 - name: apply patch welcome json
   set_fact:
-    bbb_greenlight_overlay_file: "{{ ( bbb_greenlight_overlay_file | to_json | from_json).content | combine(item.bbb_greenlight_custom_locale) | to_nice_json }}"
+    bbb_greenlight_overlay_file: "{{ bbb_greenlight_overlay_file | combine(item.bbb_greenlight_custom_locale) }}"
 
 - name: Create docker volume
   ansible.builtin.file:
@@ -20,4 +24,3 @@
     content: "{{ bbb_greenlight_overlay_file }}"
     dest: "/docker_volumes/content_overlay_{{ item.name }}_dejson/de.json"
   notify: Restart scalelite-nginx
-  
