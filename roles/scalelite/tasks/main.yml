@@ -171,28 +171,30 @@
     file: greenlight-locale.yml
   loop: "{{ scalelite_greenlight_extra_instances }}"
   loop_control:
-    label: "{{ item.bbb_greenlight_custom_locale }}"
+    label: "{{ item.name }}"
 
 - name: Create Greenlight extra instances custom file mount docker_volume
   ansible.builtin.file:
-    path: "/docker_volumes/content_overlay_{{ item.0.name }}_{{ item.1.custom_file_name }}"
+    # path: "/docker_volumes/content_overlay_{{ item.0.name }}_{{ item.1.custom_file_name }}"
+    path: "/{{ scalelite_docker_volumes_folder }}/greenlight/{{ item.0.name }}-custom-{{ item.1.custom_file_name }}"
     state: directory
     mode: '644'
   loop: "{{ scalelite_greenlight_extra_instances | selectattr('bbb_greenlight_custom_file_mount', 'defined') | subelements('bbb_greenlight_custom_file_mount') }}"
   loop_control:
-    label: "{{ item.1 }}"
+    label: "instance: {{ item.0.name }} file: {{ item.1.custom_file_name }}mountpath: {{ item.1.mountpath }}"
 
 - name: Greenlight extra instances custom file mounts
   copy:
     src: "scalelite/{{ item.1.custom_file_name }}"
-    dest: "/docker_volumes/content_overlay_{{ item.0.name }}_{{ item.1.custom_file_name }}/{{ item.1.custom_file_name }}"
+    # dest: "/docker_volumes/content_overlay_{{ item.0.name }}_{{ item.1.custom_file_name }}/{{ item.1.custom_file_name }}"
+    dest: "/{{ scalelite_docker_volumes_folder }}/greenlight/{{ item.0.name }}-custom-{{ item.1.custom_file_name }}/{{ item.1.custom_file_name }}"
     owner: root
     group: root
     mode: '0644'
   notify: Restart scalelite-nginx
   loop: "{{ scalelite_greenlight_extra_instances | selectattr('bbb_greenlight_custom_file_mount', 'defined') | subelements('bbb_greenlight_custom_file_mount') }}"
   loop_control:
-    label: "{{ item.1 }}"
+    label: "instance: {{ item.0.name }} file: {{ item.1.custom_file_name }}mountpath: {{ item.1.mountpath }}"
 
 - name: Certbot
   include_tasks: certbot.yml
