@@ -1,2 +1,11 @@
 bbb_monitoring_scrape_interval: 10s
 bbb_monitoring_scrape_timeout: 5s
+bbb_prometheus_scalelite_relabel_configs:
+  # Rewrite hostname:port to hostname
+  - source_labels: [__address__]
+    target_label: instance
+    regex: "([^:]+)(:[0-9]+)?"
+    replacement: "management.${1}"
+  # Add the tenant label
+  - target_label: tenant
+    replacement: "{{ tenant }}"
