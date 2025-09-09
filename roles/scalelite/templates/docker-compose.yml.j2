@@ -365,8 +365,11 @@ services:
       - {{ scalelite_docker_volumes_folder }}/greenlight/clamd.conf:/etc/clamav/clamd.conf:r
 {% endif %}
 {% if instance.bbb_greenlight_custom_locale is defined %}
-{% for instance_custom_locale in instance.bbb_greenlight_custom_locale %}
-      - {{ scalelite_docker_volumes_folder }}/content_overlay_{{ instance.name }}_{{ instance_custom_locale.overlay_name }}/{{ instance_custom_locale.overlay_name }}:{{ instance_custom_locale.mountpath }}
+      - {{ scalelite_docker_volumes_folder }}/content_overlay_{{ instance.name }}_dejson/de.json:/usr/src/app/app/assets/locales/de.json:r
+{% endif %}
+{% if instance.bbb_greenlight_custom_file_mount is defined %}
+{% for instance_custom_file_mount in instance.bbb_greenlight_custom_file_mount %}
+      - {{ scalelite_docker_volumes_folder }}/content_overlay_{{ instance.name }}_{{ instance_custom_file_mount.custom_file_name }}/{{ instance_custom_file_mount.custom_file_name }}:{{ instance_custom_file_mount.mountpath }}
 {% endfor %}
 {% endif %}
     healthcheck:
