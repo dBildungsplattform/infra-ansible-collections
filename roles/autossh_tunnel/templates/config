@@ -1,0 +1,8 @@
+{% for item in autossh_tunnel_hosts %}
+Host {{ item.name }}
+  LocalForward {{item.local_host}}:{{item.local_port}} {{item.remote_host}}:{{item.remote_port}}
+  ExitOnForwardFailure yes
+  ServerAliveInterval 10
+  ServerAliveCountMax 3
+
+{% endfor %}
