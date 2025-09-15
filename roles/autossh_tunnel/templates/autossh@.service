@@ -3,7 +3,7 @@ Description=Keeps an ssh tunnel to %i open
 After=network-online.target ssh.service
 
 [Service]
-User=tunnel
+User={{ autossh_tunnel_user }}
 RestartSec=3
 Restart=always
 
@@ -13,7 +13,7 @@ Restart=always
 Environment="AUTOSSH_PORT=0"
 
 # Specifies how long ssh must be up before we consider it a successful connection.
-# The default is 30 seconds. Note that if AUTOSSH_GATETIME is set to 0, then not only 
+# The default is 30 seconds. Note that if AUTOSSH_GATETIME is set to 0, then not only
 # is the gatetime behaviour turned off, but autossh also ignores the first run failure of ssh.
 # This may be useful when running autossh at boot.
 Environment="AUTOSSH_GATETIME=0"
