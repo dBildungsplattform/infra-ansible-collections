@@ -102,9 +102,7 @@ Host example.com
 > For a TCP port, the first argument must be [bind_address:]port or a Unix domain socket path.
 > The second argument is the destination and may be host:hostport or a Unix domain socket path if the remote host supports it.
 > IPv6 addresses can be specified by enclosing addresses in square brackets.
->
 > If either argument contains a '/' in it, that argument will be interpreted as a Unix-domain socket (on the corresponding host) rather than a TCP port.
-
 > Multiple forwardings may be specified, and additional forwardings can be given on the command line.
 > Only the superuser can forward privileged ports. By default, the local port is bound in accordance with the GatewayPorts setting.
 > However, an explicit bind_address may be used to bind the connection to a specific address.
