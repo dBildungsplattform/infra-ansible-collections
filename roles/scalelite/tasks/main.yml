@@ -171,30 +171,28 @@
     file: greenlight-locale.yml
   loop: "{{ scalelite_greenlight_extra_instances }}"
   loop_control:
-    label: "{{ item.name }}"
+    label: "greenlight extra instances name: {{ item.name }}"
 
 - name: Create Greenlight extra instances custom file mount docker_volume
   ansible.builtin.file:
-    # path: "/docker_volumes/content_overlay_{{ item.0.name }}_{{ item.1.custom_file_name }}"
-    path: "/{{ scalelite_docker_volumes_folder }}/greenlight/{{ item.0.name }}-custom-{{ item.1.custom_file_name }}"
+    path: "{{ item.1.hostpath | dirname }}"
     state: directory
     mode: '644'
-  loop: "{{ scalelite_greenlight_extra_instances | selectattr('bbb_greenlight_custom_file_mount', 'defined') | subelements('bbb_greenlight_custom_file_mount') }}"
+  loop: "{{ scalelite_greenlight_extra_instances | selectattr('custom_mounts', 'defined') | subelements('custom_mounts') }}"
   loop_control:
-    label: "instance: {{ item.0.name }} file: {{ item.1.custom_file_name }}mountpath: {{ item.1.mountpath }}"
+    label: "instance: {{ item.0.name }} file: {{ item.1.hostpath }} mountpath: {{ item.1.mountpath }}"
 
-- name: Greenlight extra instances custom file mounts
+- name: Add file Greenlight extra instances custom file mounts
   copy:
-    src: "scalelite/{{ item.1.custom_file_name }}"
-    # dest: "/docker_volumes/content_overlay_{{ item.0.name }}_{{ item.1.custom_file_name }}/{{ item.1.custom_file_name }}"
-    dest: "/{{ scalelite_docker_volumes_folder }}/greenlight/{{ item.0.name }}-custom-{{ item.1.custom_file_name }}/{{ item.1.custom_file_name }}"
+    content: "{{ item.1.content }}"
+    dest: "{{ item.1.hostpath }}"
     owner: root
     group: root
     mode: '0644'
   notify: Restart scalelite-nginx
-  loop: "{{ scalelite_greenlight_extra_instances | selectattr('bbb_greenlight_custom_file_mount', 'defined') | subelements('bbb_greenlight_custom_file_mount') }}"
+  loop: "{{ scalelite_greenlight_extra_instances | selectattr('custom_mounts', 'defined') | subelements('custom_mounts') }}"
   loop_control:
-    label: "instance: {{ item.0.name }} file: {{ item.1.custom_file_name }}mountpath: {{ item.1.mountpath }}"
+    label: "instance: {{ item.0.name }} file: {{ item.1.hostpath }} mountpath: {{ item.1.mountpath }}"
 
 - name: Certbot
   include_tasks: certbot.yml

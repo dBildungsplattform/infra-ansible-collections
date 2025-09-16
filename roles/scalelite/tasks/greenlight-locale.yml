@@ -5,17 +5,9 @@
     return_content: true
   register: bbb_greenlight_overlay_file
 
-# - name: tidy json
-#   set_fact:
-#     bbb_greenlight_overlay_file: "{{ ( bbb_greenlight_overlay_file | to_json | from_json).content }}"
-
-# - name: apply patch welcome json
-#   set_fact:
-#     bbb_greenlight_overlay_file: "{{ bbb_greenlight_overlay_file | combine(item.bbb_greenlight_custom_locale) }}"
-
 - name: apply patch welcome json
   set_fact:
-    bbb_greenlight_overlay_file: "{{ bbb_greenlight_overlay_file.content | from_json | combine(item.bbb_greenlight_custom_locale) }}"
+    bbb_greenlight_overlay_file: "{{ bbb_greenlight_overlay_file.content | from_json | combine(item.custom_locale, recursive=true) }}"
 
 - name: Create docker volume
   ansible.builtin.file:

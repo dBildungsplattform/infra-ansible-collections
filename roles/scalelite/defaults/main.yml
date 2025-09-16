@@ -261,3 +261,27 @@ scalelite_clamav_resources:
   reservations:
     cpus: '0.05'
     memory: '1G'
+
+# scalelite_greenlight_extra_instances_login_locale Greenlight image tag release-3.6.3
+scalelite_greenlight_extra_instances_login_locale: "https://raw.githubusercontent.com/bigbluebutton/greenlight/refs/heads/master/app/assets/locales/de.json"
+
+# bbb_instances_dbp:
+#   dp:
+#     name: bbb
+#     domain_name: 
+#     scalelite_host: 
+#     ebbba_exporters: true
+#     greenlight_extra_instances:
+#       - name: name_of_greenlight_extra_instances with separate greenlight and user management
+#         custom_locale:
+#         # optional content overwrite for greenlight login page
+#         # path to origin json set in scalelite_greenlight_extra_instances_login_locale
+#         # as for elemnets like "welcome_bbb", "bigbluebutton_description" "greenlight_description"
+#           homepage:
+#             welcome_bbb: "optional, content for greenlight login page"
+#         custom_mounts:
+#         # overlay files in greenlight extra instance 
+#          - content: |
+#             my file contents
+#            hostpath: /var/test  # docker volumes path in scalelight server
+#            mountpath: /var/test # overlay file path in greenlight extra instances container
