@@ -1,6 +1,16 @@
 {% for item in autossh_tunnel_hosts %}
 Host {{ item.name }}
-  LocalForward {{item.local_host}}:{{item.local_port}} {{item.remote_host}}:{{item.remote_port}}
+  # Specifies that a TCP port or Unix-domain socket on the local machine be forwarded over the
+  # secure channel to the specified host and port (or Unix-domain socket) from the remote machine.
+  # For a TCP port, the first argument must be [bind_address:]port or a Unix domain socket path.
+  # The second argument is the destination and may be host:hostport or a Unix domain socket path if
+  # the remote host supports it. IPv6 addresses can be specified by enclosing addresses in square brackets.
+  # If either argument contains a '/' in it, that argument will be interpreted as a Unix-domain socket.
+  # The bind_address of localhost indicates that the listening port be bound for local use only,
+  # while an empty address or ‘*’ indicates that the port should be available from all interfaces
+{% for forward in item.forwards %}
+  LocalForward {% if "bind_address" in forward and forward.bind_address %}{{ forward.bind_address }}:{% endif %}{{forward.local_port}} {% if "remote_host" in forward and forward.remote_host %}{{ forward.remote_host }}:{% endif %}{{forward.remote_port}}
+{% endfor %}
   ExitOnForwardFailure yes
   ServerAliveInterval 10
   ServerAliveCountMax 3
