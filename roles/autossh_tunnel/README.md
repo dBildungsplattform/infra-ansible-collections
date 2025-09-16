@@ -96,16 +96,15 @@ Host example.com
 ~~~
 
 > [!Note]
-> Excerpt from the open ssh man page:
-> LocalForward
+> *Excerpt from the open ssh man page:* LocalForward
 > Specifies that a TCP port or Unix-domain socket on the local machine be forwarded over the secure channel to the specified host and port (or Unix-domain socket) from the remote machine.
-> For a TCP port, the first argument must be [bind_address:]port or a Unix domain socket path.
-> The second argument is the destination and may be host:hostport or a Unix domain socket path if the remote host supports it.
-> IPv6 addresses can be specified by enclosing addresses in square brackets.
+> For a TCP port, the **first argument** must be `[bind_address:]port` or a Unix domain `socket path`.
+> The **second argument** is the destination and may be `host:hostport` or a Unix domain `socket path` if the remote host supports it.
+> **IPv6** addresses can be specified by enclosing addresses in square brackets.
 > If either argument contains a '/' in it, that argument will be interpreted as a Unix-domain socket (on the corresponding host) rather than a TCP port.
 > Multiple forwardings may be specified, and additional forwardings can be given on the command line.
-> Only the superuser can forward privileged ports. By default, the local port is bound in accordance with the GatewayPorts setting.
-> However, an explicit bind_address may be used to bind the connection to a specific address.
-> The bind_address of localhost indicates that the listening port be bound for local use only, while an empty address or ‘*’ indicates that the port should be available from all interfaces.
-> Unix domain socket paths may use the tokens described in the TOKENS section and environment variables as described in the ENVIRONMENT VARIABLES section.
+> Only the superuser can forward privileged ports. By default, the local port is bound in accordance with the `GatewayPorts` setting.
+> However, an explicit `bind_address` may be used to bind the connection to a specific address.
+> The `bind_address` of `localhost` indicates that the listening port be bound for local use only, while an empty address or `*` indicates that the port should be available from all interfaces.
+> Unix domain socket paths may use the tokens described in the `TOKENS` section and environment variables as described in the `ENVIRONMENT VARIABLES` section.
 > *Source: https://man.openbsd.org/ssh_config*
