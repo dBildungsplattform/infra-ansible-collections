@@ -1,0 +1,36 @@
+[Unit]
+Description=Keeps an ssh tunnel to %i open
+After=network-online.target ssh.service
+
+[Service]
+User={{ autossh_tunnel_user }}
+RestartSec=3
+Restart=always
+
+# Sets the connection monitoring port. Mostly in case ssh appropriates -M at some time.
+# But because of this possible use, AUTOSSH_PORT overrides the -M flag.
+# A value of 0 turns the monitoring function off, and autossh will only restart ssh upon ssh's exit.
+Environment="AUTOSSH_PORT=0"
+
+# Specifies how long ssh must be up before we consider it a successful connection.
+# The default is 30 seconds. Note that if AUTOSSH_GATETIME is set to 0, then not only
+# is the gatetime behaviour turned off, but autossh also ignores the first run failure of ssh.
+# This may be useful when running autossh at boot.
+Environment="AUTOSSH_GATETIME=0"
+
+# Sets additional SSH command line arguments.
+# -N Do not execute a remote command.  This is useful for just forwarding ports (protocol version 2 only).
+# -T Disable pseudo-tty allocation.
+Environment="SSH_OPTIONS=-NT"
+
+# "%i": Instance name: For instantiated units this is the string between the
+# first "@" character and the type suffix. Empty for non-instantiated units.
+# The escaping algorithm operates as follows: given a string, any "/" character is replaced by "-",
+# and all other characters which are not ASCII alphanumerics, ":", "_" or "." are replaced by C-style "\x2d" escapes.
+# In addition, "." is replaced with such a C-style escape when it would appear as the first character in the escaped string.
+# Source: https://www.freedesktop.org/software/systemd/man/latest/systemd.unit.html#Specifiers
+ExecStart=/usr/bin/autossh ${SSH_OPTIONS} %i
+TimeoutStopSec=10
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,40 @@
+{% for item in autossh_tunnel_hosts %}
+Host {{ item.name }}
+  # Specifies that a TCP port or Unix-domain socket on the local machine be forwarded over the
+  # secure channel to the specified host and port (or Unix-domain socket) from the remote machine.
+  # For a TCP port, the first argument must be [bind_address:]port or a Unix domain socket path.
+  # The second argument is the destination and may be host:hostport or a Unix domain socket path if
+  # the remote host supports it. IPv6 addresses can be specified by enclosing addresses in square brackets.
+  # If either argument contains a '/' in it, that argument will be interpreted as a Unix-domain socket.
+  # The bind_address of localhost indicates that the listening port be bound for local use only,
+  # while an empty address or ‘*’ indicates that the port should be available from all interfaces
+{% for forward in item.forwards %}
+  LocalForward {% if "bind_address" in forward and forward.bind_address %}{{ forward.bind_address }}:{% endif %}{{forward.local_port}} {% if "remote_host" in forward and forward.remote_host %}{{ forward.remote_host }}:{% endif %}{{forward.remote_port}}
+{% endfor %}
+  ExitOnForwardFailure yes
+
+  # Sets a timeout interval in seconds after which if no data has been received from the server,
+  # ssh(1) will send a message through the encrypted channel to request a response from the server.
+  # The default is 0, indicating that these messages will not be sent to the server.
+  ServerAliveInterval 10
+
+  # Sets the number of server alive messages (see below) which may be sent without ssh(1) receiving
+  # any messages back from the server. If this threshold is reached while server alive messages are
+  # being sent, ssh will disconnect from the server, terminating the session.
+  # It is important to note that the use of server alive messages is very different from TCPKeepAlive (below).
+  # The server alive messages are sent through the encrypted channel and therefore will not be spoofable.
+  # The TCP keepalive option enabled by TCPKeepAlive is spoofable. The server alive mechanism is valuable
+  # when the client or server depend on knowing when a connection has become unresponsive.
+  # The default value is 3. If, for example, ServerAliveInterval (see below) is set to 15 and ServerAliveCountMax
+  # is left at the default, if the server becomes unresponsive, ssh will disconnect after approximately 45 seconds.
+  ServerAliveCountMax 3
+  IdentityFile {{ autossh_tunnel_identity_file }}
+
+  # Specifies that ssh(1) should only use the configured authentication identity and certificate files
+  # (either the default files, or those explicitly configured in the ssh_config files or passed on the
+  # ssh(1) command-line), even if ssh-agent(1) or a PKCS11Provider or SecurityKeyProvider offers more identities.
+  # The argument to this keyword must be yes or no (the default). This option is intended for situations
+  # where ssh-agent offers many different identities.
+  IdentitiesOnly yes
+
+{% endfor %}
