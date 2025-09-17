@@ -54,12 +54,13 @@
   loop: "{{ autossh_tunnel_hosts }}"
   become: true
 
-- name: Read pub key
-  command: "cat {{ autossh_tunnel_identity_file }}.pub"
+- name: Read the pub key
+  ansible.builtin.slurp:
+    src: "{{ autossh_tunnel_identity_file }}.pub"
   register: r_pub_key
   become: true
   become_user: "{{ autossh_tunnel_user }}"
 
 - name: Print the pub key
   ansible.builtin.debug:
-    msg: "{{ r_pub_key }}"
+    msg: "{{ r_pub_key['content'] | b64decode }}"
