@@ -8,11 +8,26 @@
     shell: "/bin/false"
   become: true
 
+- name: Install ACL for the next steps
+  ansible.builtin.apt:
+    name: acl
+    update_cache: yes
+  become: true
+
 - name: create the .ssh directory for the tunner user
   ansible.builtin.file:
     path: "~/.ssh"
     state: directory
     mode: '0700'
+  become: true
+  become_user: "{{ autossh_tunnel_user }}"
+
+- name: Generate an OpenSSH rsa keypair
+  community.crypto.openssh_keypair:
+    path: "{{ autossh_tunnel_identity_file }}"
+    type: rsa
+    size: 4096
+    regenerate: "{{ autossh_tunnel_regenerate_identity }}"
   become: true
   become_user: "{{ autossh_tunnel_user }}"
 
@@ -29,6 +44,7 @@
     src: "autossh@.service"
     dest: "/etc/systemd/system/autossh@{{ item.name }}.service"
   loop: "{{ autossh_tunnel_hosts }}"
+  become: true
 
 - name: Enable and start the systemd service
   ansible.builtin.systemd_service:
@@ -36,3 +52,14 @@
     enabled: true
     state: started
   loop: "{{ autossh_tunnel_hosts }}"
+  become: true
+
+- name: Read pub key
+  command: "cat {{ autossh_tunnel_identity_file }}.pub"
+  register: r_pub_key
+  become: true
+  become_user: "{{ autossh_tunnel_user }}"
+
+- name: Print the pub key
+  ansible.builtin.debug:
+    msg: "{{ r_pub_key }}"

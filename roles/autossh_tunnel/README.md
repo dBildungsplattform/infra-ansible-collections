@@ -5,7 +5,7 @@ Systemd service to create an (auto) ssh tunnel from our dev vm to our kubernetes
 
 ## example usage
 
-This role creates a new user (`autossh_tunnel_user`) and configures it to forward one or more ports from remote hosts.
+This role creates a new user (`autossh_tunnel_user | default("tunnel")`) and configures it to forward one or more ports from remote hosts.
 For each host multiple forwards can be configured.
 Each forward needs the `remote_host` and `remote_port` and a `local_port`. The `bind_address` is optional.
 As an alternative to TCP Ports, unix sockets can be used.
@@ -39,7 +39,6 @@ They are specified in the respective `_port` variable, while setting the `addres
             local_port: "1234"
             remote_host: "ssh.example.com"
             remote_port: "1234"
-    autossh_tunnel_user: "tunnel"
 ~~~
 
 ## manual install
