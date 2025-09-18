@@ -1,7 +1,7 @@
 ---
 - name: Load file content
   ansible.builtin.uri:
-    url: https://raw.githubusercontent.com/bigbluebutton/greenlight/refs/heads/master/app/assets/locales/de.json
+    url: "{{ scalelite_greenlight_extra_instances_login_locale }}"
     return_content: true
   check_mode: false
   register: bbb_greenlight_overlay_file

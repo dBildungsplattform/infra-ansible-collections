@@ -262,8 +262,8 @@ scalelite_clamav_resources:
     cpus: '0.05'
     memory: '1G'
 
-# scalelite_greenlight_extra_instances_login_locale Greenlight image tag release-3.6.3
-scalelite_greenlight_extra_instances_login_locale: "https://raw.githubusercontent.com/bigbluebutton/greenlight/refs/heads/master/app/assets/locales/de.json"
+
+scalelite_greenlight_extra_instances_login_locale: "https://raw.githubusercontent.com/dBildungsplattform/greenlight/refs/tags/{{ scalelite_greenlight_image_tag | regex_replace('^v', '') }}/app/assets/locales/de.json"
 
 # bbb_instances_dbp:
 #   dp:

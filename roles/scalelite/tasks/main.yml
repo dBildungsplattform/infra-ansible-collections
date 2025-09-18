@@ -171,7 +171,8 @@
     file: greenlight-locale.yml
   loop: "{{ scalelite_greenlight_extra_instances }}"
   loop_control:
-    label: "greenlight extra instances name: {{ item.name }}"
+    label: "{{ item.name }}"
+  when: item.custom_locale is defined
 
 - name: Create Greenlight extra instances custom file mount docker_volume
   ansible.builtin.file:
@@ -180,7 +181,7 @@
     mode: '644'
   loop: "{{ scalelite_greenlight_extra_instances | selectattr('custom_mounts', 'defined') | subelements('custom_mounts') }}"
   loop_control:
-    label: "instance: {{ item.0.name }} file: {{ item.1.hostpath }} mountpath: {{ item.1.mountpath }}"
+    label: "{{ item.0.name }} - {{ item.1.hostpath }}:{{ item.1.mountpath }}"
 
 - name: Add file Greenlight extra instances custom file mounts
   copy:
@@ -192,7 +193,7 @@
   notify: Restart scalelite-nginx
   loop: "{{ scalelite_greenlight_extra_instances | selectattr('custom_mounts', 'defined') | subelements('custom_mounts') }}"
   loop_control:
-    label: "instance: {{ item.0.name }} file: {{ item.1.hostpath }} mountpath: {{ item.1.mountpath }}"
+    label: "{{ item.0.name }} - {{ item.1.hostpath }}:{{ item.1.mountpath }}"
 
 - name: Certbot
   include_tasks: certbot.yml
