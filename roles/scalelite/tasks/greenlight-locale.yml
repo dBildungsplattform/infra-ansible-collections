@@ -3,6 +3,7 @@
   ansible.builtin.uri:
     url: https://raw.githubusercontent.com/bigbluebutton/greenlight/refs/heads/master/app/assets/locales/de.json
     return_content: true
+  check_mode: false
   register: bbb_greenlight_overlay_file
 
 - name: apply patch welcome json
