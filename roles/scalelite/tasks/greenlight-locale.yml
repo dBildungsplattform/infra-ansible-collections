@@ -1,0 +1,23 @@
+---
+- name: Load file content
+  ansible.builtin.uri:
+    url: "{{ scalelite_greenlight_extra_instances_login_locale }}"
+    return_content: true
+  check_mode: false
+  register: bbb_greenlight_overlay_file
+
+- name: apply patch welcome json
+  set_fact:
+    bbb_greenlight_overlay_file: "{{ bbb_greenlight_overlay_file.content | from_json | combine(item.custom_locale, recursive=true) }}"
+
+- name: Create docker volume
+  ansible.builtin.file:
+    path: "/{{ scalelite_docker_volumes_folder }}/greenlight/{{ item.name }}-locale"
+    state: directory
+    mode: '644'
+
+- name: Save patched json in docker_volume
+  ansible.builtin.copy:
+    content: "{{ bbb_greenlight_overlay_file }}"
+    dest: "/{{ scalelite_docker_volumes_folder }}/greenlight/{{ item.name }}-locale/de.json"
+  notify: Restart scalelite-nginx
