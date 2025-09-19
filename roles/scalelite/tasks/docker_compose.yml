@@ -24,4 +24,3 @@
   community.docker.docker_compose_v2:
     project_src: "{{ scalelite_docker_compose_folder }}"
     remove_orphans: true
-  when: not ansible_check_mode
