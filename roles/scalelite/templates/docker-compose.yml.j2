@@ -342,7 +342,7 @@ services:
       - RELATIVE_URL_ROOT=/greenlight
       - DEFAULT_LOCALE={{ scalelite_greenlight_default_locale }}
       - LOG_LEVEL={{ scalelite_greenlight_log_level }}
-      - DATABASE_URL=postgres://greenlight-{{ instance.name }}-v3:${POSTGRES_GREENLIGHT_{{ instance.name|upper }}_V3_PASSWORD}@db:5432/greenlight-{{ instance.name }}-v3
+      - DATABASE_URL=postgres://greenlight-{{ instance.name }}-v3:${POSTGRES_GREENLIGHT_{{ instance.name | upper | replace('-', '_') }}_V3_PASSWORD}@db:5432/greenlight-{{ instance.name }}-v3
       - REDIS_URL=redis://${GREENLIGHT_REDIS_{{ instance.name | upper | replace('-', '_') }}_USER}:${GREENLIGHT_REDIS_{{ instance.name | upper | replace('-', '_') }}_SECRET}@redis-{{ instance.name}}:6379
       - CLAMAV_SCANNING={{ scalelite_clamav_enabled | string | lower }}
       - CLAMAV_DAEMONIZE=true
