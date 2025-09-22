@@ -364,6 +364,14 @@ services:
 {% if scalelite_clamav_enabled %}
       - {{ scalelite_docker_volumes_folder }}/greenlight/clamd.conf:/etc/clamav/clamd.conf:r
 {% endif %}
+{% if instance.custom_locale is defined %}
+      - {{ scalelite_docker_volumes_folder }}/greenlight/{{ instance.name }}-locale/de.json:/usr/src/app/app/assets/locales/de.json:r
+{% endif %}
+{% if instance.custom_mounts is defined %}
+{% for instance_custom_file_mount in instance.custom_mounts %}
+      - {{ instance_custom_file_mount.hostpath }}:{{ instance_custom_file_mount.mountpath }}:r
+{% endfor %}
+{% endif %}
     healthcheck:
       test: ["CMD", "bash", "-c", "echo -n '' > /dev/tcp/127.0.0.1/3000"]
       interval: 30s
