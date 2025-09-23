@@ -14,7 +14,7 @@
       spec:
         itemPath: "vaults/{{ bbb_vault }}/items/{{ bbb_node_exporter_basic_auth_secret_name }}"
 
-- name: Configure ScrapeConfig in Prometheus to fetch metrics from Galera nodes and PrivacyIDEA VMs
+- name: Create Scaltelite Scrape Configs
   kubernetes.core.k8s:
     state: present
     kubeconfig: "{{ kubeconfig }}"
@@ -24,7 +24,7 @@
       apiVersion: monitoring.coreos.com/v1alpha1
       kind: ScrapeConfig
       metadata:
-        name: galera-privacyidea-exporters-config
+        name: "{{ bbb_instance_name }}-scalelite"
         namespace: monitoring
         labels:
           release: application
@@ -41,7 +41,7 @@
         metricsPath: /metrics
         scrapeInterval: "{{ bbb_monitoring_scrape_interval }}"
         scrapeTimeout: "{{ bbb_monitoring_scrape_timeout }}"
-        relabelConfigs: "{{ bbb_prometheus_scalelite_relabel_configs }}"
+        relableings: "{{ bbb_prometheus_scalelite_relabel_configs }}"
         staticConfigs:
           - targets:
               - "{{ scalelite_host }}:9100"
