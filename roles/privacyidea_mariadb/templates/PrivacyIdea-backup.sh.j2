@@ -44,6 +44,9 @@ cd /backup
 export DATE=$( date "+%Y-%m-%d" )
 export DUMPFILE=privacyidea_dump_$DATE
 
+echo "===Flush Status==="
+date
+mysql_exec "FLUSH STATUS;"
 echo "===Desynchronizing the node==="
 date
 mysql_exec "SET GLOBAL wsrep_desync = ON;SET GLOBAL wsrep_on = OFF; SET GLOBAL net_read_timeout = 31536000; SET GLOBAL net_write_timeout = 31536000;  "
