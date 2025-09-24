@@ -40,6 +40,7 @@ main_backup_process() {
 rm -rf /backup
 mkdir -p /backup
 cd /backup
+rm ~/.cache/duplicity/duply_default/*
 
 export DATE=$( date "+%Y-%m-%d" )
 export DUMPFILE=privacyidea_dump_$DATE
