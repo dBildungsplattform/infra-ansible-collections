@@ -40,6 +40,7 @@ main_backup_process() {
 rm -rf /backup
 mkdir -p /backup
 cd /backup
+rm ~/.cache/duplicity/duply_default/*
 
 export DATE=$( date "+%Y-%m-%d" )
 export DUMPFILE=privacyidea_dump_$DATE
@@ -85,10 +86,12 @@ check_success "Failed to get backup status"
 cd /
 rm -rf /backup
 
-echo "===Resynchronizing the node==="
-
 echo "===The backup was successful==="
 update_node_exporter_metric 1
+echo "===Flush Status==="
+date
+mysql_exec "FLUSH STATUS;"
+
 }
 
 # Error handling
