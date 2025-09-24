@@ -5,9 +5,10 @@
     state: restarted
 
 - name: Restart Scalelite
-  community.docker.docker_container:
-    name: scalelite-api
-    restart: true
+  community.docker.docker_compose_v2:
+    project_src: "{{ scalelite_docker_compose_folder }}"
+    state: restarted
+    services: scalelite-api
 
 - name: Restart scalelite-nginx
   community.docker.docker_compose_v2:
@@ -16,36 +17,34 @@
     services: scalelite-nginx
 
 - name: Restart bbb-autoscaler
-  community.docker.docker_container:
-    name: bbb-autoscaler
-    restart: true
-
-- name: Restart OWASP
-  community.docker.docker_container:
-    name: scalelite-nginx
-    restart: true
+  community.docker.docker_compose_v2:
+    project_src: "{{ scalelite_docker_compose_folder }}"
+    state: restarted
+    services: bbb-autoscaler
 
 - name: Restart postgres
-  community.docker.docker_container:
-    name: db
-    restart: true
+  community.docker.docker_compose_v2:
+    project_src: "{{ scalelite_docker_compose_folder }}"
+    state: restarted
+    services: db
 
 - name: Restart Redis redis_data
-  community.docker.docker_container:
-    name: redis
-    restart: true
+  community.docker.docker_compose_v2:
+    project_src: "{{ scalelite_docker_compose_folder }}"
+    state: restarted
+    services: redis
 
 - name: Restart Redis redis_greenlight_data
-  community.docker.docker_container:
-    name: redis-greenlight
-    restart: true
+  community.docker.docker_compose_v2:
+    project_src: "{{ scalelite_docker_compose_folder }}"
+    state: restarted
+    services: redis-greenlight
 
 - name: Restart Redis Instaces
-  community.docker.docker_container:
-    name: redis-{{ item.name }}
-    restart: true
+  community.docker.docker_compose_v2:
+    project_src: "{{ scalelite_docker_compose_folder }}"
+    state: restarted
+    services: redis-{{ item.name }}
   loop: "{{ scalelite_greenlight_extra_instances }}"
-  loop_control: 
+  loop_control:
     label: "{{ item.name }}"
-  
-  
