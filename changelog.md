@@ -2,6 +2,4 @@
 
 ## [Unreleased]
 
-- :warning: Added a changelog
-
-## 2.3.0
+- Added a changelog
