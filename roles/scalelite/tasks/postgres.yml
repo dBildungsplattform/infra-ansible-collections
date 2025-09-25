@@ -17,6 +17,7 @@
   notify: Restart postgres
 
 - name: Ensure the correct permissions for the DBs
-  community.docker.docker_container_exec:
-    container: db
+  community.docker.docker_compose_v2_exec:
+    project_src: "{{ scalelite_docker_compose_folder }}"
+    service: db
     command: "/docker-entrypoint-initdb.d/db_permissions.sh"

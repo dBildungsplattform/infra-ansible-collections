@@ -258,7 +258,8 @@
   include_tasks: logrotate.yml
 
 - name: Reload scalelite-nginx in case some containers were restarted
-  community.docker.docker_container_exec:
-    container: scalelite-nginx
+  community.docker.docker_compose_v2_exec:
+    project_src: "{{ scalelite_docker_compose_folder }}"
+    service: scalelite-nginx
     command: nginx -s reload
   when: not ansible_check_mode
