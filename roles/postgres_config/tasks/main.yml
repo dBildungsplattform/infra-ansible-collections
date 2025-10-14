@@ -57,7 +57,7 @@
                 defaultMode: 457
             containers:
             - name:  psql-config
-              image: schulcloud/infra-tools:{{ infratools_image_tag }}
+              image: schulcloud/infra-tools:{{ infra_tools_image_tag }}
               command:
                 - /bin/bash
                 - -c
