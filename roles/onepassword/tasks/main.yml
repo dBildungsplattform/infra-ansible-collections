@@ -98,5 +98,6 @@
     chart_version: "{{ onepassword_connector_chart_version }}"
     kubeconfig: "{{ kubeconfig }}"
     release_namespace: default
+    update_repo_cache: true
     values:
       "{{ onepassword_connector_values }}"
