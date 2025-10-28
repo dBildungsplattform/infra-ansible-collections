@@ -164,6 +164,9 @@
       LogTime yes
       TCPSocket 3310
       ConcurrentDatabaseReload no
+      # Socket location /tmp/clamd.sock is hardcoded in the unprivileged init script
+      LocalSocket /tmp/clamd.sock
+      FixStaleSocket yes
   when: scalelite_clamav_enabled
 
 - name: Greenlight extra instances custom locale
