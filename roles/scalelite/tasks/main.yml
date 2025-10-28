@@ -164,6 +164,10 @@
       LogTime yes
       TCPSocket 3310
       ConcurrentDatabaseReload no
+      # Socket location /tmp/clamd.sock is hardcoded in the unprivileged init script
+      # See https://github.com/Cisco-Talos/clamav-docker/blob/0efba97f77067ee1d7c4911ad60c0e9c0a77e1e6/clamav/1.4/alpine/scripts/docker-entrypoint-unprivileged.sh#L56
+      LocalSocket /tmp/clamd.sock
+      FixStaleSocket yes
   when: scalelite_clamav_enabled
 
 - name: Greenlight extra instances custom locale
