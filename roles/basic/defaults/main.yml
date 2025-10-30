@@ -1,7 +1,7 @@
 ---
 basic_fail2ban_jail_default: |
   [DEFAULT]
-  ignoreip = 127.0.0.1/8 ::1
+  ignoreip = 127.0.0.1/8 ::1  {{ basic_fail2ban_jail_whitelist | default(omit) }}
 basic_fail2ban_jail_default_path: /etc/fail2ban/jail.d/default_jail.local
 basic_fail2ban_jail_sshd: |
   [sshd]
