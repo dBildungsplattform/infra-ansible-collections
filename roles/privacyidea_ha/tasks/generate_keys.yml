@@ -6,16 +6,6 @@
     dest: /etc/privacyidea/pi.cfg
   notify: restart uwsgi
 
-# Audit Keys (private.pem and public.pem) are used to sign and verify the audit logs, 
-# ensuring that the audit log entries are tamper-proof and can be verified.
-- name: Generate private key for PrivacyIDEA audit log
-  command: "{{ privacyidea_dir }}/virtualenv/bin/pi-manage create_audit_keys"
-  args:
-    chdir: "{{ privacyidea_dir }}"
-    creates: /etc/privacyidea/private.pem
-  become: true
-  when: is_main_node
-
 - name: Create public key file for subscription signature validation
   copy:
     dest: /etc/privacyidea/B1.pem
@@ -23,6 +13,27 @@
     mode: '0644'
     owner: www-data
     group: www-data
+
+# Audit Keys (private.pem and public.pem) are used to sign and verify the audit logs, 
+# ensuring that the audit log entries are tamper-proof and can be verified.
+
+- name: Get private audit key from vault
+  ansible.builtin.copy:
+    content: "{{ lookup('dbildungscloud.onepwd.onepwd', secret_name='privacyidea_audit', field='privatekey', vault=vault, session_shorthand='ansible-run', credentials=op_credentials)  }}"
+    dest: /etc/privacyidea/private.pem
+    mode: 0600
+    group: www-data
+    owner: www-data
+  when: is_main_node
+
+- name: Get public audit key from vault
+  ansible.builtin.copy:
+    content: "{{ lookup('dbildungscloud.onepwd.onepwd', secret_name='privacyidea_audit', field='publickey', vault=vault, session_shorthand='ansible-run', credentials=op_credentials)  }}"
+    dest: /etc/privacyidea/public.pem
+    mode: 0600
+    group: www-data
+    owner: www-data
+  when: is_main_node
 
 - name: Exchange AUDIT Keys
   block:
