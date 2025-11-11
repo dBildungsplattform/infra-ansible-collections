@@ -2,6 +2,6 @@
 START="$1"
 END="$2"
 SECRET="$3"
-for (( i=$START; i<=$END; i++ )); do docker compose --project-directory {{ scalelite_docker_compose_folder }} exec scalelite-api ./bin/rake servers:add[https://bbb-$i.$(hostname)/bigbluebutton/api,$SECRET]; done | grep id | cut -d " " -f2 > ids
+for (( i=$START; i<=$END; i++ )); do docker compose --project-directory {{ scalelite_docker_compose_folder }} exec scalelite-api ./bin/rake servers:add[https://bbb-$i.{{ bbb_domain_name }}/bigbluebutton/api,$SECRET]; done | grep id | cut -d " " -f2 > ids
 for id in $(cat ids); do docker compose --project-directory {{ scalelite_docker_compose_folder }} exec scalelite-api ./bin/rake servers:enable[$id]; done
 docker compose --project-directory {{ scalelite_docker_compose_folder }} exec scalelite-api ./bin/rake poll:servers
