@@ -13,6 +13,9 @@ privacyidea_db_user_password: ""
 private_network_cidr: 24
 privacyidea_inventory_hostname: ""
 
+mariadb_version: "10.11"
+galera_enable_mariadb_repo: true
+privacyidea_mariadb_debian_repo_pin: "mirror.mariadb.org"
 privacyidea_galera_mysql_node_exporter: ""
 mariadb_password: ""
 login_username: root

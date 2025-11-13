@@ -31,6 +31,8 @@
   vars:
     mariadb_mysql_root_password:  "{{ privacyidea_mariadb_root_password }}"
     galera_mysql_first_node: "{{ (groups[galera_cluster_nodes_group]|sort)[1]}}"
+    mariadb_debian_repo: "deb [arch=amd64,arm64,ppc64el] https://mirror.mariadb.org/repo/{{ mariadb_version }}/{{ ansible_distribution|lower }} {{ ansible_distribution_release|lower }} main"
+    mariadb_debian_repo_pin: "{{ privacyidea_mariadb_debian_repo_pin }}"
   include_role:
     name: mrlesmithjr.ansible-mariadb-galera-cluster 
 
