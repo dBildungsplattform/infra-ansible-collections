@@ -33,8 +33,16 @@
     galera_mysql_first_node: "{{ (groups[galera_cluster_nodes_group]|sort)[1]}}"
     mariadb_debian_repo: "deb [arch=amd64,arm64,ppc64el] https://mirror.mariadb.org/repo/{{ mariadb_version }}/{{ ansible_distribution|lower }} {{ ansible_distribution_release|lower }} main"
     mariadb_debian_repo_pin: "{{ privacyidea_mariadb_debian_repo_pin }}"
-  include_role:
-    name: mrlesmithjr.ansible-mariadb-galera-cluster 
+  block:
+    - name: Debug | mariadb_debian_repo & mariadb_debian_repo_pin
+      ansible.builtin.debug:
+        msg:
+          mariadb_debian_repo_pin: "{{ mprivacyidea_mariadb_debian_repo_pin }}"
+          mariadb_debian_repo: "deb [arch=amd64,arm64,ppc64el] https://mirror.mariadb.org/repo/{{ mariadb_version }}/{{ ansible_distribution|lower }} {{ ansible_distribution_release|lower }} main"
+          
+    - name: Include role mrlesmithjr.ansible-mariadb-galera-cluster
+      ansible.builtin.include_role:
+        name: mrlesmithjr.ansible-mariadb-galera-cluster
 
 - name: Set wsrep_auto_increment_control in galera-privacyidea.cnf
   ansible.builtin.copy:
