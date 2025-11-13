@@ -37,7 +37,7 @@
     - name: Debug | mariadb_debian_repo & mariadb_debian_repo_pin
       ansible.builtin.debug:
         msg:
-          mariadb_debian_repo_pin: "{{ mprivacyidea_mariadb_debian_repo_pin }}"
+          mariadb_debian_repo_pin: "{{ privacyidea_mariadb_debian_repo_pin }}"
           mariadb_debian_repo: "deb [arch=amd64,arm64,ppc64el] https://mirror.mariadb.org/repo/{{ mariadb_version }}/{{ ansible_distribution|lower }} {{ ansible_distribution_release|lower }} main"
           
     - name: Include role mrlesmithjr.ansible-mariadb-galera-cluster
