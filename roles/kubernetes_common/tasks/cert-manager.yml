@@ -53,6 +53,7 @@
   kubernetes.core.helm:
     name: sc-cert-manager-clusterissuer
     chart_ref: dbildungsplattform/cert-manager-clusterissuer"
+    chart_version: "{{ sc-cert-manager-clusterissuer_chart_version }}"
     kubeconfig: "{{ kubeconfig }}"
     release_namespace: cert-manager
   when: sc_cert_manager_clusterissuer_enabled is true
