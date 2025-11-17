@@ -1,0 +1,12 @@
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaFolder
+metadata:
+  name: {{ grafana_resource_name }}-{{ item.name }}
+spec:
+  instanceSelector:
+    matchLabels:
+      {{ grafana_label_selector }}
+  title: {{ item.titel }}
+  permissions: |
+    {{ item.permissions | indent(width=4, first=False) }}

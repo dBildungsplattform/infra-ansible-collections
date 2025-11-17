@@ -1,0 +1,30 @@
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaNotificationPolicy
+metadata:
+  name: {{ grafana_default_notification_policy.name }}
+spec:
+  instanceSelector:
+    matchLabels:
+      {{ grafana_label_selector }}
+  route:
+    receiver: {{ grafana_default_notification_policy.contact_point }}
+    group_by:
+      {{ grafana_default_notification_policy.group_by }}
+    routes:
+{% for item in grafana_default_notification_policy.routes %}
+  - receiver: {{ item.contact_point }}
+    object_matchers:
+    - - {{ item.matcher.label }}
+      - {{ item.matcher.match }}
+      - {{ item.matcher.value }}
+{% if item.group_wait is defined %}
+group_wait: {{ item.group_wait }}
+{% endif %}
+{% if item.group_interval is defined %}
+group_interval: {{ item.group_interval }}
+{% endif %}
+{% if item.repeat_interval is defined %}
+repeat_interval: {{ item.repeat_interval }}
+{% endif %}
+{% endfor %}
