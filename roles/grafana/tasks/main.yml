@@ -19,7 +19,7 @@
     proxy: "{{ proxy_url | default(omit, true) }}"
     proxy_headers: "{{ proxy_headers | default(omit, true) }}"
     namespace: "{{ grafana_namespace }}"
-    definition: "{{ grafana_resource }}"
+    template: "grafana.yml.j2"
 
 - name: Create Grafana datasources
   kubernetes.core.k8s:
