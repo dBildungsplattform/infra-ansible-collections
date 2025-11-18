@@ -9,7 +9,6 @@
     chart_version: "{{ grafana_operator_chart_version }}"
     kubeconfig: "{{ kubeconfig }}"
     release_namespace: "{{ grafana_namespace }}"
-    take_ownership: true
     values:
       "{{ grafana_operator_values | combine(grafana_operator_values_overwrite) }}"
 
