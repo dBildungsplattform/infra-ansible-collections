@@ -1,5 +1,5 @@
 ---
-grafana_operator_values_overwrite:
+grafana_operator_values_mutable:
   crds:
     # see https://grafana.github.io/grafana-operator/docs/installation/helm/#mutable-crds (support updating crds)
     immutable: false

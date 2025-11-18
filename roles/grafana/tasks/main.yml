@@ -10,7 +10,8 @@
     kubeconfig: "{{ kubeconfig }}"
     release_namespace: "{{ grafana_namespace }}"
     values:
-      "{{ grafana_operator_values | combine(grafana_operator_values_overwrite) }}"
+      "{{ grafana_operator_values | combine(grafana_operator_values_mutable) }}"
+  tags: grafana-operator
 
 - name: Create Grafana instance
   kubernetes.core.k8s:
@@ -20,6 +21,7 @@
     proxy_headers: "{{ proxy_headers | default(omit, true) }}"
     namespace: "{{ grafana_namespace }}"
     definition: "{{ grafana_resource }}"
+  tags: grafana-operator
 
 - name: Create Grafana datasources
   kubernetes.core.k8s:
@@ -30,6 +32,7 @@
     namespace: "{{ grafana_namespace }}"
     template: "grafana-datasource.yml.j2"
   loop: "{{ grafana_combined_datasources }}"
+  tags: grafana-operator
 
 - name: Create Grafana Folders
   kubernetes.core.k8s:
@@ -40,6 +43,7 @@
     namespace: "{{ grafana_namespace }}"
     template: "grafana-folder.yml.j2"
   loop: "{{ grafana_combined_folders }}"
+  tags: grafana-operator
 
 - name: Create Grafana Contactpoints
   kubernetes.core.k8s:
@@ -50,6 +54,7 @@
     namespace: "{{ grafana_namespace }}"
     template: "grafana-contact-point.yml.j2"
   loop: "{{ grafana_combined_contactpoints }}"
+  tags: grafana-operator
 
 - name: Create Grafana dashboards
   kubernetes.core.k8s:
@@ -60,6 +65,7 @@
     namespace: "{{ grafana_namespace }}"
     template: "grafana-dashboard.yml.j2"
   loop: "{{ grafana_combined_dashboards }}"
+  tags: grafana-operator
 
 - name: Create Grafana notification-policy
   kubernetes.core.k8s:
@@ -70,6 +76,7 @@
     namespace: "{{ grafana_namespace }}"
     template: "grafana-notification-policy.yml.j2"
   when: not grafana_combined_notification_policy.disabled
+  tags: grafana-operator
 
 - name: Create Grafana Mutes
   kubernetes.core.k8s:
@@ -80,3 +87,4 @@
     namespace: "{{ grafana_namespace }}"
     template: "grafana-mute-timing.yml.j2"
   loop: "{{ grafana_combined_mutes }}"
+  tags: grafana-operator
