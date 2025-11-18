@@ -10,7 +10,7 @@ spec:
   persistentVolumeClaim:
     spec:
       accessModes:
-      - ReadWriteOnce
+        - ReadWriteOnce
       resources:
         requests:
           storage: {{ grafana_storage_size }}
@@ -25,43 +25,43 @@ spec:
     spec:
       ingressClassName: {{ grafana_ingress_class_name }}
       rules:
-      - host: {{ grafana_subdomain_prefix }}.{{ terraform_run.outputs.loadbalancer_dns.value }}
-        http:
-          paths:
+        - host: {{ grafana_subdomain_prefix }}.{{ terraform_run.outputs.loadbalancer_dns.value }}
+          http:
+            paths:
               - backend:
-                service:
-                  name: {{ grafana_resource_name }}-service
-                  port:
-                    number: 3000
+                  service:
+                    name: {{ grafana_resource_name }}-service
+                    port:
+                      number: 3000
                 path: /
                 pathType: Prefix
       tls:
-      - hosts:
-        - {{ grafana_subdomain_prefix }}.{{ terraform_run.outputs.loadbalancer_dns.value }}
-        secretName: {{ grafana_resource_name }}-ingress-cert
+        - hosts:
+            - {{ grafana_subdomain_prefix }}.{{ terraform_run.outputs.loadbalancer_dns.value }}
+          secretName: {{ grafana_resource_name }}-ingress-cert
   disableDefaultAdminSecret: true
   deployment:
     spec:
       template:
         spec:
           containers:
-          - name: grafana
-            env:
-              {{ grafana_combined_envs | union(grafana_smtp_envs if (grafana_smtp_enabled2) else [] | union(grafana_oauth_env if grafana_keycloak_config.enabled else [])) }}
-            # https://github.com/grafana/grafana-operator/issues/1439#issuecomment-2677822604
-            securityContext:
-              allowPrivilegeEscalation: false
-              capabilities:
-                drop:
-                - ALL
+            - name: grafana
+              env:
+               {{ grafana_combined_envs | union(grafana_smtp_envs if (grafana_smtp_enabled2) else [] | union(grafana_oauth_env if grafana_keycloak_config.enabled else [])) }}
+              # https://github.com/grafana/grafana-operator/issues/1439#issuecomment-2677822604
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop:
+                  - ALL
           securityContext:
             fsGroup: 1001
             runAsGroup: 1001
             runAsNonRoot: true
             runAsUser: 1001
-            volumes:
+          volumes:
             - name: grafana-data
               persistentVolumeClaim:
                 claimName: {{ grafana_resource_name }}-pvc
-        strategy:
-          type: Recreate
+      strategy:
+        type: Recreate
