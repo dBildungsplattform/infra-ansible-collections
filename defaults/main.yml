@@ -1,4 +1,0 @@
----
-grafana_smtp_enabled: false
-grafana_keycloak_config:
-  enabled: false

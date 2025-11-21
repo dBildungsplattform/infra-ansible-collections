@@ -1,4 +1,7 @@
 ---
+grafana_smtp_enabled: false
+grafana_keycloak_config:
+  enabled: false
 grafana_operator_values_overwrite:
   crds:
     # see https://grafana.github.io/grafana-operator/docs/installation/helm/#mutable-crds (support updating crds)
