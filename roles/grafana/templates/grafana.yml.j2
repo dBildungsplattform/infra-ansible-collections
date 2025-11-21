@@ -47,7 +47,7 @@ spec:
           containers:
             - name: grafana
               env:
-               {{ grafana_combined_envs | union(grafana_smtp_envs if (grafana_smtp_enabled2) else [] | union(grafana_oauth_env if grafana_keycloak_config.enabled else [])) }}
+               {{ grafana_combined_envs | union(grafana_smtp_envs if (grafana_smtp_enabled) else [] | union(grafana_oauth_env if grafana_keycloak_config.enabled else [])) }}
               # https://github.com/grafana/grafana-operator/issues/1439#issuecomment-2677822604
               securityContext:
                 allowPrivilegeEscalation: false
