@@ -32,7 +32,7 @@ grafana_smtp_envs: []
 
 grafana_oauth_envs: []
 
-grafana_default_notification_policy:
+grafana_combined_notification_policy:
   disabled: true
   # Example:
   # name: default-np
@@ -46,7 +46,7 @@ grafana_default_notification_policy:
   #       value: "dev"
   #     contact_point: teamchat-infra-dev
 
-grafana_default_mutes: []
+grafana_combined_mutes: []
   # Example:
   # - name: weekend
   #   times:
