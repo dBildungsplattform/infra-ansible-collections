@@ -18,7 +18,7 @@
 
 - name: Get private audit key  from vault
   ansible.builtin.copy:
-    content: "{{ lookup('dbildungscloud.onepwd.onepwd', secret_name='privacyidea_audit', field='privatekey', vault=vault, session_shorthand='ansible-run', credentials=op_credentials)  }}"
+    content: "{{ lookup('dbildungscloud.onepwd.onepwd', secret_name='privacyidea_audit_privatekey', field='privatekey', vault=vault, session_shorthand='ansible-run', credentials=op_credentials)  }}"
     dest: /etc/privacyidea/private.pem
     mode: 0600
     group: www-data
@@ -26,7 +26,7 @@
 
 - name: Get public audit key from vault
   ansible.builtin.copy:
-    content: "{{ lookup('dbildungscloud.onepwd.onepwd', secret_name='privacyidea_audit', field='publickey', vault=vault, session_shorthand='ansible-run', credentials=op_credentials)  }}"
+    content: "{{ lookup('dbildungscloud.onepwd.onepwd', secret_name='privacyidea_audit_publickey', field='publickey', vault=vault, session_shorthand='ansible-run', credentials=op_credentials)  }}"
     dest: /etc/privacyidea/public.pem
     mode: 0600
     group: www-data
