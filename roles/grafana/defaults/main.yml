@@ -7,7 +7,6 @@ grafana_operator_values_overwrite:
 grafana_operator_chart_version: v5.19.0
 grafana_operator_values: {}
 grafana_version: 12.1.0
-# grafana_adminPassword: "pw"
 grafana_namespace: monitoring
 grafana_resource_name: grafana-main
 grafana_label_selector:
@@ -21,10 +20,7 @@ grafana_smtp_enabled: false
 grafana_keycloak_config:
   enabled: false
 
-terraform_run:
-  outputs:
-    loadbalancer_dns:
-      # value: "dbildungscloud.de"
+#grafana_root_domain: "dbildungscloud.de"
 
 grafana_default_envs: []
 

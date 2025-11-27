@@ -25,7 +25,7 @@ spec:
     spec:
       ingressClassName: {{ grafana_ingress_class_name }}
       rules:
-        - host: {{ grafana_subdomain_prefix }}.{{ terraform_run.outputs.loadbalancer_dns.value }}
+        - host: {{ grafana_subdomain_prefix }}.{{ grafana_root_domain }}
           http:
             paths:
               - backend:
@@ -37,7 +37,7 @@ spec:
                 pathType: Prefix
       tls:
         - hosts:
-            - {{ grafana_subdomain_prefix }}.{{ terraform_run.outputs.loadbalancer_dns.value }}
+            - {{ grafana_subdomain_prefix }}.{{ grafana_root_domain }}
           secretName: {{ grafana_resource_name }}-ingress-cert
   disableDefaultAdminSecret: true
   deployment:
