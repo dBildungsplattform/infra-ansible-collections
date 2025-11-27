@@ -33,7 +33,7 @@ grafana_smtp_envs: []
 grafana_oauth_envs: []
 
 grafana_combined_notification_policy: []
-  #   Example:
+  # Example:
   # - name: default-np
   #   contact_point: teamchat-infra-dev
   #   group_by: ["alertname"]
@@ -91,6 +91,6 @@ grafana_combined_folders: []
 
 grafana_combined_datasources: []
   # Example:
-  #- name: Loki
-  #  type: loki
-  #  url: http://loki:80
+  # - name: Loki
+  #   type: loki
+  #   url: http://loki:80
