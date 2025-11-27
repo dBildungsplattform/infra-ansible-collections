@@ -106,14 +106,10 @@ services:
       - "{{ server_monitoring_cadvisor_private_port }}:8080"
 {% endif %}
     privileged: {{ server_monitoring_cadvisor_privileged }}
+{% if server_monitoring_cadvisor_command is defined and server_monitoring_cadvisor_command | length > 0 %}
     command:
-      - "--store_container_labels=false"
-      - "--docker_only=true"
-      - "--disable_root_cgroup_stats=false"
-      - "--enable_load_reader=false"
-      - "--v=1"
-      - "--disable_metrics=app,cpu,cpuLoad,disk,diskIO,memory,network,oom_event,percpu,perf_event,referenced_memory"
-      - "--disable_root_cgroup_stats=false"     
+      {{ server_monitoring_cadvisor_command | to_nice_yaml | indent(6) }}
+{% endif %}
     devices:
       - /dev/kmsg
     volumes:
