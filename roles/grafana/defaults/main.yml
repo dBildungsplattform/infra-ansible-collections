@@ -32,19 +32,18 @@ grafana_smtp_envs: []
 
 grafana_oauth_envs: []
 
-grafana_combined_notification_policy:
-  disabled: true
-  # Example:
-  # name: default-np
-  # contact_point: teamchat-infra-dev
-  # group_by: ["alertname"]
-  # routes:
-  #   - name: teamchat-dev
-  #     matcher:
-  #       label: rc-target
-  #       match: "="
-  #       value: "dev"
-  #     contact_point: teamchat-infra-dev
+grafana_combined_notification_policy: []
+  #   Example:
+  # - name: default-np
+  #   contact_point: teamchat-infra-dev
+  #   group_by: ["alertname"]
+  #   routes:
+  #     - name: teamchat-dev
+  #       matcher:
+  #         label: rc-target
+  #         match: "="
+  #         value: "dev"
+  #       contact_point: teamchat-infra-dev
 
 grafana_combined_mutes: []
   # Example:
@@ -88,7 +87,7 @@ grafana_combined_folders: []
   #           "permission": 2
   #         }
   #       ]
-#     }
+  #     }
 
 grafana_combined_datasources: []
   # Example:
