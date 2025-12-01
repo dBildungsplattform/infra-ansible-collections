@@ -16,7 +16,5 @@ privacyidea_inventory_hostname: ""
 privacyidea_galera_mysql_node_exporter: ""
 mariadb_password: ""
 login_username: root
-
-mariadb_version: "10.11"
 mariadb_debian_repo: ""
 mariadb_debian_repo_pin: ""
