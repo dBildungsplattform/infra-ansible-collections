@@ -1,0 +1,92 @@
+---
+grafana_operator_values_overwrite:
+  crds:
+    # see https://grafana.github.io/grafana-operator/docs/installation/helm/#mutable-crds (support updating crds)
+    immutable: false
+
+grafana_operator_chart_version: v5.19.0
+grafana_operator_values: {}
+grafana_version: 12.1.0
+grafana_namespace: monitoring
+grafana_resource_name: grafana-main
+grafana_label_selector:
+  dashboards: "grafana-main"
+grafana_log_mode: "console"
+grafana_storage_size: 10Gi
+grafana_ingress_class_name: nginx
+# grafana_smtp_password: "pw"
+grafana_subdomain_prefix: grafana
+grafana_smtp_enabled: false
+grafana_keycloak_config:
+  enabled: false
+
+#grafana_root_domain: "dbildungscloud.de"
+
+grafana_default_envs: []
+
+grafana_smtp_envs: []
+
+grafana_oauth_envs: []
+
+grafana_combined_notification_policy: []
+  # Example:
+  # - name: default-np
+  #   contact_point: teamchat-infra-dev
+  #   group_by: ["alertname"]
+  #   routes:
+  #     - name: teamchat-dev
+  #       matcher:
+  #         label: rc-target
+  #         match: "="
+  #         value: "dev"
+  #       contact_point: teamchat-infra-dev
+
+grafana_combined_mutes: []
+  # Example:
+  # - name: weekend
+  #   times:
+  #     start: "00:00"
+  #     end: "23:59"
+  #   weekdays: ["saturday", "sunday"]
+  # - name: weekday
+  #   times:
+  #     start: "00:00"
+  #     end: "23:59"
+  #   weekdays: ["monday:friday"]
+
+grafana_combined_dashboards: []
+  # Example:
+  # - name: events
+  #   folder: Monitoring
+  #   json: "events.json"
+
+grafana_combined_contactpoints: []
+  # Example:
+  # - name: teamchat-infra-dev
+  #   type: "Webhook"
+  #   settings:
+  #     url: "https://rocketchat/hooks/room/token"
+
+grafana_combined_folders: []
+  # Example:
+  # - name: playground
+  #   titel: Playground
+  #   permissions: |
+  #     {
+  #       "items": [
+  #         {
+  #           "role": "Admin",
+  #           "permission": 4
+  #         },
+  #         {
+  #           "role": "Editor",
+  #           "permission": 2
+  #         }
+  #       ]
+  #     }
+
+grafana_combined_datasources: []
+  # Example:
+  # - name: Loki
+  #   type: loki
+  #   url: http://loki:80

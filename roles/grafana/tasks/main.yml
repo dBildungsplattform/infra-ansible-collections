@@ -1,0 +1,82 @@
+---
+- name: Install grafana-operator
+  kubernetes.core.helm:
+    name: grafana-operator
+    chart_ref: oci://ghcr.io/grafana/helm-charts/grafana-operator
+    update_repo_cache: true
+    wait: true
+    wait_timeout: 10m
+    chart_version: "{{ grafana_operator_chart_version }}"
+    kubeconfig: "{{ kubeconfig }}"
+    release_namespace: "{{ grafana_namespace }}"
+    values:
+      "{{ grafana_operator_values | combine(grafana_operator_values_overwrite) }}"
+
+- name: Create Grafana instance
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    namespace: "{{ grafana_namespace }}"
+    template: "grafana.yml.j2"
+
+- name: Create Grafana datasources
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    namespace: "{{ grafana_namespace }}"
+    template: "grafana-datasource.yml.j2"
+  loop: "{{ grafana_combined_datasources }}"
+
+- name: Create Grafana Folders
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    namespace: "{{ grafana_namespace }}"
+    template: "grafana-folder.yml.j2"
+  loop: "{{ grafana_combined_folders }}"
+
+- name: Create Grafana Contactpoints
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    namespace: "{{ grafana_namespace }}"
+    template: "grafana-contact-point.yml.j2"
+  loop: "{{ grafana_combined_contactpoints }}"
+
+- name: Create Grafana dashboards
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    namespace: "{{ grafana_namespace }}"
+    template: "grafana-dashboard.yml.j2"
+  loop: "{{ grafana_combined_dashboards }}"
+
+- name: Create Grafana notification-policy
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    namespace: "{{ grafana_namespace }}"
+    template: "grafana-notification-policy.yml.j2"
+  loop: "{{ grafana_combined_notification_policy }}"
+
+- name: Create Grafana Mutes
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    namespace: "{{ grafana_namespace }}"
+    template: "grafana-mute-timing.yml.j2"
+  loop: "{{ grafana_combined_mutes }}"
