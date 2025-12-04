@@ -15,12 +15,11 @@ grafana_log_mode: "console"
 grafana_storage_size: 10Gi
 grafana_ingress_class_name: nginx
 # grafana_smtp_password: "pw"
-grafana_subdomain_prefix: grafana
 grafana_smtp_enabled: false
 grafana_keycloak_config:
   enabled: false
 
-#grafana_root_domain: "dbildungscloud.de"
+#grafana_domain: "grafana.dbildungscloud.de"
 
 grafana_default_envs: []
 
