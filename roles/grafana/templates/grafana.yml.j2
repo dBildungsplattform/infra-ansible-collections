@@ -1,0 +1,67 @@
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: Grafana
+metadata:
+  name: {{ grafana_resource_name }}
+  labels:
+    {{ grafana_label_selector | from_yaml }}
+spec:
+  version: {{ grafana_version }}
+  persistentVolumeClaim:
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: {{ grafana_storage_size }}
+  config:
+    log:
+      mode: {{ grafana_log_mode }}
+    auth.generic_oauth: {{ grafana_resource_keycloak_config if (grafana_keycloak_config.enabled) else '' }}
+  ingress:
+    metadata:
+      annotations:
+        cert-manager.io/cluster-issuer: sc-cert-manager-clusterissuer-letsencrypt
+    spec:
+      ingressClassName: {{ grafana_ingress_class_name }}
+      rules:
+        - host: {{ grafana_domain }}
+          http:
+            paths:
+              - backend:
+                  service:
+                    name: {{ grafana_resource_name }}-service
+                    port:
+                      number: 3000
+                path: /
+                pathType: Prefix
+      tls:
+        - hosts:
+            - {{ grafana_domain }}
+          secretName: {{ grafana_resource_name }}-ingress-cert
+  disableDefaultAdminSecret: true
+  deployment:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: grafana
+              env:
+               {{ grafana_combined_envs | union(grafana_smtp_envs if (grafana_smtp_enabled) else [] | union(grafana_oauth_env if grafana_keycloak_config.enabled else [])) }}
+              # https://github.com/grafana/grafana-operator/issues/1439#issuecomment-2677822604
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop:
+                  - ALL
+          securityContext:
+            fsGroup: 1001
+            runAsGroup: 1001
+            runAsNonRoot: true
+            runAsUser: 1001
+          volumes:
+            - name: grafana-data
+              persistentVolumeClaim:
+                claimName: {{ grafana_resource_name }}-pvc
+      strategy:
+        type: Recreate
