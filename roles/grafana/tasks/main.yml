@@ -22,6 +22,7 @@
     template: "grafana.yml.j2"
 
 - name: Create Grafana datasources
+  no_log: true
   kubernetes.core.k8s:
     state: present
     kubeconfig: "{{ kubeconfig }}"
@@ -80,3 +81,18 @@
     namespace: "{{ grafana_namespace }}"
     template: "grafana-mute-timing.yml.j2"
   loop: "{{ grafana_combined_mutes }}"
+
+
+
+- name: Create Grafana Alert Rule Groups
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    namespace: "{{ grafana_namespace }}"
+    template: "grafana-alertrulegroup.yml.j2"
+  loop: "{{ grafana_combined_alert | default([]) }}"
+  loop_control:
+    label: "{{ item.folder | default('default') }}"
+

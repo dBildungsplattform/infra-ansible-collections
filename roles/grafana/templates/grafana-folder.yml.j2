@@ -6,9 +6,9 @@ metadata:
 spec:
   instanceSelector:
     matchLabels:
-      {{ grafana_label_selector }}
-  title: {{ item.titel }}
+{{ grafana_label_selector | to_nice_yaml(indent=6) | indent(6, true) }}
+  title: {{ item.title }}
 {% if item.permissions is defined %}
   permissions: |
-    {{ item.permissions | indent(width=4, first=False) }}
+    {{ item.permissions | to_json }}
 {% endif %}

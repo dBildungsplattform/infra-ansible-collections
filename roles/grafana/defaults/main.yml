@@ -40,6 +40,8 @@ grafana_combined_notification_policy: []
   #         value: "dev"
   #       contact_point: teamchat-infra-dev
 
+
+
 grafana_combined_mutes: []
   # Example:
   # - name: weekend
@@ -89,3 +91,13 @@ grafana_combined_datasources: []
   # - name: Loki
   #   type: loki
   #   url: http://loki:80
+
+grafana_combined_alert: []
+postgres_datasource_uid: ""
+postgres_thresholds:
+  disk_io: 0.8          # Disk I/O threshold (80%)
+  storage: 0.2          # Storage remaining threshold (20%) -> ACHTUNG: je nach Query "lt" oder "gt"
+  cpu: 0.8              # CPU utilization threshold (80%)
+  memory: 0.2           # Memory available threshold (20%) -> passt zu deinem "lt" evaluator
+  load: 4               # Load threshold
+  transactions: 717     # Connections/transactions threshold (absolute Zahl)
