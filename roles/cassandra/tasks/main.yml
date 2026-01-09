@@ -20,6 +20,7 @@
         namespace: monitoring
       spec:
         itemPath: "vaults/{{ vault }}/items/cassandra"
+  when: cassandra_enabled | default (true)
 
 - name: Create Image pull secret token
   kubernetes.core.k8s:
@@ -36,6 +37,7 @@
         namespace: monitoring
       data:
         .dockerconfigjson: "{{ image_pull_token_secret }}"
+  when: cassandra_enabled | default (true)
 
 - name: Create Cassandra PVCs
   kubernetes.core.k8s:
@@ -57,6 +59,7 @@
             storage: "{{ cassandra_pvc_size }}"
   # End is less than or equal so we have to substract 1
   with_sequence: start=0 end="{{ cassandra_replica_count -1 }}"
+  when: cassandra_enabled | default (true)
 
 - name: Install Cassandra
   kubernetes.core.helm:
@@ -70,6 +73,7 @@
     release_namespace: monitoring
     values:
       "{{ cassandra_values }}"
+  when: cassandra_enabled | default (true)
 
 - name: Create Cassandra cleanup cronjob script
   kubernetes.core.k8s:
@@ -100,7 +104,9 @@
               echo "Nothing to delete"
             fi
           done
-  when: cassandra_cleanup_enabled
+  when: 
+    - cassandra_cleanup_enabled
+    - cassandra_enabled | default (true)
 
 - name: Install Cassandra cleanup cronjob
   kubernetes.core.helm:
@@ -112,4 +118,6 @@
     release_namespace: "monitoring"
     values:
       "{{ cassandra_cleanup_values }}"
-  when: cassandra_cleanup_enabled
+  when: 
+    - cassandra_cleanup_enabled
+    - cassandra_enabled | default (true)
