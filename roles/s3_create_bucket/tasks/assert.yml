@@ -11,6 +11,10 @@
       - "s3_create_bucket_bucket_versioning is boolean"
       - "s3_create_bucket_bucket_policy is string"
       - "s3_create_bucket_bucket_name | regex_search('^[a-z0-9][a-z0-9-.]{1,61}[a-z0-9]$')"
+      - "s3_create_bucket_access_key is string"
+      - "s3_create_bucket_secret_key is string"
+      - "(s3_create_bucket_access_key | length > 0 and s3_create_bucket_secret_key | length > 0)
+        or (s3_create_bucket_access_key | length == 0 and s3_create_bucket_secret_key | length == 0)"
       - "s3_create_bucket_cors_settings is boolean"
       - "s3_create_bucket_allowed_origins is sequence"
       - "s3_create_bucket_allowed_methods is sequence"

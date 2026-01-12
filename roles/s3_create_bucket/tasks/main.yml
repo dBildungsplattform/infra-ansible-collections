@@ -7,12 +7,15 @@
     token: "{{ s3_create_bucket_ionos_token | default(ionos_token, true) }}"
     user: "{{ s3_create_bucket_owner | default(omit, true) }}"
     idempotency: true
-  register: s3_create_bucket_r_s3_key
+  when:
+    - "s3_create_bucket_access_key | length == 0"
+    - "s3_create_bucket_secret_key | length == 0"
+  register: r_s3_create_bucket_s3_key
 
 - name: "Create bucket '{{ s3_create_bucket_bucket_name }}'"
   amazon.aws.s3_bucket:
-    access_key: "{{ s3_create_bucket_r_s3_key.s3key.id }}"
-    secret_key: "{{ s3_create_bucket_r_s3_key.s3key.properties.secret_key }}"
+    access_key: "{{ c_s3_create_bucket_access_key }}"
+    secret_key: "{{ c_s3_create_bucket_secret_key }}"
     state: "present"
     region: "{{ s3_create_bucket_region }}"
     endpoint_url: "{{ s3_create_bucket_url }}"
@@ -22,8 +25,8 @@
 
 - name: "Configure a S3 lifecycle rule to delete incomplete S3 Multipart Upload"
   community.aws.s3_lifecycle:
-    aws_access_key: "{{ s3_create_bucket_r_s3_key.s3key.id }}"
-    aws_secret_key: "{{ s3_create_bucket_r_s3_key.s3key.properties.secret_key }}"
+    aws_access_key: "{{ c_s3_create_bucket_access_key }}"
+    aws_secret_key: "{{ c_s3_create_bucket_secret_key }}"
     name: "{{ s3_create_bucket_bucket_name }}"
     abort_incomplete_multipart_upload_days: 1
     state: "present"
@@ -34,8 +37,8 @@
 
 - name: "Add/remove CORS Settings on web access"
   community.aws.aws_s3_cors:
-    aws_access_key: "{{ s3_create_bucket_r_s3_key.s3key.id }}"
-    aws_secret_key: "{{ s3_create_bucket_r_s3_key.s3key.properties.secret_key }}"
+    aws_access_key: "{{ c_s3_create_bucket_access_key }}"
+    aws_secret_key: "{{ c_s3_create_bucket_secret_key }}"
     endpoint_url: "{{ s3_create_bucket_url }}"
     region: "{{ s3_create_bucket_region }}"
     name: "{{ s3_create_bucket_bucket_name }}"
@@ -49,8 +52,8 @@
 
 - name: "Configure lifecycle rules"
   community.aws.s3_lifecycle:
-    aws_access_key: "{{ s3_create_bucket_r_s3_key.s3key.id }}"
-    aws_secret_key: "{{ s3_create_bucket_r_s3_key.s3key.properties.secret_key }}"
+    aws_access_key: "{{ c_s3_create_bucket_access_key }}"
+    aws_secret_key: "{{ c_s3_create_bucket_secret_key }}"
     name: "{{ s3_create_bucket_bucket_name }}"
     expiration_days: "{{ s3_create_bucket_lifecycle_rule.rule_expiration_days | default(omit) }}"
     noncurrent_version_expiration_days: "{{ s3_lifecycle_rule.rule_noncurrent_version_expiration_days | default(omit) }}"
@@ -78,11 +81,11 @@
         section: "{{ s3_create_bucket_1pw_target.credentials_section_name }}"
       - name: "{{ s3_create_bucket_1pw_target.access_key_1pw_field_name }}"
         type: "text"
-        value: "{{ s3_create_bucket_r_s3_key.s3key.id }}"
+        value: "{{ c_s3_create_bucket_access_key }}"
         section: "{{ s3_create_bucket_1pw_target.credentials_section_name }}"
       - name: "{{ s3_create_bucket_1pw_target.access_secret_1pw_field_name }}"
         type: "password"
-        value: "{{ s3_create_bucket_r_s3_key.s3key.properties.secret_key }}"
+        value: "{{ c_s3_create_bucket_secret_key }}"
         section: "{{ s3_create_bucket_1pw_target.credentials_section_name }}"
       - name: "{{ s3_create_bucket_1pw_target.url_1pw_field_name }}"
         type: "text"

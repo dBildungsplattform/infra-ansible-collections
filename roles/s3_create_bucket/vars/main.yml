@@ -1,0 +1,2 @@
+c_s3_create_bucket_access_key: "{{ s3_create_bucket_access_key | default(r_s3_create_bucket_s3_key.s3key.id) }}"
+c_s3_create_bucket_secret_key: "{{ s3_create_bucket_secret_key | default(r_s3_create_bucket_s3_key.s3key.properties.secret_key) }}"

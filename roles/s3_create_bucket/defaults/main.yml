@@ -5,6 +5,8 @@ s3_create_bucket_url: "https://s3.{{ s3_create_bucket_region }}.ionoscloud.com"
 s3_create_bucket_bucket_versioning: false
 s3_create_bucket_bucket_policy: "null" # "null" as string sets the policy to absent
 s3_create_bucket_bucket_name: "data"
+s3_create_bucket_access_key: ""
+s3_create_bucket_secret_key: ""
 s3_create_bucket_cors_settings: false
 s3_create_bucket_allowed_origins:
   - "https://*"
