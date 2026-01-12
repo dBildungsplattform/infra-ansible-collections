@@ -44,7 +44,7 @@
     - loki
   when: loki_s3_enabled
 
-# For working secret transfer a 1password secret is needed (See https://docs.dbildungscloud.de/display/PROD/Loki)
+# For working secret transfer a 1password secret is needed
 # See https://docs.ansible.com/ansible/latest/collections/kubernetes/core/k8s_module.html
 - name: Create loki http basic auth secret
   kubernetes.core.k8s:
