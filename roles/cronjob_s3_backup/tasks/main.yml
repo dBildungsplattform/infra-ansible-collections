@@ -109,10 +109,17 @@
             endpoint = {{ s3_backup_url }}
             region = {{ s3_backup_region }}
 
+  - name: Add public dbildungsplattform chart repo
+    kubernetes.core.helm_repository:
+      name: dbildungsplattform
+      repo_url: https://dbildungsplattform.github.io/helm-charts-registry/
+    check_mode: false
+    changed_when: false
+
   - name: Install IONOS S3 Backup cronjob
     kubernetes.core.helm:
       name: "{{ instance_name }}"
-      chart_ref: "{{ playbook_dir }}/../charts/cronjob"
+      chart_ref: dbildungsplattform/cronjob
       wait: yes
       chart_version: "{{ cronjob_s3_backup_chart_version }}"
       kubeconfig: "{{ kubeconfig }}"

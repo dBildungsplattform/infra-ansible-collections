@@ -38,6 +38,13 @@
     values:
       "{{ cert_manager_chart_values }}"
 
+- name: Add public dbildungsplattform chart repo
+  kubernetes.core.helm_repository:
+    name: dbildungsplattform
+    repo_url: https://dbildungsplattform.github.io/helm-charts-registry/
+  check_mode: false
+  changed_when: false
+
 # ClusterIssuer setup. See https://artifacthub.io/packages/helm/jetstack/cert-manager
 # "In order to begin issuing certificates, you will need to set up a ClusterIssuer or
 # Issuer resource (for example, by creating a 'letsencrypt-staging' issuer)."
@@ -45,7 +52,9 @@
 - name: Install clusterissuer Helm chart
   kubernetes.core.helm:
     name: sc-cert-manager-clusterissuer
-    chart_ref: "{{ playbook_dir }}/../charts/sc-cert-manager-clusterissuer"
+    chart_ref: dbildungsplattform/cert-manager-clusterissuer
+    chart_version: "{{ cert_manager_clusterissuer_chart_version }}"
     kubeconfig: "{{ kubeconfig }}"
     release_namespace: cert-manager
-  when: sc_cert_manager_clusterissuer_enabled is true
+    values: "{{ cert_manager_clusterissuer_values }}"
+  when: cert_manager_clusterissuer_enabled is true
