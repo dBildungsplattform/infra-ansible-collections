@@ -8,8 +8,19 @@ spec:
     matchLabels:
       {{ grafana_label_selector }}
   datasource:
-    access: proxy
+    access: {{ item.access | default('proxy') }}
     name: {{ item.name }}
     type: {{ item.type }}
+    uid: {{ item.uid }}
     url: {{ item.url }}
-    isDefault: {{ item.default | default(false) }}
+    isDefault: {{ item.default | default(item.isDefault | default(false)) }}
+
+{% if item.jsonData is defined %}
+    jsonData:
+{{ item.jsonData | to_nice_yaml | indent(6, true) }}
+{% endif %}
+
+{% if item.secureJsonData is defined %}
+    secureJsonData:
+{{ item.secureJsonData | to_nice_yaml | indent(6, true) }}
+{% endif %}

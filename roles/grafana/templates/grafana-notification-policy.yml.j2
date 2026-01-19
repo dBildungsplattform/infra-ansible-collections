@@ -6,25 +6,20 @@ metadata:
 spec:
   instanceSelector:
     matchLabels:
-      {{ grafana_label_selector }}
+{{ grafana_label_selector | to_nice_yaml(indent=2) | indent(6, true) }}
+
   route:
-    receiver: {{ item.contact_point }}
-    group_by:
-      {{ item.group_by }}
+    receiver: "{{ item.contact_point }}"
+    groupBy:
+{{ item.group_by | to_nice_yaml(indent=2) | indent(6, true) }}
     routes:
-{% for item_inner in item.routes %}
-  - receiver: {{ item.contact_point }}
-    object_matchers:
-    - - {{ item_inner.matcher.label }}
-      - {{ item_inner.matcher.match }}
-      - {{ item_inner.matcher.value }}
-{% if item_inner.group_wait is defined %}
-group_wait: {{ item_inner.group_wait }}
-{% endif %}
-{% if item_inner.group_interval is defined %}
-group_interval: {{ item_inner.group_interval }}
-{% endif %}
-{% if item_inner.repeat_interval is defined %}
-repeat_interval: {{ item_inner.repeat_interval }}
-{% endif %}
+{% for r in item.routes %}
+      - receiver: "{{ item.contact_point }}"
+        groupWait: "{{ r.group_wait }}"
+        groupInterval: "{{ r.group_interval }}"
+        repeatInterval: "{{ r.repeat_interval }}"
+        matchers:
+          - label: "{{ r.matcher.label }}"
+            match: "{{ r.matcher.match }}"
+            value: "{{ r.matcher.value }}"
 {% endfor %}
