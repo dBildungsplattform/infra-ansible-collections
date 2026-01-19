@@ -8,9 +8,14 @@ psql_private_db: false                        # If true: All priviliges for the 
 # Addionital necessary variables for this role:
 # psql_namespace: Namespace for ConfigMap, Secret and Job
 # psql_host: Host of DB
-# psql_pass: Password for Initial/Admin user
+# psql_pass: Password for Initial/Admin user (OR psql_pass_key and existing_secret as listed below)
 # psql_db_name: Name of the DB
 psql_db_users: []                             # List of users to create
 #   - name: Name of User
 #     password: Password of User
 #     privileges: Privileges for user (e.g. "CONNECT" or "ALL PRIVILEGES")
+
+# optional: use of an existing secret - currently supports psql_name AND/OR psql_pass
+# existing_secret: Secret name
+# psql_pass_key: Key of the psql_pass in the existing secret
+# psql_name_key: Key of the psql_name in the existing secret
