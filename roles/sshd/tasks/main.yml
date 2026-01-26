@@ -2,20 +2,20 @@
     - name: Generate SSH public keys list for SSHD Users
       set_fact:
         sshd_public_keys: |
-          {% set canonical_hosts  = [] %}
-          {% set sshd_public_key_map  = {} %}
+          {% set sshd_public_key_map = {} %}
           {% for user in present_users %}
-            {% if item.permissions.sshd is defined %}
-              {% if item.permissions.sshd.hosts is string %}
-                {% set hosts = [ item.permissions.sshd.hosts ] %}
+            {% set canonical_hosts = [] %}
+            {% if user.permissions.sshd is defined %}
+              {% if user.permissions.sshd.hosts is string %}
+                {% set hosts = [ user.permissions.sshd.hosts ] %}
               {% else %}
-                {% set hosts = item.permissions.sshd.hosts %}
+                {% set hosts = user.permissions.sshd.hosts %}
               {% endif %}
               {% for host in hosts %}
                 {% set _ = canonical_hosts.extend(lookup('inventory_hostnames', host, wantlist=true)) %}
               {% endfor %}
               {% if inventory_hostname in canonical_hosts %}
-                {% set _ = sshd_public_key_list.update({item.name: lookup('file', 'sshkeys/' + item.name + '.pub')}) %}
+                {% set _ = sshd_public_key_list.update({user.name: lookup('file', 'sshkeys/' + user.name + '.pub')}) %}
               {% endif %}
             {% endif %}
           {% endfor %}
