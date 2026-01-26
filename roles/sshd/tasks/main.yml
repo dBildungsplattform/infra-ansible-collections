@@ -1,14 +1,28 @@
+
     - name: Generate SSH public keys list for SSHD Users
       set_fact:
-        sshd_public_keys: "{{ sshd_public_keys | default({}) | combine({item.name: lookup('file', 'sshkeys/' + item.name + '.pub')}) }}"
-      when: item.permissions.sshd is defined and inventory_hostname in (lookup('inventory_hostnames', item.permissions.sshd.hosts) | default('', true)).split(',')
+        sshd_public_keys: |
+          {% set canonical_hosts  = [] %}
+          {% if item.permissions.sshd.hosts is string %}
+            {% set hosts = [ item.permissions.sshd.hosts ] %}
+          {% else %}
+            {% set hosts = item.permissions.sshd.hosts %}
+          {% endif %}
+          {% for host in hosts %}
+            {% set _ = canonical_hosts.extend(lookup('inventory_hostnames', host, wantlist=true)) %}
+          {% endfor %}
+          {% if inventory_hostname in canonical_hosts %}
+            {{ sshd_public_keys | default({}) | combine({item.name: lookup('file', 'sshkeys/' + item.name + '.pub')}) }}
+          {% endif %}
+      when: item.permissions.sshd is defined
       loop: "{{ present_users }}"
       tags:
         - sshd
 
+
     - name: Create {{ sshd_namespace }} namespace
       kubernetes.core.k8s:
-        state: present
+        state: "{{ (sshd_public_keys | strip | length == 0) | ternary('present', 'absent') }}"
         kubeconfig: "{{ kubeconfig }}"
         proxy: "{{ proxy_url | default(omit, true) }}"
         proxy_headers: "{{ proxy_headers | default(omit, true) }}"
@@ -32,6 +46,7 @@
             namespace: "{{ sshd_namespace }}"
           spec:
             itemPath: "vaults/{{ vault }}/items/sshd-host-keys"
+      when: sshd_public_keys | strip | length > 0
       tags:
         - sshd
 
@@ -50,7 +65,9 @@
             namespace: "{{ sshd_namespace }}"
           data:
             .dockerconfigjson: "{{ image_pull_token_secret }}"
-      when: image_pull_token_enabled
+      when:
+        - image_pull_token_enabled
+        - sshd_public_keys | strip | length > 0
       tags: sshd
 
     - name: Add dbildungsplattform chart repo
@@ -59,6 +76,7 @@
         repo_url: https://dbildungsplattform.github.io/helm-charts-registry/
       check_mode: false
       changed_when: false
+      when: sshd_public_keys | strip | length > 0
       tags: sshd
 
     - name: Deploy latest version of SSHD chart to update user keys on Cluster
@@ -71,5 +89,6 @@
         release_namespace: "{{ sshd_namespace }}"
         values: "{{ sshd_values }}"
         wait: true
+      when: sshd_public_keys | strip | length > 0
       tags:
         - sshd
