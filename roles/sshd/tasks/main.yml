@@ -96,3 +96,6 @@
       when: sshd_public_keys | length > 0
       tags:
         - sshd
+    - name: debug
+      ansible.builtin.debug:
+        msg: "{{ sshd_values }}"
