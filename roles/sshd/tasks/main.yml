@@ -26,7 +26,7 @@
 
     - name: Create {{ sshd_namespace }} namespace
       kubernetes.core.k8s:
-        state: "{{ (sshd_public_keys | length == 0) | ternary('present', 'absent') }}"
+        state: "{{ (sshd_public_keys | length > 0) | ternary('present', 'absent') }}"
         kubeconfig: "{{ kubeconfig }}"
         proxy: "{{ proxy_url | default(omit, true) }}"
         proxy_headers: "{{ proxy_headers | default(omit, true) }}"
@@ -50,7 +50,7 @@
             namespace: "{{ sshd_namespace }}"
           spec:
             itemPath: "vaults/{{ vault }}/items/sshd-host-keys"
-      when: sshd_public_keys | strip | length > 0
+      when: sshd_public_keys | length > 0
       tags:
         - sshd
 
@@ -71,7 +71,7 @@
             .dockerconfigjson: "{{ image_pull_token_secret }}"
       when:
         - image_pull_token_enabled
-        - sshd_public_keys | strip | length > 0
+        - sshd_public_keys | length > 0
       tags: sshd
 
     - name: Add dbildungsplattform chart repo
@@ -80,7 +80,7 @@
         repo_url: https://dbildungsplattform.github.io/helm-charts-registry/
       check_mode: false
       changed_when: false
-      when: sshd_public_keys | strip | length > 0
+      when: sshd_public_keys | length > 0
       tags: sshd
 
     - name: Deploy latest version of SSHD chart to update user keys on Cluster
@@ -93,6 +93,6 @@
         release_namespace: "{{ sshd_namespace }}"
         values: "{{ sshd_values }}"
         wait: true
-      when: sshd_public_keys | strip | length > 0
+      when: sshd_public_keys | length > 0
       tags:
         - sshd
