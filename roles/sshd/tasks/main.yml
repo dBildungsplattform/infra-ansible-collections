@@ -15,7 +15,7 @@
                 {% set _ = canonical_hosts.extend(lookup('inventory_hostnames', host, wantlist=true)) %}
               {% endfor %}
               {% if inventory_hostname in canonical_hosts %}
-                {% set _ = sshd_public_key_list.update({user.name: lookup('file', 'sshkeys/' + user.name + '.pub')}) %}
+                {% set _ = sshd_public_key_map.update({user.name: lookup('file', 'sshkeys/' + user.name + '.pub')}) %}
               {% endif %}
             {% endif %}
           {% endfor %}
