@@ -26,7 +26,7 @@
 
     - name: Create {{ sshd_namespace }} namespace
       kubernetes.core.k8s:
-        state: "{{ (sshd_public_keys | length > 0) | ternary('present', 'absent') }}"
+        state: present
         kubeconfig: "{{ kubeconfig }}"
         proxy: "{{ proxy_url | default(omit, true) }}"
         proxy_headers: "{{ proxy_headers | default(omit, true) }}"
@@ -38,6 +38,7 @@
 
     - name: Deploy SSHD host keys secret
       kubernetes.core.k8s:
+        state: "{{ (sshd_public_keys | length > 0) | ternary('present', 'absent') }}"
         kubeconfig: "{{ kubeconfig }}"
         proxy: "{{ proxy_url | default(omit, true) }}"
         proxy_headers: "{{ proxy_headers | default(omit, true) }}"
@@ -50,13 +51,12 @@
             namespace: "{{ sshd_namespace }}"
           spec:
             itemPath: "vaults/{{ vault }}/items/sshd-host-keys"
-      when: sshd_public_keys | length > 0
       tags:
         - sshd
 
     - name: Create docker token secret
       kubernetes.core.k8s:
-        state: present
+        state: "{{ (image_pull_token_enabled and sshd_public_keys | length > 0) | ternary('present', 'absent') }}"
         kubeconfig: "{{ kubeconfig }}"
         proxy: "{{ proxy_url | default(omit, true) }}"
         proxy_headers: "{{ proxy_headers | default(omit, true) }}"
@@ -69,9 +69,6 @@
             namespace: "{{ sshd_namespace }}"
           data:
             .dockerconfigjson: "{{ image_pull_token_secret }}"
-      when:
-        - image_pull_token_enabled
-        - sshd_public_keys | length > 0
       tags: sshd
 
     - name: Add dbildungsplattform chart repo
@@ -85,6 +82,7 @@
 
     - name: Deploy latest version of SSHD chart to update user keys on Cluster
       kubernetes.core.helm:
+        state: "{{ (sshd_public_keys | length > 0) | ternary('present', 'absent') }}"
         kubeconfig: "{{ kubeconfig }}"
         name: "{{ sshd_chart }}"
         chart_ref: "dbildungsplattform/{{ sshd_chart }}"
@@ -93,6 +91,5 @@
         release_namespace: "{{ sshd_namespace }}"
         values: "{{ sshd_values }}"
         wait: true
-      when: sshd_public_keys | length > 0
       tags:
         - sshd
