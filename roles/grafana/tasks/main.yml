@@ -41,6 +41,9 @@
     namespace: "{{ grafana_namespace }}"
     template: "grafana-folder.yml.j2"
   loop: "{{ grafana_combined_folders }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when: not (item.name == 'developer' and stage != 'dev')
 
 - name: Create Grafana Contactpoints
   kubernetes.core.k8s:

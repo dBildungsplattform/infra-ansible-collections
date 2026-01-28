@@ -94,6 +94,8 @@ grafana_combined_datasources: []
 
 grafana_combined_alert: []
 postgres_datasource_uid: ""
+postgres_alert_receiver: ""
+rc_target: ""
 postgres_thresholds:
   disk_io: 0.8          # Disk I/O threshold (80%)
   storage: 0.2          # Storage remaining threshold (20%) -> ACHTUNG: je nach Query "lt" oder "gt"

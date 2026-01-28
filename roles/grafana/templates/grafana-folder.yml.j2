@@ -1,4 +1,3 @@
-{% if not (item.name == 'developer' and stage != 'dev') %}
 ---
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaFolder
@@ -12,5 +11,4 @@ spec:
 {% if item.permissions is defined %}
   permissions: |
     {{ item.permissions | to_json }}
-{% endif %}
 {% endif %}
