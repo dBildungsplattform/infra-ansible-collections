@@ -118,7 +118,9 @@ spec:
       execErrState: Error
       for: 5m
       annotations:
-        summary: "PostgreSQL CPU usage exceeded threshold. CPU utilization is above "{{ postgres_thresholds.cpu * 100 }}"%."
+        annotations:
+          summary: "PostgreSQL CPU usage exceeded threshold. CPU utilization is above {{ (postgres_thresholds.cpu * 100) | int }}%."
+
       labels:
         alertname: "HighCPUUtilization"
         rc-target: "{{ rc_target }}"
@@ -268,8 +270,9 @@ spec:
                 - evaluator:
                     params:
                         - {{ postgres_thresholds.disk_io }}
-                  operator:
                     type: gt
+                  operator:
+                    type: and
                   query:
                     params:
                         - Disk_IO_Query
@@ -290,7 +293,7 @@ spec:
       execErrState: OK
       for: 5m
       annotations:
-        summary:  "PostgreSQL disk I/O time (5m avg) exceeded {{ postgres_thresholds.disk_io }}s."
+        summary: "PostgreSQL disk I/O time (5m avg) exceeded {{ postgres_thresholds.disk_io }}s."
       labels:
         alertname: HighDiskIO
         rc-target: "{{ rc_target }}"
@@ -347,7 +350,8 @@ spec:
       execErrState: OK
       for: 5m
       annotations:
-         summary: "PostgreSQL free storage dropped below {{ (postgres_thresholds.storage * 100) | int }}%."
+        annotations:
+          summary: "PostgreSQL free storage dropped below {{ (postgres_thresholds.storage * 100) | int }}%."
       labels:
         alertname: LowStorageAvailability
         rc-target: "{{ rc_target }}"

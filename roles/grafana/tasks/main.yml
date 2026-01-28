@@ -85,8 +85,6 @@
     template: "grafana-mute-timing.yml.j2"
   loop: "{{ grafana_combined_mutes }}"
 
-
-
 - name: Create Grafana Alert Rule Groups
   kubernetes.core.k8s:
     state: present
