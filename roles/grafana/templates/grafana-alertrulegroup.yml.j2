@@ -118,7 +118,6 @@ spec:
       execErrState: Error
       for: 5m
       annotations:
-        annotations:
           summary: "PostgreSQL CPU usage exceeded threshold. CPU utilization is above {{ (postgres_thresholds.cpu * 100) | int }}%."
 
       labels:
@@ -350,7 +349,6 @@ spec:
       execErrState: OK
       for: 5m
       annotations:
-        annotations:
           summary: "PostgreSQL free storage dropped below {{ (postgres_thresholds.storage * 100) | int }}%."
       labels:
         alertname: LowStorageAvailability
