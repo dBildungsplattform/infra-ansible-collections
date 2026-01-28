@@ -70,7 +70,9 @@
             namespace: "{{ sshd_namespace }}"
           data:
             .dockerconfigjson: "{{ image_pull_token_secret }}"
-      when: image_pull_token_enabled
+      when:
+        - image_pull_token_enabled
+        - sshd_public_keys | length > 0
       tags: sshd
 
     - name: Add dbildungsplattform chart repo
