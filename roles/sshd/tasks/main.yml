@@ -57,7 +57,7 @@
 
     - name: Create docker token secret
       kubernetes.core.k8s:
-        state: "{{ (image_pull_token_enabled and sshd_public_keys | length > 0) | ternary('present', 'absent') }}"
+        state: present
         kubeconfig: "{{ kubeconfig }}"
         proxy: "{{ proxy_url | default(omit, true) }}"
         proxy_headers: "{{ proxy_headers | default(omit, true) }}"
@@ -70,6 +70,7 @@
             namespace: "{{ sshd_namespace }}"
           data:
             .dockerconfigjson: "{{ image_pull_token_secret }}"
+      when: image_pull_token_enabled
       tags: sshd
 
     - name: Add dbildungsplattform chart repo
