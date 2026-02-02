@@ -6,5 +6,6 @@ metadata:
   namespace: {{ item.namespace | default('monitoring') }}
   labels:
     grafana_dashboard: "1"
-data: >
+data:
+  my-dashboard.json: |
     {{ item.json | indent(width=4, first=False) }}
