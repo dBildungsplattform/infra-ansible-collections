@@ -1,7 +1,5 @@
 ---
-grafana_resource_name: grafana-main
-grafana_label_selector:
-  dashboards: "grafana-main"
+kubernetes_prometheus_dashboard_prefix: grafana-main
 kubernetes_prometheus_dashboards:
   - name: events
     folder: Monitoring
