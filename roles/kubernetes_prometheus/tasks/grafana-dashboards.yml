@@ -10,4 +10,4 @@
     namespace: "{{ item.namespace | default('monitoring') }}"
   loop: "{{ kubernetes_prometheus_dashboards }}"
   loop_control:
-    label: "{{ item.namespace | default('monitoring') }}"
+    label: "{{ (item.namespace | default('monitoring')) }}"
