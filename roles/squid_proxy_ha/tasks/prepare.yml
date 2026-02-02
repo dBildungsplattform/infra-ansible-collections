@@ -6,17 +6,14 @@
     name: 
       - pcs
       - pacemaker
-      - python3-distutils
+      - python3-setuptools
+      - python3-passlib
       - libxml2-utils
       - ufw
       - fail2ban
       - squid-openssl
       - golang
       - apparmor-utils
-
-- name: Install passlib (required for htpasswd module)
-  pip:
-    name: passlib
 
 - name: Set unique name of ha cluster (used for grouping)
   set_fact:
