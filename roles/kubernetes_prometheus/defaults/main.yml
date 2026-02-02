@@ -5,4 +5,4 @@ grafana_label_selector:
 kubernetes_prometheus_dashboards:
   - name: events
     folder: Monitoring
-    json: "events.json"
+    json: "{{ lookup('file', 'files/events.json') }}"

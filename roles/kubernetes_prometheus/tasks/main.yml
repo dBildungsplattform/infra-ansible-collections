@@ -40,5 +40,5 @@
   tags: prometheus
 
 - include_tasks: grafana-dashboards.yml
-  tags: grafana
+  tags: prometheus
 

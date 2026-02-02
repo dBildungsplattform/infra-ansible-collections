@@ -1,0 +1,28 @@
+my-dashboard.json: |
+    {
+      "annotations": {
+        "list": ["dbm-tag"]
+      },
+      "editable": true,
+      "gnetId": null,
+      "graphTooltip": 0,
+      "id": null,
+      "panels": [],
+      "schemaVersion": 36,
+      "style": "dark",
+      "tags": [
+        "abc-dns",
+        "abc-coredns"
+        ],
+      "templating": {
+        "list": []
+      },
+      "time": {
+        "from": "now-6h",
+        "to": "now"
+      },
+      "timezone": "",
+      "title": "My Custom Dashboard2",
+      "uid": "my-custom-dashboard",
+      "version": 1
+    }
