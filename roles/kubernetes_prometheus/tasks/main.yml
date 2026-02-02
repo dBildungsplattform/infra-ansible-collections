@@ -38,3 +38,7 @@
     prometheus_community_values: "{{ prometheus_default_values }}"
   loop: "{{ prometheus_instances }}"
   tags: prometheus
+
+- include_tasks: grafana-dashboards.yml
+  tags: grafana
+
