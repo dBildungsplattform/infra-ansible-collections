@@ -1,5 +1,4 @@
-my-dashboard.json: |
-    {
+{
       "annotations": {
         "list": ["dbm-tag"]
       },
