@@ -6,6 +6,5 @@
     kubeconfig: "{{ kubeconfig }}"
     proxy: "{{ proxy_url | default(omit, true) }}"
     proxy_headers: "{{ proxy_headers | default(omit, true) }}"
-    namespace: "{{ item.namespace }}"
     template: "grafana-dashboard.yml.j2"
   loop: "{{ kubernetes_prometheus_dashboards }}"
