@@ -15,9 +15,9 @@
       - golang
       - apparmor-utils
 
-- name: Install passlib (required for htpasswd module)
-  pip:
-    name: passlib
+# - name: Install passlib (required for htpasswd module)
+#   pip:
+#     name: passlib
 
 - name: Set unique name of ha cluster (used for grouping)
   set_fact:
