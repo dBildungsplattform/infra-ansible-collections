@@ -6,3 +6,8 @@ kubernetes_prometheus_dashboards:
   - name: events
     folder: Monitoring
     json: "{{ lookup('file', 'files/events.json') }}"
+    filename: events.json
+  - name: another
+    folder: Monitoring
+    json: "{{ lookup('file', 'files/another-dashboard.json') }}"
+    filename: another-dashboard.json
