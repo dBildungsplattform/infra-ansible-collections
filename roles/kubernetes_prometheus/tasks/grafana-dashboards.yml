@@ -7,4 +7,5 @@
     proxy: "{{ proxy_url | default(omit, true) }}"
     proxy_headers: "{{ proxy_headers | default(omit, true) }}"
     template: "grafana-dashboard.yml.j2"
+    namespace: monitoring
   loop: "{{ kubernetes_prometheus_dashboards }}"
