@@ -6,7 +6,7 @@
     name: 
       - pcs
       - pacemaker
-      - python3-distutils
+      - python3-setuptools
       - libxml2-utils
       - ufw
       - fail2ban
