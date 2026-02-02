@@ -39,6 +39,45 @@
   loop: "{{ prometheus_instances }}"
   tags: prometheus
 
+- name: Create service account
+  uri:
+    url: "{{ grafana_main_url }}/api/serviceaccounts"
+    method: POST
+    user: "{{ grafana_adminUser }}"
+    password: "{{ grafana_adminPassword }}"
+    force_basic_auth: yes
+    status_code: 200,201
+    body_format: json
+    body:
+      name: "{{ grafana_sa_name }}"
+      role: "{{ grafana_sa_role }}"
+  register: sa_response
+
+- name: Create token for service account
+  uri:
+    url: "{{ grafana_main_url }}/api/serviceaccounts/{{ sa_response.json.id }}/tokens"
+    method: POST
+    user: "{{ grafana_adminUser }}"
+    password: "{{ grafana_adminPassword }}"
+    force_basic_auth: yes
+    status_code: 200,201
+    body_format: json
+    body:
+      name: "ansible-token"
+  register: token_response
+
+- name: Show token
+  debug:
+    msg: "Service Account Token: {{ token_response.json.key }}"
+
+- name: Create a team
+  community.grafana.grafana_team:
+    url: "{{ grafana_main_url }}"
+    grafana_api_key: "{{  }}"
+    name: "grafana_working_group"
+    email: "foo.bar@example.com"
+    state: present
+
 - include_tasks: grafana-dashboards.yml
   tags: prometheus
 
