@@ -6,7 +6,6 @@
     name: 
       - pcs
       - pacemaker
-      - python3-setuptools
       - python3-passlib
       - libxml2-utils
       - ufw
@@ -14,6 +13,20 @@
       - squid-openssl
       - golang
       - apparmor-utils
+
+- name: Install packages (Ubuntu 22.04 specific)
+  apt:
+    name: 
+      - python3-distutils
+  when: ansible_distribution == "Ubuntu" and
+        ansible_distribution_version is version('22.04', '==')
+
+- name: Install packages (Ubuntu 24.04 specific)
+  apt:
+    name: 
+      - python3-setuptools
+  when: ansible_distribution == "Ubuntu" and
+        ansible_distribution_version is version('24.04', '>=')
 
 - name: Set unique name of ha cluster (used for grouping)
   set_fact:
