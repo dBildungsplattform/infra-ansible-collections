@@ -41,7 +41,7 @@
 
 - name: Create service account
   uri:
-    url: "{{ grafana_main_domain }}/api/serviceaccounts"
+    url: "{{ grafana_main_url }}/api/serviceaccounts"
     method: POST
     user: "{{ grafana_adminUser }}"
     password: "{{ grafana_adminPassword }}"
@@ -55,7 +55,7 @@
 
 - name: Create token for service account
   uri:
-    url: "{{ grafana_main_domain }}/api/serviceaccounts/{{ sa_response.json.id }}/tokens"
+    url: "{{ grafana_main_url }}/api/serviceaccounts/{{ sa_response.json.id }}/tokens"
     method: POST
     user: "{{ grafana_adminUser }}"
     password: "{{ grafana_adminPassword }}"
@@ -72,7 +72,7 @@
 
 - name: Create a team
   community.grafana.grafana_team:
-    url: "{{ grafana_main_domain }}"
+    url: "{{ grafana_main_url }}"
     grafana_api_key: "{{  }}"
     name: "grafana_working_group"
     email: "foo.bar@example.com"
