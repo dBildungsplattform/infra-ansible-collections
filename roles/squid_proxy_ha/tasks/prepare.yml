@@ -26,7 +26,7 @@
     name: 
       - python3-setuptools
   when: ansible_distribution == "Ubuntu" and
-        ansible_distribution_version is version('24.04', '==')
+        ansible_distribution_version is version('24.04', '>=')
 
 - name: Set unique name of ha cluster (used for grouping)
   set_fact:
