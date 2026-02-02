@@ -40,42 +40,5 @@
     kubeconfig: "{{ kubeconfig }}"
     proxy: "{{ proxy_url | default(omit, true) }}"
     proxy_headers: "{{ proxy_headers | default(omit, true) }}"
-    definition:
-      apiVersion: batch/v1
-      kind: Job
-      metadata:
-        name: "psql-{{ psql_name }}-config-{{ lookup('community.general.random_string', min_lower=10, length=10)}}"
-        namespace: "{{ psql_namespace }}"
-      spec:
-        template:
-          spec:
-            volumes:
-            - name: config-script
-              configMap:
-                name: "psql-{{ psql_name }}-config-script"
-              # 711 in decimal is 457
-                defaultMode: 457
-            containers:
-            - name:  psql-config
-              image: schulcloud/infra-tools:{{ infra_tools_image_tag }}
-              command:
-                - /bin/bash
-                - -c
-              args:
-                - /scripts/config-script
-              resources:
-                limits:
-                  cpu: 1000m
-                  memory: 2Gi
-                requests:
-                  cpu: 100m
-                  memory: 1Gi
-              volumeMounts:
-              - name: config-script
-                mountPath: /scripts/
-              envFrom:
-              - secretRef:
-                  name: "psql-{{ psql_name }}-config"
-            restartPolicy: Never
-        backoffLimit: 4
-  when: postgres_secret.changed or postgres_configscript.changed
+    template: 'config-job.yml.j2'
+  when: postgres_secret.changed or postgres_configscript.changed or rerun_postgres_config | default (false)
