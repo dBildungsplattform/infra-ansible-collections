@@ -1,0 +1,357 @@
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaAlertRuleGroup
+metadata:
+  name: "{{ grafana_resource_name }}-postgresql-alerts"
+  labels:
+    dashboards: "grafana"
+spec:
+  folderRef: "grafana-main-erwin"
+  instanceSelector:
+    matchLabels:
+      {{ grafana_label_selector | to_nice_yaml(indent=6) | trim }}
+  interval: "60s"
+  rules:
+    - uid: cf9c3pj7j3ocdf
+      title: LowAvailableMemory
+      condition: RAM_Condition
+      data:
+        - refId: RAM_Query
+          queryType: instant
+          relativeTimeRange:
+            from: 300
+            to: 0
+          datasourceUid: 9c86cd27-7f2a-4b2e-97c2-ad32bd7d6dba
+          model:
+            expr: ionos_dbaas_postgres_memory_available_bytes{postgres_cluster="{{ postgres_datasource_uid }}"} / ionos_dbaas_postgres_memory_total_bytes{postgres_cluster="{{ postgres_datasource_uid }}"}
+            hide: false
+            intervalMs: 1000
+            maxDataPoints: 43200
+            queryType: instant
+            refId: RAM_Query
+        - refId: RAM_Condition
+          relativeTimeRange:
+            from: 300
+            to: 0
+          datasourceUid: __expr__
+          model:
+            conditions:
+                - evaluator:
+                    params:
+                        - 0.2
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                        - RAM_Query
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+            datasource:
+                type: __expr__
+                uid: __expr__
+            expression: RAM_Query
+            hide: false
+            intervalMs: 1000
+            maxDataPoints: 43200
+            refId: RAM_Condition
+            type: classic_conditions
+      noDataState: OK
+      execErrState: OK
+      for: 5m
+      annotations:
+        summary: PostgreSQL memory usage exceeded threshold. Available memory dropped below 20%.
+      labels:
+        alertname: LowAvailableMemory
+        rc-target: prod
+        severity: critical
+      isPaused: false
+    
+    - uid: cf9c3pj7j3oxse
+      title: HighCPUUtilization
+      condition: C
+      data:
+        - refId: A
+          relativeTimeRange:
+            from: 600
+            to: 0
+          datasourceUid: 9c86cd27-7f2a-4b2e-97c2-ad32bd7d6dba
+          model:
+            datasource:
+              type: prometheus
+              uid: 9c86cd27-7f2a-4b2e-97c2-ad32bd7d6dba
+            editorMode: code
+            expr: ionos_dbaas_postgres_cpu_rate5m{postgres_cluster="{{ postgres_datasource_uid }}"}
+            instant: true
+            intervalMs: 1000
+            legendFormat: __auto
+            maxDataPoints: 43200
+            range: false
+            refId: A
+        - refId: C
+          datasourceUid: __expr__
+          model:
+            conditions:
+              - evaluator:
+                  params:
+                    - 0.8
+                  type: gt
+                operator:
+                  type: and
+                query:
+                  params:
+                    - A   
+                reducer:
+                  params: []
+                  type: last
+                type: query
+            datasource:
+              type: __expr__
+              uid: __expr__
+            expression: A
+            intervalMs: 1000
+            maxDataPoints: 43200
+            refId: C
+            type: threshold
+      noDataState: NoData
+      execErrState: Error
+      for: 5m
+      annotations:
+        summary: PostgreSQL CPU usage exceeded threshold. CPU utilization is above 80%
+      labels:
+        alertname: "HighCPUUtilization"
+        rc-target: dev
+        severity: critical
+      isPaused: false
+      notification_settings:
+        receiver: teamchat-infra
+
+    - uid: cf9c3pj7j3oxsme
+      title: HighTransactions
+      condition: Transactions_Condition
+      data:
+        - refId: Transactions_Query
+          queryType: range
+          relativeTimeRange:
+            from: 300
+            to: 0
+          datasourceUid: 9c86cd27-7f2a-4b2e-97c2-ad32bd7d6dba
+          model:
+            expr: ionos_dbaas_postgres_connections_count{postgres_cluster="{{ postgres_datasource_uid }}"}
+            hide: false
+            intervalMs: 1000
+            maxDataPoints: 43200
+            queryType: range
+            refId: Transactions_Query
+        - refId: Transactions_Condition
+          relativeTimeRange:
+            from: 300
+            to: 0
+          datasourceUid: __expr__
+          model:
+            conditions:
+                - evaluator:
+                    params:
+                        - 717
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                        - Transactions_Query
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+            datasource:
+                type: __expr__
+                uid: __expr__
+            expression: Transactions_Query
+            hide: false
+            intervalMs: 1000
+            maxDataPoints: 43200
+            refId: Transactions_Condition
+            type: classic_conditions
+      noDataState: OK
+      execErrState: OK
+      for: 5m
+      annotations:
+        summary: The number of PostgreSQL connections has exceeded the threshold of 717. Investigate high transaction or connection activity.
+      labels:
+        alertname: HighTransactions
+        rc-target: dev
+        severity: critical
+      isPaused: false
+
+    - uid: cf9c3pj7j3oxle
+      title: HighLoadAverage
+      condition: Load_Condition
+      data:
+        - refId: Load_Query
+          queryType: range
+          relativeTimeRange:
+            from: 300
+            to: 0
+          datasourceUid: 9c86cd27-7f2a-4b2e-97c2-ad32bd7d6dba
+          model:
+            expr: ionos_dbaas_postgres_load5{postgres_cluster="{{ postgres_datasource_uid }}"}
+            hide: false
+            intervalMs: 1000
+            maxDataPoints: 43200
+            queryType: range
+            refId: Load_Query
+        - refId: Load_Condition
+          relativeTimeRange:
+            from: 300
+            to: 0
+          datasourceUid: __expr__
+          model:
+            conditions:
+                - evaluator:
+                    params:
+                        - 4
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                        - Load_Query
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+            datasource:
+                type: __expr__
+                uid: __expr__
+            expression: Load_Query
+            hide: false
+            intervalMs: 1000
+            maxDataPoints: 43200
+            refId: Load_Condition
+            type: classic_conditions
+      noDataState: OK
+      execErrState: OK
+      for: 5m
+      annotations:
+        summary: PostgreSQL load average over 5 minutes exceeded the threshold of total CPU cores 4. Investigate high load.
+      labels:
+        alertname: HighLoadAverage
+        rc-target: dev
+        severity: critical
+      isPaused: false
+    
+    
+    - uid: cf9c3pj7j3oxcd
+      title: HighDiskIO
+      condition: Disk_IO_Condition
+      data:
+        - refId: Disk_IO_Query
+          queryType: range
+          relativeTimeRange:
+            from: 300
+            to: 0
+          datasourceUid: 9c86cd27-7F2A-4b2e-97c2-ad32bd7d6dba
+          model:
+            expr: ionos_dbaas_postgres_disk_io_time_weighted_seconds_rate5m{postgres_cluster="dc30204a-8033-461a-86ff-b3843a15f74"}
+            hide: false
+            intervalMs: 1000
+            maxDataPoints: 43200
+            queryType: range
+            refId: Disk_IO_Query
+        - refId: Disk_IO_Condition
+          relativeTimeRange:
+            from: 300
+            to: 0
+          datasourceUid: __expr__
+          model:
+            conditions:
+                - evaluator:
+                    params:
+                        - 0.8
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                        - Disk_IO_Query
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+            datasource:
+                type: __expr__
+                uid: __expr__
+            expression: Disk_IO_Query
+            hide: false
+            intervalMs: 1000
+            maxDataPoints: 43200
+            refId: Disk_IO_Condition
+            type: classic_conditions
+      noDataState: OK
+      execErrState: OK
+      for: 5m
+      annotations:
+        summary: PostgreSQL disk I/O utilization exceeded 80%. Investigate high disk activity.
+      labels:
+        alertname: HighDiskIO
+        rc-target: prod
+        severity: critical
+      isPaused: false
+    
+    - uid: cf9c3pj7j3oxke
+      title: LowStorageAvailability
+      condition: Storage_Condition
+      data:
+        - refId: Storage_Query
+          queryType: range
+          relativeTimeRange:
+            from: 300
+            to: 0
+          datasourceUid: 9c86cd27-7F2A-4b2e-97c2-ad32bd7d6dba
+          model:
+            expr: ionos_dbaas_postgres_storage_available_bytes{postgres_cluster="dc30204a-8033-461a-86ff-b3843a15f74"} / ionos_dbaas_postgres_storage_total_bytes{postgres_cluster="dc30204a-8033-461a-86ff-b3843a15f74"}
+            hide: false
+            intervalMs: 1000
+            maxDataPoints: 43200
+            queryType: range
+            refId: Storage_Query
+        - refId: Storage_Condition
+          relativeTimeRange:
+            from: 300
+            to: 0
+          datasourceUid: __expr__
+          model:
+            conditions:
+                - evaluator:
+                    params:
+                        - 0.2
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                        - Storage_Query
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+            datasource:
+                type: __expr__
+                uid: __expr__
+            expression: Storage_Query
+            hide: false
+            intervalMs: 1000
+            maxDataPoints: 43200
+            refId: Storage_Condition
+            type: classic_conditions
+      noDataState: OK
+      execErrState: OK
+      for: 5m
+      annotations:
+        summary: PostgreSQL storage utilization exceeded threshold. Free storage dropped below 20%.
+      labels:
+        alertname: LowStorageAvailability
+        rc-target: prod
+        severity: critical
+      isPaused: false
