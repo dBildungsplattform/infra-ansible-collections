@@ -56,6 +56,7 @@
       Authorization: "Basic {{ (grafana_adminUser + ':' + grafana_adminPassword) | b64encode }}"
     status_code: 200,201
     body_format: json
+    use_proxy: yes
     body:
       name: "{{ grafana_sa_name }}"
       role: "{{ grafana_sa_role }}"
