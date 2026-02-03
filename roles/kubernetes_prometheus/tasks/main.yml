@@ -49,7 +49,6 @@
     user: "{{ grafana_adminUser }}"
     password: "{{ grafana_adminPassword }}"
     force_basic_auth: yes
-    debug: yes
     status_code: 200,201
     body_format: json
     body:
