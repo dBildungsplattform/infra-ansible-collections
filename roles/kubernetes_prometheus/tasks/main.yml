@@ -39,34 +39,35 @@
   loop: "{{ prometheus_instances }}"
   tags: prometheus
 
-- debug:
-    msg: "Passwort-Länge: {{ grafana_adminPassword | length }}"
+# - debug:
+#     msg: "Passwort-Länge: {{ grafana_adminPassword | length }}"
 
-- debug:
-    msg: "{{ {'name': grafana_sa_name, 'role': grafana_sa_role} | to_json }}"
+# - debug:
+#     msg: "{{ {'name': grafana_sa_name, 'role': grafana_sa_role} | to_json }}"
 
-- name: Create service account (curl-like headers)
-  uri:
-    url: "{{ grafana_main_url }}/api/serviceaccounts"
-    method: POST
-    headers:
-      Content-Type: "application/json"
-      Accept: "application/json"
-      User-Agent: "curl/7.81.0"
-      Authorization: "Basic {{ (grafana_adminUser + ':' + grafana_adminPassword) | b64encode }}"
-    status_code: 200,201
-    body_format: json
-    use_proxy: yes
-    body:
-      name: "{{ grafana_sa_name }}"
-      role: "{{ grafana_sa_role }}"
-  environment:
-    http_proxy: "http://10.65.117.35:3128"
-    https_proxy: "http://10.65.117.35:3128"      
-  register: sa_response
+# - name: Create service account (curl-like headers)
+#   uri:
+#     url: "{{ grafana_main_url }}/api/serviceaccounts"
+#     method: POST
+#     headers:
+#       Content-Type: "application/json"
+#       Accept: "application/json"
+#       User-Agent: "curl/7.81.0"
+#       Authorization: "Basic {{ (grafana_adminUser + ':' + grafana_adminPassword) | b64encode }}"
+#     status_code: 200,201
+#     body_format: json
+#     use_proxy: yes
+#     body:
+#       name: "{{ grafana_sa_name }}"
+#       role: "{{ grafana_sa_role }}"
+#   environment:
+#     http_proxy: "http://10.65.117.35:3128"
+#     https_proxy: "http://10.65.117.35:3128"      
+#   register: sa_response
 
-- debug:
-    var: sa_response
+# - debug:
+#     var: sa_response
+#
 # - name: Create service account
 #   uri:
 #     url: "{{ grafana_main_url }}/api/serviceaccounts"
@@ -81,30 +82,30 @@
 #       role: "{{ grafana_sa_role }}"
 #   register: sa_response
 
-- name: Create token for service account
-  uri:
-    url: "{{ grafana_main_url }}/api/serviceaccounts/{{ sa_response.json.id }}/tokens"
-    method: POST
-    user: "{{ grafana_adminUser }}"
-    password: "{{ grafana_adminPassword }}"
-    force_basic_auth: true
-    status_code: 200,201
-    body_format: json
-    body:
-      name: "ansible-token"
-  register: token_response
+# - name: Create token for service account
+#   uri:
+#     url: "{{ grafana_main_url }}/api/serviceaccounts/{{ sa_response.json.id }}/tokens"
+#     method: POST
+#     user: "{{ grafana_adminUser }}"
+#     password: "{{ grafana_adminPassword }}"
+#     force_basic_auth: true
+#     status_code: 200,201
+#     body_format: json
+#     body:
+#       name: "ansible-token"
+#   register: token_response
 
-- name: Show token
-  debug:
-    msg: "Service Account Token: {{ token_response.json.key }}"
+# - name: Show token
+#   debug:
+#     msg: "Service Account Token: {{ token_response.json.key }}"
 
-- name: Create a team
-  community.grafana.grafana_team:
-    url: "{{ grafana_main_url }}"
-    grafana_api_key: "{{  }}"
-    name: "grafana_working_group"
-    email: "foo.bar@example.com"
-    state: present
+# - name: Create a team
+#   community.grafana.grafana_team:
+#     url: "{{ grafana_main_url }}"
+#     grafana_api_key: "{{  }}"
+#     name: "grafana_working_group"
+#     email: "foo.bar@example.com"
+#     state: present
 
 - include_tasks: grafana-dashboards.yml
   tags: prometheus
