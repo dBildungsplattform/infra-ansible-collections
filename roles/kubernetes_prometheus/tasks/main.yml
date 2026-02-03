@@ -48,12 +48,11 @@
 - name: Create service account (curl-like headers)
   uri:
     url: "{{ grafana_main_url }}/api/serviceaccounts"
+    proxy: "http://10.65.117.35:3128"
     method: POST
-    proxy: "{{ proxy_url | default(omit, true) }}"
-    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
     headers:
       Content-Type: "application/json"
-      Accept: "*/*"
+      Accept: "application/json"
       User-Agent: "curl/7.81.0"
       Authorization: "Basic {{ (grafana_adminUser + ':' + grafana_adminPassword) | b64encode }}"
     status_code: 200,201
