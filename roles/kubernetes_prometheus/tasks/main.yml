@@ -49,6 +49,8 @@
   uri:
     url: "{{ grafana_main_url }}/api/serviceaccounts"
     method: POST
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
     headers:
       Content-Type: "application/json"
       Accept: "*/*"
