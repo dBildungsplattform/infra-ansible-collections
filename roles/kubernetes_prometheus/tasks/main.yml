@@ -39,16 +39,13 @@
   loop: "{{ prometheus_instances }}"
   tags: prometheus
 
-- debug:
-    msg: "User: {{ grafana_adminUser }}, URL: {{ grafana_main_url }}, SA-Name: {{ grafana_sa_name }}, SA-Role: {{ grafana_sa_role }}"
-
-- name: Create service account
+- name: Create service account (mit explizitem Authorization-Header)
   uri:
     url: "{{ grafana_main_url }}/api/serviceaccounts"
     method: POST
-    user: "{{ grafana_adminUser }}"
-    password: "{{ grafana_adminPassword }}"
-    force_basic_auth: yes
+    headers:
+      Content-Type: "application/json"
+      Authorization: "Basic {{ (grafana_adminUser + ':' + grafana_adminPassword) | b64encode }}"
     status_code: 200,201
     body_format: json
     body:
@@ -56,13 +53,27 @@
       role: "{{ grafana_sa_role }}"
   register: sa_response
 
+# - name: Create service account
+#   uri:
+#     url: "{{ grafana_main_url }}/api/serviceaccounts"
+#     method: POST
+#     user: "{{ grafana_adminUser }}"
+#     password: "{{ grafana_adminPassword }}"
+#     force_basic_auth: true
+#     status_code: 200,201
+#     body_format: json
+#     body:
+#       name: "{{ grafana_sa_name }}"
+#       role: "{{ grafana_sa_role }}"
+#   register: sa_response
+
 - name: Create token for service account
   uri:
     url: "{{ grafana_main_url }}/api/serviceaccounts/{{ sa_response.json.id }}/tokens"
     method: POST
     user: "{{ grafana_adminUser }}"
     password: "{{ grafana_adminPassword }}"
-    force_basic_auth: yes
+    force_basic_auth: true
     status_code: 200,201
     body_format: json
     body:
