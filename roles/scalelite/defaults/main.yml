@@ -25,7 +25,7 @@ scalelite_certbot_resources:
     cpus: '0.1'
     memory: 50M
   limits:
-    cpus: '0.3'
+    cpus: '1'
     memory: 200M
 # scalelite_letsencrypt_email:
 
@@ -256,7 +256,7 @@ scalelite_clamav_log_path: "/var/log/clamav"
 scalelite_clamav_db_path: "/var/lib/clamav"
 scalelite_clamav_resources:
   limits:
-    cpus: '0.5'
+    cpus: '1'
     memory: '1.5G'
   reservations:
     cpus: '0.05'
