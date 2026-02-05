@@ -5,28 +5,8 @@
     repo_url: "https://grafana.github.io/helm-charts"
   check_mode: false
   changed_when: false
-  tags:
-    - loki
-    - loki-legacy
-  when: loki_legacy_enabled | default (false) or loki_s3_enabled
-  # If a task has no always or never tags, then the when condition will be evaluated to determine if the task should run.
-
-# Legacy Loki
-- name: Install legacy Loki
-  kubernetes.core.helm:
-    name: loki
-    chart_ref: grafana/loki-distributed
-    update_repo_cache: true
-    wait: true
-    wait_timeout: 10m
-    chart_version: "{{ loki_legacy_chart_version }}"
-    kubeconfig: "{{ kubeconfig }}"
-    release_namespace: monitoring
-    values:
-      "{{ loki_legacy_values }}"
-  tags:
-    - loki-legacy
-  when: loki_legacy_enabled | default (false)
+  tags: loki
+  when: loki_s3_enabled
 
 - name: Install Loki
   kubernetes.core.helm:
@@ -40,8 +20,7 @@
     release_namespace: monitoring
     values:
       "{{ loki_values }}"
-  tags:
-    - loki
+  tags: loki
   when: loki_s3_enabled
 
 # For working secret transfer a 1password secret is needed
@@ -64,7 +43,5 @@
           release: loki
       spec:
         itemPath: "vaults/{{ vault }}/items/loki"
-  tags:
-    - loki
-    - loki-legacy
-  when: loki_legacy_enabled | default (false) or loki_s3_enabled
+  tags: loki
+  when: loki_s3_enabled
