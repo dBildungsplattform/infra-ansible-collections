@@ -14,6 +14,7 @@ psql_db_users: []                             # List of users to create
 #   - name: Name of User
 #     password: Password of User
 #     privileges: Privileges for user (e.g. "CONNECT" or "ALL PRIVILEGES")
+#     allow_db_creation: Give the user rights to create new databases (optional, defaults to false)
 
 # optional: use of an existing secret - currently supports psql_name AND/OR psql_pass
 # existing_secret: Secret name
