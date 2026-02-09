@@ -4,7 +4,7 @@ owasp_docker_compose_folder: /etc/owasp
 owasp_docker_compose_owner: root
 owasp_docker_compose_group: root
 
-owasp_nginx_image: owasp/modsecurity-crs:4.12.0-nginx-alpine-202503230103
+owasp_nginx_image: owasp/modsecurity-crs:4.23.0-nginx-alpine-202602050102
 # Image requires 101 or /etc/nginx must be remounted
 owasp_nginx_user_id: 101
 # Group must have read access to certs
