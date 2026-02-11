@@ -47,7 +47,7 @@
     release_namespace: kube-system
     values:
       "{{ fluentbit_k8sevents_values }}"
-    when: "fluentbit_k8sevents_values is defined"
+  when: "fluentbit_k8sevents_values is defined"
 
 - name: Install Fluentbit (syslog VM)
   kubernetes.core.helm:
