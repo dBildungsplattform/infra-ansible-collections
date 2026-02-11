@@ -36,6 +36,19 @@
     values:
       "{{ fluentbit_values }}"
 
+- name: Install Fluentbit (k8s events)
+  kubernetes.core.helm:
+    name: fluent-bit-k8s-events
+    chart_ref: fluent/fluent-bit
+    update_repo_cache: true
+    wait: true
+    chart_version: "{{ fluentbit_chart_version }}"
+    kubeconfig: "{{ kubeconfig }}"
+    release_namespace: kube-system
+    values:
+      "{{ fluentbit_k8sevents_values }}"
+    when: "fluentbit_k8sevents_values is defined"
+
 - name: Install Fluentbit (syslog VM)
   kubernetes.core.helm:
     name: fluent-bit-syslog
