@@ -16,5 +16,4 @@
     kubeconfig: "{{ kubeconfig }}"
     release_namespace: monitoring
     values: "{{ kube_events_logger_values }}"
-  when: kube_events_logger_values is defined
   tags: kube-events
