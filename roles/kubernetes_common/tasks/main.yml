@@ -10,3 +10,4 @@
   when: fluentbit_enabled
 - import_tasks: nfs-provider.yml
 - import_tasks: kubernetes-event-exporter.yml
+  when: kubernetes_event_exporter_enabled
