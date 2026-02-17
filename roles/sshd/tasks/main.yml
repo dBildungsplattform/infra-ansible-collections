@@ -2,27 +2,26 @@
     - name: Generate SSH public keys list for SSHD Users
       set_fact:
         sshd_public_keys: |
-          {% set sshd_public_key_map = {} %}
-          {% for user in present_users %}
-            {% set canonical_hosts = [] %}
-            {% if user.permissions.sshd is defined %}
-              {% if user.permissions.sshd.hosts is string %}
-                {% set hosts = [ user.permissions.sshd.hosts ] %}
-              {% else %}
-                {% set hosts = user.permissions.sshd.hosts %}
-              {% endif %}
-              {% for host in hosts %}
-                {% set _ = canonical_hosts.extend(lookup('inventory_hostnames', host, wantlist=true)) %}
-              {% endfor %}
-              {% if inventory_hostname in canonical_hosts %}
-                {% set _ = sshd_public_key_map.update({user.name: lookup('file', 'sshkeys/' + user.name + '.pub')}) %}
-              {% endif %}
-            {% endif %}
-          {% endfor %}
+          {%- set sshd_public_key_map = {} -%}
+          {%- for user in present_users -%}
+            {%- set canonical_hosts = [] -%}
+            {%- if user.permissions.sshd is defined -%}
+              {%- if user.permissions.sshd.hosts is string -%}
+                {%- set hosts = [user.permissions.sshd.hosts] -%}
+              {%- else -%}
+                {%- set hosts = user.permissions.sshd.hosts -%}
+              {%- endif -%}
+              {%- for host in hosts -%}
+                {%- set _ = canonical_hosts.extend(lookup('inventory_hostnames', host, wantlist=true)) -%}
+              {%- endfor -%}
+              {%- if inventory_hostname in canonical_hosts -%}
+                {%- set _ = sshd_public_key_map.update({user.name: lookup('file', 'sshkeys/' + user.name + '.pub')}) -%}
+              {%- endif -%}
+            {%- endif -%}
+          {%- endfor -%}
           {{ sshd_public_key_map }}
       tags:
         - sshd
-
 
     - name: Create {{ sshd_namespace }} namespace
       kubernetes.core.k8s:
