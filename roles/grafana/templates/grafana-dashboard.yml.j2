@@ -8,5 +8,5 @@ spec:
     matchLabels:
       {{ grafana_label_selector }}
   folder: {{ item.folder }}
-  json: >
-    {{ item.json | indent(width=4, first=False) }}
+  json: |
+{{ item.json | indent(4, true) }}
