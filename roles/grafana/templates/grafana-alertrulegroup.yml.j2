@@ -22,7 +22,7 @@ spec:
             to: 0
           datasourceUid: 9c86cd27-7f2a-4b2e-97c2-ad32bd7d6dba
           model:
-            expr: ionos_dbaas_postgres_memory_available_bytes{postgres_cluster="{{ postgres_datasource_uid }}"} / ionos_dbaas_postgres_memory_total_bytes{postgres_cluster="{{ postgres_datasource_uid }}"}
+            expr: ionos_dbaas_postgres_memory_available_bytes{postgres_cluster="{{ erwin_portal_postgres_cluster_id }}"} / ionos_dbaas_postgres_memory_total_bytes{postgres_cluster="{{ erwin_portal_postgres_cluster_id }}"}
             hide: false
             intervalMs: 1000
             maxDataPoints: 43200
@@ -82,7 +82,7 @@ spec:
               type: prometheus
               uid: 9c86cd27-7f2a-4b2e-97c2-ad32bd7d6dba
             editorMode: code
-            expr: ionos_dbaas_postgres_cpu_rate5m{postgres_cluster="{{ postgres_datasource_uid }}"}
+            expr: ionos_dbaas_postgres_cpu_rate5m{postgres_cluster="{{ erwin_portal_postgres_cluster_id }}"}
             instant: true
             intervalMs: 1000
             legendFormat: __auto
@@ -139,7 +139,7 @@ spec:
             to: 0
           datasourceUid: 9c86cd27-7f2a-4b2e-97c2-ad32bd7d6dba
           model:
-            expr: ionos_dbaas_postgres_connections_count{postgres_cluster="{{ postgres_datasource_uid }}"}
+            expr: ionos_dbaas_postgres_connections_count{postgres_cluster="{{ erwin_portal_postgres_cluster_id }}"}
             hide: false
             intervalMs: 1000
             maxDataPoints: 43200
@@ -196,7 +196,7 @@ spec:
             to: 0
           datasourceUid: 9c86cd27-7f2a-4b2e-97c2-ad32bd7d6dba
           model:
-            expr: ionos_dbaas_postgres_load5{postgres_cluster="{{ postgres_datasource_uid }}"}
+            expr: ionos_dbaas_postgres_load5{postgres_cluster="{{ erwin_portal_postgres_cluster_id }}"}
             hide: false
             intervalMs: 1000
             maxDataPoints: 43200
@@ -253,7 +253,7 @@ spec:
             to: 0
           datasourceUid: 9c86cd27-7F2A-4b2e-97c2-ad32bd7d6dba
           model:
-            expr: ionos_dbaas_postgres_disk_io_time_weighted_seconds_rate5m{postgres_cluster="{{ postgres_datasource_uid }}"}
+            expr: ionos_dbaas_postgres_disk_io_time_weighted_seconds_rate5m{postgres_cluster="{{ erwin_portal_postgres_cluster_id }}"}
             hide: false
             intervalMs: 1000
             maxDataPoints: 43200
@@ -310,7 +310,7 @@ spec:
             to: 0
           datasourceUid: 9c86cd27-7F2A-4b2e-97c2-ad32bd7d6dba
           model:
-            expr: ionos_dbaas_postgres_storage_available_bytes{postgres_cluster="{{ postgres_datasource_uid }}"} / ionos_dbaas_postgres_storage_total_bytes{postgres_cluster="{{ postgres_datasource_uid }}"}
+            expr: ionos_dbaas_postgres_storage_available_bytes{postgres_cluster="{{ erwin_portal_postgres_cluster_id }}"} / ionos_dbaas_postgres_storage_total_bytes{postgres_cluster="{{ erwin_portal_postgres_cluster_id }}"}
             hide: false
             intervalMs: 1000
             maxDataPoints: 43200

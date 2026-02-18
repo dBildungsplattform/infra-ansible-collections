@@ -93,7 +93,7 @@ grafana_combined_datasources: []
   #   url: http://loki:80
 
 grafana_combined_alert: []
-postgres_datasource_uid: ""
+erwin_portal_postgres_cluster_id: ""
 postgres_alert_receiver: ""
 rc_target: ""
 postgres_thresholds:
