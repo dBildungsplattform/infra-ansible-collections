@@ -181,6 +181,9 @@
       logpath = {{ server_monitoring_nginx_logs_folder }}/error.log
       maxretry = 3
       bantime = 3600
+      backend = auto
+      banaction = iptables-multiport
+      chain = DOCKER-USER
     dest: /etc/fail2ban/jail.d/server-monitoring.local
     owner: root
     group: root

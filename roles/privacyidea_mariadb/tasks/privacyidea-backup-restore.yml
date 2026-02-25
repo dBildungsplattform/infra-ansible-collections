@@ -47,7 +47,7 @@
 
 - name: Create GPG public keys
   copy: 
-    content: "{{ lookup('dbildungscloud.onepwd.onepwd', secret_name='backup.gpg.keys.' + item + '.public', vault=vault) }}"
+    content: "{{ lookup('dbildungscloud.onepwd.onepwd', secret_name='backup.gpg.keys.' + item + '.public', vault=vault , session_shorthand='ansible-run', credentials=op_credentials) }}"
     dest: "/etc/duply/default/gpgkey.{{ item }}.pub"
     mode: "0400"
   loop: "{{ backup_gpg_key_names }}"
@@ -56,7 +56,7 @@
 
 - name: Create GPG private keys
   copy:  
-    content: "{{ lookup('dbildungscloud.onepwd.onepwd', secret_name='backup.gpg.keys.' + item + '.secret', vault=vault) }}"
+    content: "{{ lookup('dbildungscloud.onepwd.onepwd', secret_name='backup.gpg.keys.' + item + '.secret', vault=vault , session_shorthand='ansible-run', credentials=op_credentials) }}"
     dest: "/etc/duply/default/gpgkey.{{ item }}.asc"
     mode: "0400"
   loop: "{{ backup_gpg_key_names }}"
