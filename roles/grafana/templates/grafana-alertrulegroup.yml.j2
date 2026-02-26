@@ -22,7 +22,7 @@ spec:
             to: 0
           datasourceUid: 9c86cd27-7f2a-4b2e-97c2-ad32bd7d6dba
           model:
-            expr: ionos_dbaas_postgres_memory_available_bytes{postgres_cluster="{{ postgres_datasource_uid }}"} / ionos_dbaas_postgres_memory_total_bytes{postgres_cluster="{{ postgres_datasource_uid }}"}
+            expr: ionos_dbaas_postgres_memory_available_bytes{postgres_cluster="{{ erwin_portal_postgres_cluster_id }}"} / ionos_dbaas_postgres_memory_total_bytes{postgres_cluster="{{ erwin_portal_postgres_cluster_id }}"}
             hide: false
             intervalMs: 1000
             maxDataPoints: 43200
@@ -37,7 +37,7 @@ spec:
             conditions:
                 - evaluator:
                     params:
-                        - 0.2
+                        - {{ postgres_thresholds.memory }}
                     type: lt
                   operator:
                     type: and
@@ -61,10 +61,10 @@ spec:
       execErrState: OK
       for: 5m
       annotations:
-        summary: PostgreSQL memory usage exceeded threshold. Available memory dropped below 20%.
+        summary: "PostgreSQL available memory dropped below {{ (postgres_thresholds.memory * 100) | int }}%."
       labels:
         alertname: LowAvailableMemory
-        rc-target: prod
+        rc-target: "{{ rc_target }}"
         severity: critical
       isPaused: false
     
@@ -82,7 +82,7 @@ spec:
               type: prometheus
               uid: 9c86cd27-7f2a-4b2e-97c2-ad32bd7d6dba
             editorMode: code
-            expr: ionos_dbaas_postgres_cpu_rate5m{postgres_cluster="{{ postgres_datasource_uid }}"}
+            expr: ionos_dbaas_postgres_cpu_rate5m{postgres_cluster="{{ erwin_portal_postgres_cluster_id }}"}
             instant: true
             intervalMs: 1000
             legendFormat: __auto
@@ -95,7 +95,7 @@ spec:
             conditions:
               - evaluator:
                   params:
-                    - 0.8
+                    - {{ postgres_thresholds.cpu }}
                   type: gt
                 operator:
                   type: and
@@ -118,14 +118,15 @@ spec:
       execErrState: Error
       for: 5m
       annotations:
-        summary: PostgreSQL CPU usage exceeded threshold. CPU utilization is above 80%
+          summary: "PostgreSQL CPU usage exceeded threshold. CPU utilization is above {{ (postgres_thresholds.cpu * 100) | int }}%."
+
       labels:
         alertname: "HighCPUUtilization"
-        rc-target: dev
+        rc-target: "{{ rc_target }}"
         severity: critical
       isPaused: false
       notification_settings:
-        receiver: teamchat-infra
+        receiver: "{{ postgres_alert_receiver }}"
 
     - uid: cf9c3pj7j3oxsme
       title: HighTransactions
@@ -138,7 +139,7 @@ spec:
             to: 0
           datasourceUid: 9c86cd27-7f2a-4b2e-97c2-ad32bd7d6dba
           model:
-            expr: ionos_dbaas_postgres_connections_count{postgres_cluster="{{ postgres_datasource_uid }}"}
+            expr: ionos_dbaas_postgres_connections_count{postgres_cluster="{{ erwin_portal_postgres_cluster_id }}"}
             hide: false
             intervalMs: 1000
             maxDataPoints: 43200
@@ -153,7 +154,7 @@ spec:
             conditions:
                 - evaluator:
                     params:
-                        - 717
+                        - {{ postgres_thresholds.transactions }}
                     type: gt
                   operator:
                     type: and
@@ -177,10 +178,10 @@ spec:
       execErrState: OK
       for: 5m
       annotations:
-        summary: The number of PostgreSQL connections has exceeded the threshold of 717. Investigate high transaction or connection activity.
+        summary: The number of PostgreSQL connections has exceeded the threshold of "{{ postgres_thresholds.transactions }}". Investigate high transaction or connection activity.
       labels:
         alertname: HighTransactions
-        rc-target: dev
+        rc-target: "{{ rc_target }}"
         severity: critical
       isPaused: false
 
@@ -195,7 +196,7 @@ spec:
             to: 0
           datasourceUid: 9c86cd27-7f2a-4b2e-97c2-ad32bd7d6dba
           model:
-            expr: ionos_dbaas_postgres_load5{postgres_cluster="{{ postgres_datasource_uid }}"}
+            expr: ionos_dbaas_postgres_load5{postgres_cluster="{{ erwin_portal_postgres_cluster_id }}"}
             hide: false
             intervalMs: 1000
             maxDataPoints: 43200
@@ -210,7 +211,7 @@ spec:
             conditions:
                 - evaluator:
                     params:
-                        - 4
+                        - {{ postgres_thresholds.load }}
                     type: gt
                   operator:
                     type: and
@@ -234,14 +235,13 @@ spec:
       execErrState: OK
       for: 5m
       annotations:
-        summary: PostgreSQL load average over 5 minutes exceeded the threshold of total CPU cores 4. Investigate high load.
+        summary: "PostgreSQL load (5m avg) exceeded {{ postgres_thresholds.load }}. Investigate high load."
       labels:
         alertname: HighLoadAverage
-        rc-target: dev
+        rc-target: "{{ rc_target }}"
         severity: critical
       isPaused: false
-    
-    
+
     - uid: cf9c3pj7j3oxcd
       title: HighDiskIO
       condition: Disk_IO_Condition
@@ -253,7 +253,7 @@ spec:
             to: 0
           datasourceUid: 9c86cd27-7F2A-4b2e-97c2-ad32bd7d6dba
           model:
-            expr: ionos_dbaas_postgres_disk_io_time_weighted_seconds_rate5m{postgres_cluster="dc30204a-8033-461a-86ff-b3843a15f74"}
+            expr: ionos_dbaas_postgres_disk_io_time_weighted_seconds_rate5m{postgres_cluster="{{ erwin_portal_postgres_cluster_id }}"}
             hide: false
             intervalMs: 1000
             maxDataPoints: 43200
@@ -268,7 +268,7 @@ spec:
             conditions:
                 - evaluator:
                     params:
-                        - 0.8
+                        - {{ postgres_thresholds.disk_io }}
                     type: gt
                   operator:
                     type: and
@@ -292,10 +292,10 @@ spec:
       execErrState: OK
       for: 5m
       annotations:
-        summary: PostgreSQL disk I/O utilization exceeded 80%. Investigate high disk activity.
+        summary: "PostgreSQL disk I/O time (5m avg) exceeded {{ postgres_thresholds.disk_io }}s."
       labels:
         alertname: HighDiskIO
-        rc-target: prod
+        rc-target: "{{ rc_target }}"
         severity: critical
       isPaused: false
     
@@ -310,7 +310,7 @@ spec:
             to: 0
           datasourceUid: 9c86cd27-7F2A-4b2e-97c2-ad32bd7d6dba
           model:
-            expr: ionos_dbaas_postgres_storage_available_bytes{postgres_cluster="dc30204a-8033-461a-86ff-b3843a15f74"} / ionos_dbaas_postgres_storage_total_bytes{postgres_cluster="dc30204a-8033-461a-86ff-b3843a15f74"}
+            expr: ionos_dbaas_postgres_storage_available_bytes{postgres_cluster="{{ erwin_portal_postgres_cluster_id }}"} / ionos_dbaas_postgres_storage_total_bytes{postgres_cluster="{{ erwin_portal_postgres_cluster_id }}"}
             hide: false
             intervalMs: 1000
             maxDataPoints: 43200
@@ -325,7 +325,7 @@ spec:
             conditions:
                 - evaluator:
                     params:
-                        - 0.2
+                        - {{ postgres_thresholds.storage }}
                     type: lt
                   operator:
                     type: and
@@ -349,9 +349,9 @@ spec:
       execErrState: OK
       for: 5m
       annotations:
-        summary: PostgreSQL storage utilization exceeded threshold. Free storage dropped below 20%.
+          summary: "PostgreSQL free storage dropped below {{ (postgres_thresholds.storage * 100) | int }}%."
       labels:
         alertname: LowStorageAvailability
-        rc-target: prod
+        rc-target: "{{ rc_target }}"
         severity: critical
       isPaused: false

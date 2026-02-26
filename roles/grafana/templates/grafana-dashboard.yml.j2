@@ -6,7 +6,7 @@ metadata:
 spec:
   instanceSelector:
     matchLabels:
-      {{ grafana_label_selector }}
-  folder: {{ item.folder }}
-  json: >
-    {{ item.json | indent(width=4, first=False) }}
+{{ grafana_label_selector | to_nice_yaml | indent(6, true) }}
+  folder: "{{ item.folder }}"
+  json: |
+{{ ((item.json | to_nice_json) if (item.json is mapping or item.json is sequence) else item.json) | indent(4, true) }}
