@@ -41,8 +41,8 @@ server_monitoring_certbot_config: |
   work-dir = /certbot/work
 
 server_monitoring_nginx_enabled: true
-# nginxinc/nginx-unprivileged:1.24-alpine3.18
-server_monitoring_nginx_image: nginxinc/nginx-unprivileged@sha256:3096b8355b9d3494b913748b2c4674d76e31f3055bb28ec1435b31d14cc539f6
+# nginxinc/nginx-unprivileged:1.29.5-alpine3.23
+server_monitoring_nginx_image: nginxinc/nginx-unprivileged@sha256:07ac04b4a727a38e7360f3bd8bbe49a7433a8e2a3259dd403d2c982e5f4c7a1c
 server_monitoring_nginx_user_id: 101
 server_monitoring_nginx_group_id: 1800
 server_monitoring_nginx_healthcheck:
