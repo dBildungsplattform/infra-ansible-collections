@@ -59,6 +59,7 @@
             apt update -y
             apt-get install rclone -y
             rclone --version
+            apt-get install git -y
             apt-get install python3-setuptools -y
             apt-get install python3-pip -y
             python3 -m pip --version
