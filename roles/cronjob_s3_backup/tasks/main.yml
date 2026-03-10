@@ -56,7 +56,7 @@
           script.sh: |-
             #!/usr/bin/env bash
             echo "=== prepare backup pod ==="
-            apt update -y
+            apt update
             apt-get install rclone -y
             rclone --version
             apt-get install git -y
