@@ -77,7 +77,7 @@ scalelite_postgres_exporter_resources:
     memory: 10M
   limits:
     cpus: "0.5"
-    memory: "20M"
+    memory: "30M"
 # redis:7.2.4-alpine
 scalelite_redis_image: redis@sha256:c8bb255c3559b3e458766db810aa7b3c7af1235b204cfdb304e79ff388fe1a5a
 # Redis Docker image runs as redis:redis (999:1000)
