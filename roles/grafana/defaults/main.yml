@@ -1,9 +1,0 @@
----
-grafana_operator_values_overwrite:
-  crds:
-    # see https://grafana.github.io/grafana-operator/docs/installation/helm/#mutable-crds (support updating crds)
-    immutable: false
-
-grafana_operator_chart_version: v5.19.0
-grafana_operator_values: {}
-grafana_namespace: monitoring
