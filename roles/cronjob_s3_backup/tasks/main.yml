@@ -56,9 +56,10 @@
           script.sh: |-
             #!/usr/bin/env bash
             echo "=== prepare backup pod ==="
-            apt update -y
+            apt update
             apt-get install rclone -y
             rclone --version
+            apt-get install git -y
             apt-get install python3-setuptools -y
             apt-get install python3-pip -y
             python3 -m pip --version
