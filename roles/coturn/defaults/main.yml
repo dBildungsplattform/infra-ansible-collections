@@ -22,7 +22,7 @@ coturn_container_ports:
   - "{{ coturn_min_port }}-{{ coturn_max_port }}:{{ coturn_min_port }}-{{ coturn_max_port }}/udp"
 coturn_metrics_enabled: true
 coturn_verbose: true
-coturn_docker_image: coturn/coturn:4.6.2-r5-alpine
+coturn_docker_image: coturn/coturn:4.9.0-r0-alpine@sha256:229f87ef2428336ca2f4b4967a961cc6ad7aceb79277bc51f5a179606228d45f
 coturn_docker_compose_folder: /coturn
 coturn_docker_compose_folder_owner: 0
 coturn_docker_compose_folder_group: 0
