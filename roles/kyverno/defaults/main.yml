@@ -1,4 +1,15 @@
 ---
 kyverno_chart_version: "3.7.1"
 kyverno_namespace: "kyverno"
-kyverno_values: {}
+kyverno_values:
+  backgroundController:
+    rbac:
+      clusterRole:
+        extraResources:
+         - apiGroups:
+             - 'rbac.authorization.k8s.io/v1'
+           resources:
+             - rolebindings
+           verbs:
+             - get
+             - list
