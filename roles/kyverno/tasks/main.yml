@@ -1,28 +1,28 @@
 ---
-    - name: Create kyverno namespace
-      kubernetes.core.k8s:
-        state: present
-        kubeconfig: "{{ kubeconfig }}"
-        proxy: "{{ proxy_url | default(omit, true) }}"
-        proxy_headers: "{{ proxy_headers | default(omit, true) }}"
-        api_version: v1
-        name: "{{ kyverno_namespace }}"
-        kind: Namespace
+- name: Create kyverno namespace
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    api_version: v1
+    name: "{{ kyverno_namespace }}"
+    kind: Namespace
 
-    - name: Add kyverno chart repo
-      kubernetes.core.helm_repository:
-        name: kyverno
-        repo_url: https://kyverno.github.io/kyverno/
-      check_mode: false
-      changed_when: false
+- name: Add kyverno chart repo
+  kubernetes.core.helm_repository:
+    name: kyverno
+    repo_url: https://kyverno.github.io/kyverno/
+  check_mode: false
+  changed_when: false
 
-    - name: Install kyverno
-      kubernetes.core.helm:
-        name: "kyverno"
-        create_namespace: yes
-        chart_ref: kyverno/kyverno
-        wait: yes
-        chart_version: "{{ kyverno_chart_version }}"
-        kubeconfig: "{{ kubeconfig }}"
-        release_namespace: "kyverno"
-        values: "{{ kyverno_values }}"
+- name: Install kyverno
+  kubernetes.core.helm:
+    name: "kyverno"
+    create_namespace: yes
+    chart_ref: kyverno/kyverno
+    wait: yes
+    chart_version: "{{ kyverno_chart_version }}"
+    kubeconfig: "{{ kubeconfig }}"
+    release_namespace: "kyverno"
+    values: "{{ kyverno_values }}"
