@@ -1,14 +1,4 @@
 ---
-- name: Create kyverno namespace
-  kubernetes.core.k8s:
-    state: present
-    kubeconfig: "{{ kubeconfig }}"
-    proxy: "{{ proxy_url | default(omit, true) }}"
-    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
-    api_version: v1
-    name: "{{ kyverno_namespace }}"
-    kind: Namespace
-
 - name: Add kyverno chart repo
   kubernetes.core.helm_repository:
     name: kyverno
@@ -18,11 +8,11 @@
 
 - name: Install kyverno
   kubernetes.core.helm:
-    name: "kyverno"
+    name: kyverno
     create_namespace: yes
     chart_ref: kyverno/kyverno
     wait: yes
     chart_version: "{{ kyverno_chart_version }}"
     kubeconfig: "{{ kubeconfig }}"
-    release_namespace: "kyverno"
+    release_namespace: "{{ kyverno_namespace }}"
     values: "{{ kyverno_values }}"
