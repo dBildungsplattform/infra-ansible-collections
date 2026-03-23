@@ -251,7 +251,8 @@ scalelite_fail2ban_jail_path_greenlight: /etc/fail2ban/jail.d/greenlight_jail.lo
 scalelite_clamav_enabled: true
 scalelite_clamav_user_id: 2330
 scalelite_clamav_group_id: 2330
-scalelite_clamav_image: "clamav/clamav"
+scalelite_clamav_image_repository: "clamav/clamav"
+scalelite_clamav_image_tag: "1.5.2_base@sha256:2218f2b0b8734382ef84e49a9e8d996cd1a0f124fc9c3c8929b421826e05afe9"
 scalelite_clamav_log_path: "/var/log/clamav"
 scalelite_clamav_db_path: "/var/lib/clamav"
 scalelite_clamav_resources:

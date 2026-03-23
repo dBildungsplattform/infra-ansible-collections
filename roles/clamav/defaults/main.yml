@@ -1,4 +1,6 @@
-clamav_image: "clamav/clamav"  
+clamav_image: "" # deprecated
+clamav_image_repository: "clamav/clamav"
+clamav_image_tag: "1.5.2_base@sha256:2218f2b0b8734382ef84e49a9e8d996cd1a0f124fc9c3c8929b421826e05afe9"
 clamav_container_name: "clamav-scan"
 clamav_scan_directory: ""
 clamav_log_path: "/var/log/clamav"

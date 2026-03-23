@@ -404,7 +404,7 @@ services:
 
 {% if scalelite_clamav_enabled %}
   clamav-scan:
-    image: {{ scalelite_clamav_image }}
+    image: {{ scalelite_clamav_image | default(scalelite_clamav_image_repository ~ ':' ~ scalelite_clamav_image_tag, true) }}
     container_name: clamav
     read_only: true
     restart: unless-stopped
