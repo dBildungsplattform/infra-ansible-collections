@@ -99,9 +99,9 @@ scalelite_greenlight_redis_user: "greenlight"
 
 scalelite_nginx_image: >-
   {{
-    'owasp/modsecurity-crs:4.23.0-nginx-alpine-202602050102'
+    'owasp/modsecurity-crs:4.24.1-nginx-alpine-202603150103'
     if scalelite_modsec_enabled else 
-    'nginxinc/nginx-unprivileged:1.24-alpine3.18' 
+    'nginxinc/nginx-unprivileged:1.29-alpine3.23' 
   }}
 scalelite_nginx_user_id: 101
 scalelite_nginx_group_id: "{{ scalelite_certbot_group_id }}"
