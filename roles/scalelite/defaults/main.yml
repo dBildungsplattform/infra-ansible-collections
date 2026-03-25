@@ -5,7 +5,7 @@ scalelite_docker_compose_owner: root
 scalelite_docker_compose_group: root
 
 scalelite_certbot_image_repository: certbot/certbot
-scalelite_certbot_image_version_and_digest: "v5.4.0@sha256:c23159d30afdd9c97960578aa4654f5901de6cae394958f894074dedd55e599d"
+scalelite_certbot_image_tag "v5.4.0@sha256:c23159d30afdd9c97960578aa4654f5901de6cae394958f894074dedd55e599d"
 # Custom UID to run certbot as
 scalelite_certbot_user_id: 9999
 scalelite_certbot_group_id: 9999
