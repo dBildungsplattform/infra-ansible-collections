@@ -165,9 +165,10 @@ scalelite_web_concurrency: 4
 scalelite_rails_max_threads: 4
 scalelite_log_level: warn
 scalelite_multitenancy_enabled: true
-# v1.5.1.7-focal260-alpine
-scalelite_poller_image: "blindsidenetwks/scalelite@sha256:f534cb09f14a43f4581d899c0b4efe8ff69dcb851fd670ab90901c3620674d8f"
-scalelite_api_image: "blindsidenetwks/scalelite@sha256:2dbffceb9731e9ec0c2ab41f53332efdbbf73c31cdb3688b77bb52b8ef627582"
+
+scalelite_poller_image: blindsidenetwks/scalelite:v1.8.1-jammy300-alpine-poller@sha256:0b6a94a880fe584c5230c1caf0f582c42f9068da4b9ad3496cfe4cc05d2a7f94
+scalelite_api_image: blindsidenetwks/scalelite:v1.8.1-jammy300-alpine-api@sha256:8155cbda34057b84e431bb4595e48624a147a0fed546b1f180191cc50969b741
+
 # scalelite_secret_key_base:
 # scalelite_api_key
 scalelite_poller_resources:
