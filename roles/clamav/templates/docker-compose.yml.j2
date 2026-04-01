@@ -2,7 +2,7 @@ version: '3'
 
 services:
   clamav-scan:
-    image: {{ clamav_image }}
+    image: {{ clamav_image | default(clamav_image_repository ~ ':' ~ clamav_image_tag, true) }}
     read_only: true
     container_name: {{ clamav_container_name }}
     restart: unless-stopped
