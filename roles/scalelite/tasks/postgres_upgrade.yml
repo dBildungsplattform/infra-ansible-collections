@@ -47,8 +47,8 @@
     container: "db-temp-old"
     command: "/bin/bash -c \"pg_dumpall -U postgres > /dump/{{ scalelite_postgres_dump_name }}\""
     env:
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "{{ scalelite_postgres_password }}"
+      PGUSER: "postgres"
+      PGPASSWORD: "{{ scalelite_postgres_password }}"
 
 - name: "Remove temporary container"
   community.docker.docker_container:
@@ -100,8 +100,8 @@
     container: "db-temp-new"
     command: "/bin/bash -c \"psql < /dump/{{ scalelite_postgres_dump_name }}\""
     env:
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "{{ scalelite_postgres_password }}"
+      PGUSER: "postgres"
+      PGPASSWORD: "{{ scalelite_postgres_password }}"
 
 - name: "Remove temporary container again"
   community.docker.docker_container:
