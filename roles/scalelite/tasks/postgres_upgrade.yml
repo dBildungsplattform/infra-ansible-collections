@@ -32,7 +32,7 @@
       - "{{ scalelite_docker_volumes_folder }}/postgres_init/:/docker-entrypoint-initdb.d/"
     tmpfs:
       - "/var/run:rw,mode=777"
-    environment:
+    env:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "{{ scalelite_postgres_password }}"
       PGDATA: /var/lib/postgresql/data
@@ -82,7 +82,7 @@
       - "{{ scalelite_docker_volumes_folder }}/postgres_init/:/docker-entrypoint-initdb.d/"
     tmpfs:
       - "/var/run:rw,mode=777"
-    environment:
+    env:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "{{ scalelite_postgres_password }}"
       PGDATA: /var/lib/postgresql/data
