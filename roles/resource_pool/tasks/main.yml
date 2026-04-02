@@ -12,6 +12,7 @@
     AWS_SECRET_ACCESS_KEY: "{{ aws_secret_access_key }}"
     OS_ACCESS_KEY: "{{ os_access_key }}"
     OS_SECRET_KEY: "{{ os_secret_key }}"
+    OP_SERVICE_ACCOUNT_TOKEN: "{{ op_credentials.OP_SERVICE_ACCOUNT_TOKEN }}"
   community.general.terraform:
     project_path: '{{ playbook_dir }}/../terraform/resource-pools/{{ resource_pool }}'
     state: "{{ 'planned' if terraform_plan else 'present' }}"
