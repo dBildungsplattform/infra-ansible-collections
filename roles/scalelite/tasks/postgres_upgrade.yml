@@ -20,6 +20,9 @@
       0
       {% endif %}
 
+- debug:
+    var: scalelite_postgres_current_datadir_major
+
 - name: "Run postgres upgrade if required"
   ansible.builtin.include_tasks: "postgres_upgrade_main.yml"
   when:
