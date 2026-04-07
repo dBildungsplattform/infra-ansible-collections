@@ -57,18 +57,18 @@
 
 - name: "Get data dir content"
   ansible.builtin.find:
-    path: "{{ directory }}" 
+    path: "{{ scalelite_docker_volumes_folder }}/postgres_data/"
     file_type: any
-    hidden: yes
-  register: pg_datadir_content
+    hidden: true
+  register: scalelite_pg_datadir_content
 
 - name: "Clean data dir"
   ansible.builtin.file:
-    path: "{{ item.path }}" 
+    path: "{{ item.path }}"
     state: "absent"
   loop_control:
-    label: "{{ item.path }}" 
-  loop: "{{ pg_datadir_content.files}}"
+    label: "{{ item.path }}"
+  loop: "{{ scalelite_pg_datadir_content.files }}"
 
 
 - name: "Start new db with different hostname to populate data dir"
