@@ -47,7 +47,8 @@
     scalelite_postgres_upgrade_tables_query: "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name ASC;"
   community.docker.docker_container_exec:
     container: "db-temp-old"
-    command: "/bin/bash -c \"psql scalelite -c \\\"{{ scalelite_postgres_upgrade_tables_query }}\\\"\""
+    command: >-
+      /bin/bash -c "psql scalelite -c \"{{ scalelite_postgres_upgrade_tables_query }}\""
     env:
       PGUSER: "postgres"
       PGPASSWORD: "{{ scalelite_postgres_password }}"
@@ -56,7 +57,8 @@
 - name: "Create database dump"
   community.docker.docker_container_exec:
     container: "db-temp-old"
-    command: "/bin/bash -c \"pg_dumpall -U postgres | gzip -9 > /dump/all_{{ scalelite_postgres_dump_ts }}.dump.gz\""
+    command: >-
+      /bin/bash -c "pg_dumpall -U postgres | gzip -9 > /dump/all_{{ scalelite_postgres_dump_ts }}.dump.gz"
     env:
       PGUSER: "postgres"
       PGPASSWORD: "{{ scalelite_postgres_password }}"
@@ -109,7 +111,8 @@
 - name: "Restore database dump"
   community.docker.docker_container_exec:
     container: "db-temp-new"
-    command: "/bin/bash -c \"cat /dump/all_{{ scalelite_postgres_dump_ts }}.dump.gz | gunzip --stdout | psql\""
+    command: >-
+      /bin/bash -c "cat /dump/all_{{ scalelite_postgres_dump_ts }}.dump.gz | gunzip --stdout | psql"
     env:
       PGUSER: "postgres"
       PGPASSWORD: "{{ scalelite_postgres_password }}"
@@ -119,7 +122,8 @@
     scalelite_postgres_upgrade_tables_query: "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name ASC;"
   community.docker.docker_container_exec:
     container: "db-temp-new"
-    command: "/bin/bash -c \"psql scalelite -c \\\"{{ scalelite_postgres_upgrade_tables_query }}\\\"\""
+    command: >-
+      /bin/bash -c "psql scalelite -c \"{{ scalelite_postgres_upgrade_tables_query }}\""
     env:
       PGUSER: "postgres"
       PGPASSWORD: "{{ scalelite_postgres_password }}"
