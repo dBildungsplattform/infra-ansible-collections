@@ -62,7 +62,7 @@ scalelite_postgres_group_id: 70
 # this variable is parsed via regex (see vars/main.yml), please keep the scheme (or update the regex if required)
 scalelite_postgres_image: "postgres:18.3-alpine@sha256:4da1a4828be12604092fa55311276f08f9224a74a62dcb4708bd7439e2a03911"
 
-# to update the major version
+# to update the major version:
 # copy scalelite_postgres_image to scalelite_postgres_image_previous,
 # set scalelite_postgres_image to the new major version
 # and do a rollout. The logic detects the currently used version and does an upgrade if needed.
