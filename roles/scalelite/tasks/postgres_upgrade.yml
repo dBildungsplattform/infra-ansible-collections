@@ -1,109 +1,26 @@
 ---
+- name: "Check if PG_VERSION exists"
+  ansible.builtin.stat:
+    path: "{{ scalelite_docker_volumes_folder }}/postgres_data/PG_VERSION"
+  register: scalelite_postgres_version_file
 
-- name: Docker-compose down (db)
-  community.docker.docker_compose_v2:
-    project_src: "{{ scalelite_docker_compose_folder }}"
-    state: "stopped"
-    wait: true
-    services:
-      - db
+- name: "Read PG_VERSION"
+  ansible.builtin.slurp:
+    src: "{{ scalelite_docker_volumes_folder }}/postgres_data/PG_VERSION"
+  register: scalelite_postgres_version_file_content
+  when:
+    - "scalelite_postgres_version_file.stat.exists"
 
-- name: "Create copy of data dir, just to be sure"
-  ansible.builtin.copy:
-    src: "{{ scalelite_docker_volumes_folder }}/postgres_data/"
-    dest: "{{ scalelite_docker_volumes_folder }}/postgres_dump/data_dir_{{ '%Y-%m-%d_%H-%M-%S' | strftime(ansible_date_time.epoch) }}/"
-    remote_src: true
-
-- name: "Set fact for dump name"
+- name: "Set scalelite_postgres_current_datadir_major"
   ansible.builtin.set_fact:
-    scalelite_postgres_dump_name: "all_{{ '%Y-%m-%d_%H-%M-%S' | strftime(ansible_date_time.epoch) }}.dump"
+    scalelite_postgres_current_datadir_major: >-
+      {% if scalelite_postgres_version_file.stat.exists %}
+      {{ scalelite_postgres_version_file_content.content | b64decode | int }}
+      {% else %}
+      0
+      {% endif %}
 
-- name: "Start previous db with different hostname to create a dump"
-  community.docker.docker_container:
-    name: "db-temp-old"
-    image: "{{ scalelite_postgres_image_previous }}"
-    state: "healthy"
-    recreate: true
-    user: "{{ scalelite_postgres_user_id }}:{{ scalelite_postgres_group_id }}"
-    read_only: true
-    volumes:
-      - "{{ scalelite_docker_volumes_folder }}/postgres_dump/:/dump"
-      - "{{ scalelite_docker_volumes_folder }}/postgres_data/:/var/lib/postgresql/data"
-      - "{{ scalelite_docker_volumes_folder }}/postgres_init/:/docker-entrypoint-initdb.d/"
-    tmpfs:
-      - "/var/run:rw,mode=777"
-    env:
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "{{ scalelite_postgres_password }}"
-      PGDATA: /var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-
-- name: "Create database dump"
-  community.docker.docker_container_exec:
-    container: "db-temp-old"
-    command: "/bin/bash -c \"pg_dumpall -U postgres > /dump/{{ scalelite_postgres_dump_name }}\""
-    env:
-      PGUSER: "postgres"
-      PGPASSWORD: "{{ scalelite_postgres_password }}"
-
-- name: "Remove temporary container"
-  community.docker.docker_container:
-    name: "db-temp-old"
-    state: "absent"
-
-- name: "Get data dir content"
-  ansible.builtin.find:
-    path: "{{ scalelite_docker_volumes_folder }}/postgres_data/"
-    file_type: any
-    hidden: true
-  register: scalelite_pg_datadir_content
-
-- name: "Clean data dir"
-  ansible.builtin.file:
-    path: "{{ item.path }}"
-    state: "absent"
-  loop_control:
-    label: "{{ item.path }}"
-  loop: "{{ scalelite_pg_datadir_content.files }}"
-
-
-- name: "Start new db with different hostname to populate data dir"
-  community.docker.docker_container:
-    name: "db-temp-new"
-    image: "{{ scalelite_postgres_image }}"
-    state: "healthy"
-    recreate: true
-    user: "{{ scalelite_postgres_user_id }}:{{ scalelite_postgres_group_id }}"
-    read_only: true
-    volumes:
-      - "{{ scalelite_docker_volumes_folder }}/postgres_dump/:/dump"
-      - "{{ scalelite_docker_volumes_folder }}/postgres_data/:/var/lib/postgresql/data"
-      - "{{ scalelite_docker_volumes_folder }}/postgres_init/:/docker-entrypoint-initdb.d/"
-    tmpfs:
-      - "/var/run:rw,mode=777"
-    env:
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "{{ scalelite_postgres_password }}"
-      PGDATA: /var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-
-- name: "Restore database dump"
-  community.docker.docker_container_exec:
-    container: "db-temp-new"
-    command: "/bin/bash -c \"psql < /dump/{{ scalelite_postgres_dump_name }}\""
-    env:
-      PGUSER: "postgres"
-      PGPASSWORD: "{{ scalelite_postgres_password }}"
-
-- name: "Remove temporary container again"
-  community.docker.docker_container:
-    name: "db-temp-new"
-    state: "absent"
+- name: "Run postgres upgrade if required"
+  ansible.builtin.include_tasks: "postgres_upgrade_main.yml"
+  when:
+    - "scalelite_postgres_needs_upgrade"
