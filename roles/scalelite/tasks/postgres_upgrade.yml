@@ -74,7 +74,7 @@
 - name: "Start new db with different hostname to populate data dir"
   community.docker.docker_container:
     name: "db-temp-new"
-    image: "{{ scalelite_postgres_image_previous }}"
+    image: "{{ scalelite_postgres_image }}"
     state: "healthy"
     recreate: true
     user: "{{ scalelite_postgres_user_id }}:{{ scalelite_postgres_group_id }}"
