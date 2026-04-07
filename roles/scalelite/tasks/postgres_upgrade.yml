@@ -18,7 +18,7 @@
 - name: "Check if downgrade is planned"
   ansible.builtin.fail:
     msg: >
-      Postgres Downgrade ({{ scalelite_postgres_current_datadir_major }} -> {{ scalelite_postgres_current_image_major }}) is not supported!
+      A downgrade from {{ scalelite_postgres_current_datadir_major }} to {{ scalelite_postgres_current_image_major }} was requested. Downgrading Postgres major versions is not supported!
   when:
     - "scalelite_postgres_current_image_major != 0 and scalelite_postgres_current_image_major < scalelite_postgres_current_datadir_major"
 
