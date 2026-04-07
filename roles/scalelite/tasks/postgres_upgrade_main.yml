@@ -42,6 +42,17 @@
       timeout: 5s
       retries: 10
 
+- name: "List tables in database"
+  vars:
+    query: "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';"
+  community.docker.docker_container_exec:
+    container: "db-temp-old"
+    command: "/bin/bash -c \"psql scalelite -c \\\"{{ query }}\\\"\""
+    env:
+      PGUSER: "postgres"
+      PGPASSWORD: "{{ scalelite_postgres_password }}"
+  register: scalelite_postgres_tables_pre
+
 - name: "Create database dump"
   community.docker.docker_container_exec:
     container: "db-temp-old"
@@ -103,7 +114,24 @@
       PGUSER: "postgres"
       PGPASSWORD: "{{ scalelite_postgres_password }}"
 
+- name: "List tables in database"
+  vars:
+    query: "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';"
+  community.docker.docker_container_exec:
+    container: "db-temp-new"
+    command: "/bin/bash -c \"psql scalelite -c \\\"{{ query }}\\\"\""
+    env:
+      PGUSER: "postgres"
+      PGPASSWORD: "{{ scalelite_postgres_password }}"
+  register: scalelite_postgres_tables_post
+
 - name: "Remove temporary container again"
   community.docker.docker_container:
     name: "db-temp-new"
     state: "absent"
+
+- name: "Check result"
+  ansible.builtin.debug:
+    msg: |
+      {{ scalelite_postgres_tables_pre.stdout }}
+      {{ scalelite_postgres_tables_post.stdout }}

@@ -15,10 +15,24 @@
   ansible.builtin.set_fact:
     scalelite_postgres_current_datadir_major: "{{ scalelite_postgres_version_file.stat.exists | ternary((scalelite_postgres_version_file_content['content'] | b64decode | trim | int), 0) }}"
 
-- debug:
-    var: scalelite_postgres_current_datadir_major
+- name: "Check if downgrade is planned"
+  ansible.builtin.fail:
+    msg: >
+      Postgres Downgrade ({{ scalelite_postgres_current_datadir_major }} -> {{ scalelite_postgres_current_image_major }}) is not supported!
+  when:
+    - "scalelite_postgres_current_image_major != 0 and scalelite_postgres_current_image_major < scalelite_postgres_current_datadir_major"
+
+- name: "Check if upgrade is allowed"
+  ansible.builtin.fail:
+    msg: >
+      Postgres upgrade ({{ scalelite_postgres_current_datadir_major }} -> {{ scalelite_postgres_current_image_major }}) needed,
+      but scalelite_postgres_major_upgrade_allowed is not 'true'
+  when:
+    - "scalelite_postgres_needs_upgrade"
+    - "not scalelite_postgres_major_upgrade_allowed"
 
 - name: "Run postgres upgrade if required"
   ansible.builtin.include_tasks: "postgres_upgrade_main.yml"
   when:
     - "scalelite_postgres_needs_upgrade"
+    - "scalelite_postgres_major_upgrade_allowed"

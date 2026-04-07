@@ -66,7 +66,7 @@ scalelite_postgres_image: "postgres:18.3-alpine@sha256:4da1a4828be12604092fa5531
 # set scalelite_postgres_image to the new major version
 # and do a rollout. The logic detects the currently used version and does an upgrade if needed.
 scalelite_postgres_image_previous: "postgres:14.8-alpine@sha256:fa48198f8c88d5563e7ff3f6d5d269be58a7571e4464d70e4cb6c0987d903ba3"
-scalelite_postgres_major_upgrade: true
+scalelite_postgres_major_upgrade_allowed: true
 
 scalelite_postgres_resources:
   reservations:
