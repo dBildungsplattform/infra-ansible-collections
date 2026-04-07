@@ -234,7 +234,7 @@
 
 - name: Postgres upgrade
   include_tasks: postgres_upgrade.yml
-  when: scalelite_postgres_major_upgrade
+  when: scalelite_postgres_needs_upgrade
 
 - name: Docker-Compose
   include_tasks: docker_compose.yml
