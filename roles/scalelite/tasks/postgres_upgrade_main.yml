@@ -82,7 +82,7 @@
   loop: "{{ scalelite_pg_datadir_content.files }}"
 
 
-- name: "Start new db with different hostname to populate data dir"
+- name: "Start new dbms version with different hostname to populate data dir"
   community.docker.docker_container:
     name: "db-temp-new"
     image: "{{ scalelite_postgres_image }}"
