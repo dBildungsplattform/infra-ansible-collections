@@ -18,7 +18,7 @@
     dest: "{{ scalelite_docker_volumes_folder }}/postgres_dump/data_dir_{{ scalelite_postgres_dump_ts }}/"
     remote_src: true
 
-- name: "Start previous db with different hostname to create a dump"
+- name: "Start previous dbms version with different hostname to create a dump"
   community.docker.docker_container:
     name: "db-temp-old"
     image: "{{ scalelite_postgres_image_previous }}"
