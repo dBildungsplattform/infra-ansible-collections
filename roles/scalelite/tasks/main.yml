@@ -232,6 +232,9 @@
     mode: "0400"
   notify: Restart bbb-autoscaler
 
+- name: Postgres upgrade check
+  include_tasks: postgres_upgrade_pre.yml
+
 - name: Postgres upgrade
   include_tasks: postgres_upgrade.yml
   when: scalelite_postgres_needs_upgrade
