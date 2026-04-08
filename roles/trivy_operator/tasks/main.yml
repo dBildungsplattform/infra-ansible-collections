@@ -3,6 +3,7 @@
   kubernetes.core.helm_repository:
     name: aqua
     repo_url: "https://aquasecurity.github.io/helm-charts/"
+  when: not trivy_operator_use_oci_repo
   check_mode: false
   changed_when: false
   tags: trivy
@@ -20,13 +21,12 @@
 
 - name: Install Trivy Operator
   kubernetes.core.helm:
-    name: trivy-operator
-    chart_ref: aqua/trivy-operator
-    update_repo_cache: true
-    chart_version: "{{ trivy_operator_chart_version }}"
+    name: "{{ trivy_operator_release_name }}"
+    chart_ref: "{{ trivy_operator_chart_ref }}"
+    chart_version: "{{ trivy_operator_helm_chart_version }}"
+    update_repo_cache: "{{ trivy_operator_update_repo_cache }}"
     kubeconfig: "{{ kubeconfig }}"
     release_namespace: "{{ trivy_operator_release_namespace }}"
     wait: true
-    values:
-      "{{ trivy_values }}"
+    values: "{{ trivy_values }}"
   tags: trivy
