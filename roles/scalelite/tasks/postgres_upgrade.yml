@@ -1,0 +1,38 @@
+---
+- name: "Check if PG_VERSION exists"
+  ansible.builtin.stat:
+    path: "{{ scalelite_docker_volumes_folder }}/postgres_data/PG_VERSION"
+  register: scalelite_postgres_version_file
+
+- name: "Read PG_VERSION"
+  ansible.builtin.slurp:
+    src: "{{ scalelite_docker_volumes_folder }}/postgres_data/PG_VERSION"
+  register: scalelite_postgres_version_file_content
+  when:
+    - "scalelite_postgres_version_file.stat.exists"
+
+- name: "Set scalelite_postgres_current_datadir_major"
+  ansible.builtin.set_fact:
+    scalelite_postgres_current_datadir_major: "{{ scalelite_postgres_version_file.stat.exists | ternary((scalelite_postgres_version_file_content['content'] | b64decode | trim | int), 0) }}"
+
+- name: "Check if downgrade is planned"
+  ansible.builtin.fail:
+    msg: >
+      A downgrade from {{ scalelite_postgres_current_datadir_major }} to {{ scalelite_postgres_current_image_major }} was requested. Downgrading Postgres major versions is not supported!
+  when:
+    - "scalelite_postgres_current_image_major != 0 and scalelite_postgres_current_image_major < scalelite_postgres_current_datadir_major"
+
+- name: "Check if upgrade is allowed"
+  ansible.builtin.fail:
+    msg: >
+      Postgres upgrade ({{ scalelite_postgres_current_datadir_major }} -> {{ scalelite_postgres_current_image_major }}) needed,
+      but scalelite_postgres_major_upgrade_allowed is not 'true'
+  when:
+    - "scalelite_postgres_needs_upgrade"
+    - "not scalelite_postgres_major_upgrade_allowed"
+
+- name: "Run postgres upgrade if required"
+  ansible.builtin.include_tasks: "postgres_upgrade_main.yml"
+  when:
+    - "scalelite_postgres_needs_upgrade"
+    - "scalelite_postgres_major_upgrade_allowed"
