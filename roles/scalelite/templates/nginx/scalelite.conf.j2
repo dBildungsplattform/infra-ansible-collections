@@ -32,6 +32,12 @@ server {
   ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
   ssl_prefer_server_ciphers off;
 
+{% if scalelite_redirect_root %}
+  location = / {
+    return 301 {{ scalelite_redirect_url }};
+  }
+{% endif %}
+
   location / {
     proxy_pass http://scalelite-api:3000;
 
@@ -70,10 +76,12 @@ server {
   ssl_protocols TLSv1.2 TLSv1.3;
   ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
   ssl_prefer_server_ciphers off;
-
+{% if instance.redirect_root | default(false) %}
+{% set instance_redirect_url = instance.redirect_url | default('https://$host/greenlight') %}
   location = / {
-    return  301 https://$host/greenlight;
+    return 301 {{ instance_redirect_url }};
   }
+{% endif %}
   {{ lookup('template', 'nginx/scalelite/greenlight.nginx.j2',template_vars={'scalelite_greenlight_container': 'greenlight-' ~ instance.name}) | indent(2) }}
 }
 {% endfor %}
