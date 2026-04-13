@@ -186,6 +186,8 @@ scalelite_api_resources:
     memory: "{{ ansible_facts['memory_mb']['real']['total'] / 2 }}M"
 
 scalelite_host: "{{ inventory_hostname }}"
+scalelite_redirect_root: false
+scalelite_redirect_url: "https://$host/greenlight"
 scalelite_basedomain: "{{ inventory_hostname }}"
 scalelite_letsencrypt_folder: /etc/letsencrypt
 scalelite_terraform_workspace: prod
