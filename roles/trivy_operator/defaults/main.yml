@@ -1,0 +1,15 @@
+---
+trivy_operator_release_name: trivy-operator
+trivy_operator_release_namespace: security
+trivy_operator_chart_version: "0.31.0@sha256:a8df25616e3af9a9e516d16c7a223274d5cf3584baa8b46396381f075ddc0cd4"
+
+# If the OCI repo is not used, the chart version must be overwritten as non-OCI doesn't support digest
+trivy_operator_use_oci_repo: true
+trivy_operator_oci_repo: "oci://ghcr.io/aquasecurity/helm-charts/trivy-operator"
+
+# For OCI repos digests can only be set in chart_ref
+trivy_operator_chart_ref: "{{ trivy_operator_use_oci_repo | ternary(trivy_operator_oci_repo ~ ':' ~ trivy_operator_chart_version, 'aqua/trivy-operator') }}"
+trivy_operator_helm_chart_version: "{{ trivy_operator_use_oci_repo | ternary(omit, trivy_operator_chart_version) }}"
+trivy_operator_update_repo_cache: "{{ not trivy_operator_use_oci_repo | bool }}"
+
+trivy_values: {}
