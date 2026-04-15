@@ -1,0 +1,4 @@
+delete_nodepools_retries: 1
+delete_nodepools_retry_delay: 30
+delete_nodepools_timeout: 3600
+delete_nodepools_wait: true

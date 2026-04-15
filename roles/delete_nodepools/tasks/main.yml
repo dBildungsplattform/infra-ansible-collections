@@ -29,6 +29,10 @@
     password: "{{ ionos_password | default(omit) }}"
     token: "{{ ionos_token | default(omit) }}"
     state: absent
+    wait: "{{ delete_nodepools_wait }}"
+    wait_timeout: "{{ delete_nodepools_timeout }}"
+  retries: "{{ delete_nodepools_retries }}"
+  delay: "{{ delete_nodepools_retry_delay }}"
   loop: "{{ nodepools_to_delete }}"
   loop_control:
     loop_var: pool_id
