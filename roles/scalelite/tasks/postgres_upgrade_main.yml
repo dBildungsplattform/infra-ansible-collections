@@ -1,0 +1,152 @@
+---
+
+- name: Docker-compose down (db)
+  community.docker.docker_compose_v2:
+    project_src: "{{ scalelite_docker_compose_folder }}"
+    state: "stopped"
+    wait: true
+    services:
+      - db
+
+- name: "Set fact for dump name"
+  ansible.builtin.set_fact:
+    scalelite_postgres_dump_ts: "{{ lookup('pipe', 'date +%Y-%m-%d_%H-%M-%S') }}"
+
+- name: "Create copy of data dir, just to be sure"
+  ansible.builtin.copy:
+    src: "{{ scalelite_docker_volumes_folder }}/postgres_data/"
+    dest: "{{ scalelite_docker_volumes_folder }}/postgres_dump/data_dir_{{ scalelite_postgres_dump_ts }}/"
+    remote_src: true
+
+- name: "Start previous dbms version with different hostname to create a dump"
+  community.docker.docker_container:
+    name: "db-temp-old"
+    image: "{{ scalelite_postgres_image_previous }}"
+    state: "healthy"
+    recreate: true
+    user: "{{ scalelite_postgres_user_id }}:{{ scalelite_postgres_group_id }}"
+    read_only: true
+    volumes:
+      - "{{ scalelite_docker_volumes_folder }}/postgres_dump/:/dump"
+      - "{{ scalelite_docker_volumes_folder }}/postgres_data/:/var/lib/postgresql/data"
+      - "{{ scalelite_docker_volumes_folder }}/postgres_init/:/docker-entrypoint-initdb.d/"
+    tmpfs:
+      - "/var/run:rw,mode=777"
+    env:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "{{ scalelite_postgres_password }}"
+      PGDATA: /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+- name: "List tables in database"
+  vars:
+    scalelite_postgres_upgrade_tables_query: "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name ASC;"
+  community.docker.docker_container_exec:
+    container: "db-temp-old"
+    command: >-
+      /bin/bash -c "psql scalelite -c \"{{ scalelite_postgres_upgrade_tables_query }}\""
+    env:
+      PGUSER: "postgres"
+      PGPASSWORD: "{{ scalelite_postgres_password }}"
+  register: scalelite_postgres_tables_pre
+
+- name: "Create database dump"
+  community.docker.docker_container_exec:
+    container: "db-temp-old"
+    command: >-
+      /bin/bash -c "pg_dumpall -U postgres | gzip -9 > /dump/all_{{ scalelite_postgres_dump_ts }}.dump.gz"
+    env:
+      PGUSER: "postgres"
+      PGPASSWORD: "{{ scalelite_postgres_password }}"
+
+- name: "Remove temporary container"
+  community.docker.docker_container:
+    name: "db-temp-old"
+    state: "absent"
+
+- name: "Get data dir content"
+  ansible.builtin.find:
+    path: "{{ scalelite_docker_volumes_folder }}/postgres_data/"
+    file_type: any
+    hidden: true
+  register: scalelite_pg_datadir_content
+
+- name: "Clean data dir"
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: "absent"
+  loop_control:
+    label: "{{ item.path }}"
+  loop: "{{ scalelite_pg_datadir_content.files }}"
+
+
+- name: "Start new dbms version with different hostname to populate data dir"
+  community.docker.docker_container:
+    name: "db-temp-new"
+    image: "{{ scalelite_postgres_image }}"
+    state: "healthy"
+    recreate: true
+    user: "{{ scalelite_postgres_user_id }}:{{ scalelite_postgres_group_id }}"
+    read_only: true
+    volumes:
+      - "{{ scalelite_docker_volumes_folder }}/postgres_dump/:/dump"
+      - "{{ scalelite_docker_volumes_folder }}/postgres_data/:/var/lib/postgresql/data"
+      - "{{ scalelite_docker_volumes_folder }}/postgres_init/:/docker-entrypoint-initdb.d/"
+    tmpfs:
+      - "/var/run:rw,mode=777"
+    env:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "{{ scalelite_postgres_password }}"
+      PGDATA: /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+- name: "Restore database dump"
+  community.docker.docker_container_exec:
+    container: "db-temp-new"
+    command: >-
+      /bin/bash -c "cat /dump/all_{{ scalelite_postgres_dump_ts }}.dump.gz | gunzip --stdout | psql"
+    env:
+      PGUSER: "postgres"
+      PGPASSWORD: "{{ scalelite_postgres_password }}"
+
+- name: "List tables in database"
+  vars:
+    scalelite_postgres_upgrade_tables_query: "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name ASC;"
+  community.docker.docker_container_exec:
+    container: "db-temp-new"
+    command: >-
+      /bin/bash -c "psql scalelite -c \"{{ scalelite_postgres_upgrade_tables_query }}\""
+    env:
+      PGUSER: "postgres"
+      PGPASSWORD: "{{ scalelite_postgres_password }}"
+  register: scalelite_postgres_tables_post
+
+- name: "Remove temporary container again"
+  community.docker.docker_container:
+    name: "db-temp-new"
+    state: "absent"
+
+- name: "Check result"
+  ansible.builtin.fail:
+    msg: |
+      Database content pre/post does not match!
+      Pre:
+      {{ scalelite_postgres_tables_pre.stdout }}
+
+      Post:
+      {{ scalelite_postgres_tables_post.stdout }}
+  when:
+    - "scalelite_postgres_tables_pre.stdout | trim != scalelite_postgres_tables_post.stdout | trim"
+
+- name: "Remove temporary data dir copy"
+  ansible.builtin.file:
+    path: "{{ scalelite_docker_volumes_folder }}/postgres_dump/data_dir_{{ scalelite_postgres_dump_ts }}/"
+    state: "absent"

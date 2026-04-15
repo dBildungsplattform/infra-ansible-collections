@@ -30,6 +30,10 @@
       mode: "0700"
       owner: "{{ scalelite_postgres_user_id }}"
       group: "{{ scalelite_postgres_group_id }}"
+    - path: "{{ scalelite_docker_volumes_folder }}/postgres_dump"
+      mode: "0700"
+      owner: "{{ scalelite_postgres_user_id }}"
+      group: "{{ scalelite_postgres_group_id }}"
     - path: "{{ scalelite_docker_volumes_folder }}/redis_data"
       mode: "0700"
       owner: "{{ scalelite_redis_user_id }}"
@@ -227,6 +231,9 @@
     group: "{{ scalelite_autoscaler_group_id }}"
     mode: "0400"
   notify: Restart bbb-autoscaler
+
+- name: Postgres upgrade
+  include_tasks: postgres_upgrade.yml
 
 - name: Docker-Compose
   include_tasks: docker_compose.yml

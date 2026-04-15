@@ -1,0 +1,2 @@
+scalelite_postgres_current_image_major: "{{ scalelite_postgres_image | regex_search('.+?:(\\d+).*', '\\1') | first | int }}"
+scalelite_postgres_needs_upgrade: "{{ scalelite_postgres_current_datadir_major != 0 and scalelite_postgres_current_datadir_major < scalelite_postgres_current_image_major }}"
