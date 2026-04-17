@@ -1,4 +1,4 @@
 ---
 kyverno_chart_version: "3.7.1"
 kyverno_namespace: "kyverno"
-
+kverno_values: {}
