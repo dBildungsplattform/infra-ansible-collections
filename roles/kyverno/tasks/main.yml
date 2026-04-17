@@ -15,4 +15,4 @@
     chart_version: "{{ kyverno_chart_version }}"
     kubeconfig: "{{ kubeconfig }}"
     release_namespace: "{{ kyverno_namespace }}"
-    values: "{{ kyverno_values }}"
+    values: "{{ kyverno_values | default(omit) }}"
