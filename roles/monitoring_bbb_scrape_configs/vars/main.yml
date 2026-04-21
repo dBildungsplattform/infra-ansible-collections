@@ -1,0 +1,141 @@
+---
+bbb_datacenter_ionos_sd_configs: |
+  {% for id in bbb_datacenter_ids %}
+  - datacenterID: "{{ id }}"
+    port: {{ 443 if bbb_ebbba_exporters else 9688 }}
+    refresh_interval: 15s
+    authorization:
+      type: Bearer
+      credentials:
+        name: "{{ bbb_ionos_bearer_token_secret_name }}"
+        key: token
+    # basic_auth:
+    #   username:
+    #     name: "{{ bbb_ionos_bearer_token_secret_name }}"
+    #     key: username
+    #   password:
+    #     name: "{{ bbb_ionos_bearer_token_secret_name }}"
+    #     key: "{{ bbb_ionos_basic_auth_secret_key }}"
+  {% endfor %}
+bbb_turn_coturn_datacenter_ionos_sd_configs: |
+  {% for id in bbb_datacenter_ids %}
+  - datacenterID: "{{ id }}"
+    port: 9642
+    refresh_interval: 15s
+    authorization:
+      type: Bearer
+      credentials:
+        name: "{{ bbb_ionos_bearer_token_secret_name }}"
+        key: token
+  {% endfor %}
+bbb_turn_node_datacenter_ionos_sd_configs: |
+  {% for id in bbb_datacenter_ids %}
+  - datacenterID: "{{ id }}"
+    port: 9100
+    refresh_interval: 15s
+    authorization:
+      type: Bearer
+      credentials:
+        name: "{{ bbb_ionos_bearer_token_secret_name }}"
+        key: token
+  {% endfor %}
+bbb_turn_node_datacenter_ionos_sd_configs_cadvisor: |
+  {% for id in bbb_datacenter_ids %}
+  - datacenterID: "{{ id }}"
+    port: 9300
+    refresh_interval: 15s
+    authorization:
+      type: Bearer
+      credentials:
+        name: "{{ bbb_ionos_bearer_token_secret_name }}"
+        key: token
+  {% endfor %}
+
+bbb_ionos_basic_auth_secret_mount_path: "/etc/bbb/{{ bbb_instance_name }}-ionos"
+bbb_ionos_basic_auth:
+  username: "{{ bbb_prometheus_ionos_username }}"
+  password_file: "{{ bbb_ionos_basic_auth_secret_mount_path }}/{{ bbb_ionos_basic_auth_secret_key }}"
+
+bbb_scrape_relabel_configs_ionos_bbb:
+  - sourceLabels: [__meta_ionos_server_name]
+    regex: "bbb-.*"
+    action: keep
+  - sourceLabels: [__meta_ionos_server_state]
+    regex: "RUNNING"
+    action: keep
+  - sourceLabels: [__address__]
+    targetLabel: __tmp_metrics_port
+    regex: "([^:]+)(:[0-9]+)?"
+    replacement: "${2}"
+  - sourceLabels: [__meta_ionos_server_name, __tmp_metrics_port]
+    targetLabel: __address__
+    separator: ""
+  - sourceLabels: [__address__]
+    targetLabel: instance
+    regex: "([^:]+)(:[0-9]+)?"
+    replacement: "${1}"
+  - targetLabel: tenant
+    replacement: "{{ tenant }}"
+
+bbb_scrape_relabel_configs_ionos_turn:
+  - sourceLabels: [__meta_ionos_server_name]
+    regex: "turn-.*"
+    action: keep
+  - sourceLabels: [__meta_ionos_server_state]
+    regex: "RUNNING"
+    action: keep
+  - sourceLabels: [__address__]
+    targetLabel: __tmp_metrics_port
+    regex: "([^:]+)(:[0-9]+)?"
+    replacement: "${2}"
+  - sourceLabels: [__meta_ionos_server_name, __tmp_metrics_port]
+    targetLabel: __address__
+    separator: ""
+  - sourceLabels: [__address__]
+    targetLabel: instance
+    regex: "([^:]+)(:[0-9]+)?"
+    replacement: "${1}"
+  - targetLabel: tenant
+    replacement: "{{ tenant }}"
+
+bbb_scrape_relabel_configs_scalelite:
+  - sourceLabels: [__address__]
+    targetLabel: instance
+    regex: "([^:]+)(:[0-9]+)?"
+    replacement: "management.${1}"
+  - targetLabel: tenant
+    replacement: "{{ tenant }}"
+
+bbb_scrape_relabel_configs_owasp:
+  - sourceLabels: [__address__]
+    targetLabel: instance
+    regex: "([^:]+)(:[0-9]+)?"
+    replacement: "${1}"
+  - targetLabel: tenant
+    replacement: "{{ tenant }}"
+
+bbb_scrape_relabel_configs_freeswitch:
+  - sourceLabels: [__address__]
+    targetLabel: instance
+    regex: "([^:]+)(:[0-9]+)?"
+    replacement: "${1}"
+  - targetLabel: tenant
+    replacement: "{{ tenant }}"
+
+bbb_scrape_relabel_configs_blackbox:
+  - sourceLabels: [__meta_ionos_server_name]
+    regex: "bbb-.*"
+    action: keep
+  - sourceLabels: [__meta_ionos_server_state]
+    regex: "RUNNING"
+    action: keep
+  - sourceLabels: [__meta_ionos_server_name]
+    targetLabel: __param_target
+    regex: "(.*)"
+    replacement: "https://${1}/bigbluebutton"
+  - sourceLabels: [__param_target]
+    targetLabel: instance
+  - targetLabel: __address__
+    replacement: "{{ bbb_blackbox_exporter_url | default('prometheus-blackbox-exporter:9115') }}"
+  - targetLabel: tenant
+    replacement: "{{ tenant }}"
