@@ -9,13 +9,6 @@ bbb_datacenter_ionos_sd_configs: |
       credentials:
         name: "{{ bbb_ionos_bearer_token_secret_name }}"
         key: token
-    # basic_auth:
-    #   username:
-    #     name: "{{ bbb_ionos_bearer_token_secret_name }}"
-    #     key: username
-    #   password:
-    #     name: "{{ bbb_ionos_bearer_token_secret_name }}"
-    #     key: "{{ bbb_ionos_basic_auth_secret_key }}"
   {% endfor %}
 bbb_turn_coturn_datacenter_ionos_sd_configs: |
   {% for id in bbb_datacenter_ids %}
@@ -51,11 +44,6 @@ bbb_turn_node_datacenter_ionos_sd_configs_cadvisor: |
         key: token
   {% endfor %}
 
-bbb_ionos_basic_auth_secret_mount_path: "/etc/bbb/{{ bbb_instance_name }}-ionos"
-bbb_ionos_basic_auth:
-  username: "{{ bbb_prometheus_ionos_username }}"
-  password_file: "{{ bbb_ionos_basic_auth_secret_mount_path }}/{{ bbb_ionos_basic_auth_secret_key }}"
-
 bbb_scrape_relabel_configs_ionos_bbb:
   - sourceLabels: [__meta_ionos_server_name]
     regex: "bbb-.*"
@@ -75,7 +63,7 @@ bbb_scrape_relabel_configs_ionos_bbb:
     regex: "([^:]+)(:[0-9]+)?"
     replacement: "${1}"
   - targetLabel: tenant
-    replacement: "{{ tenant }}"
+    replacement: "{{ bbb_tenant }}"
 
 bbb_scrape_relabel_configs_ionos_turn:
   - sourceLabels: [__meta_ionos_server_name]
@@ -96,7 +84,7 @@ bbb_scrape_relabel_configs_ionos_turn:
     regex: "([^:]+)(:[0-9]+)?"
     replacement: "${1}"
   - targetLabel: tenant
-    replacement: "{{ tenant }}"
+    replacement: "{{ bbb_tenant }}"
 
 bbb_scrape_relabel_configs_scalelite:
   - sourceLabels: [__address__]
@@ -104,7 +92,7 @@ bbb_scrape_relabel_configs_scalelite:
     regex: "([^:]+)(:[0-9]+)?"
     replacement: "management.${1}"
   - targetLabel: tenant
-    replacement: "{{ tenant }}"
+    replacement: "{{ bbb_tenant }}"
 
 bbb_scrape_relabel_configs_owasp:
   - sourceLabels: [__address__]
@@ -112,7 +100,7 @@ bbb_scrape_relabel_configs_owasp:
     regex: "([^:]+)(:[0-9]+)?"
     replacement: "${1}"
   - targetLabel: tenant
-    replacement: "{{ tenant }}"
+    replacement: "{{ bbb_tenant }}"
 
 bbb_scrape_relabel_configs_freeswitch:
   - sourceLabels: [__address__]
@@ -120,7 +108,7 @@ bbb_scrape_relabel_configs_freeswitch:
     regex: "([^:]+)(:[0-9]+)?"
     replacement: "${1}"
   - targetLabel: tenant
-    replacement: "{{ tenant }}"
+    replacement: "{{ bbb_tenant }}"
 
 bbb_scrape_relabel_configs_blackbox:
   - sourceLabels: [__meta_ionos_server_name]
@@ -138,4 +126,4 @@ bbb_scrape_relabel_configs_blackbox:
   - targetLabel: __address__
     replacement: "{{ bbb_blackbox_exporter_url | default('prometheus-blackbox-exporter:9115') }}"
   - targetLabel: tenant
-    replacement: "{{ tenant }}"
+    replacement: "{{ bbb_tenant }}"

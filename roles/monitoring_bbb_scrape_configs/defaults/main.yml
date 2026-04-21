@@ -29,8 +29,8 @@ scalelite_postgresexporter_enabled: false
 bbb_node_exporter_basic_auth_secret_name: "{{ bbb_instance_name }}-node-exporter-basic-auth"
 # Name of the Kubernetes secret containing the IONOS credentials
 bbb_ionos_bearer_token_secret_name: "{{ bbb_instance_name }}-ionos"
-bbb_ionos_basic_auth_secret_key: password
-# Only monitor the BBB servers but not Scalelite or TURN
-bbb_servers_only: false
 bbb_monitoring_scrape_interval: 10s
 bbb_monitoring_scrape_timeout: 5s
+
+# IONOS datacenter IDs
+bbb_datacenter_ids: []

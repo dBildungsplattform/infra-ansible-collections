@@ -47,7 +47,6 @@
         relabelings: "{{ bbb_scrape_relabel_configs_ionos_bbb }}"
         scrapeInterval: "{{ bbb_monitoring_scrape_interval }}"
         scrapeTimeout: "{{ bbb_monitoring_scrape_timeout }}"
-  when: true
 
 - name: Create ScrapeConfig for BBB node exporter
   kubernetes.core.k8s:
@@ -77,7 +76,6 @@
         relabelings: "{{ bbb_scrape_relabel_configs_ionos_bbb }}"
         scrapeInterval: "{{ bbb_monitoring_scrape_interval }}"
         scrapeTimeout: "{{ bbb_monitoring_scrape_timeout }}"
-  when: true
 
 - name: Create ScrapeConfig for BBB blackbox exporter
   kubernetes.core.k8s:
@@ -101,7 +99,6 @@
         relabelings: "{{ bbb_scrape_relabel_configs_blackbox }}"
         scrapeInterval: "{{ bbb_monitoring_scrape_interval }}"
         scrapeTimeout: "{{ bbb_monitoring_scrape_timeout }}"
-  when: true
 
 - name: Create ScrapeConfig for Scalelite node exporter
   kubernetes.core.k8s:
@@ -133,7 +130,6 @@
         relabelings: "{{ bbb_scrape_relabel_configs_scalelite }}"
         scrapeInterval: "{{ bbb_monitoring_scrape_interval }}"
         scrapeTimeout: "{{ bbb_monitoring_scrape_timeout }}"
-  when: not bbb_servers_only
 
 - name: Create ScrapeConfig for Scalelite autoscaler
   kubernetes.core.k8s:
@@ -165,7 +161,6 @@
         relabelings: "{{ bbb_scrape_relabel_configs_scalelite }}"
         scrapeInterval: "{{ bbb_monitoring_scrape_interval }}"
         scrapeTimeout: "{{ bbb_monitoring_scrape_timeout }}"
-  when: not bbb_servers_only
 
 - name: Create ScrapeConfig for TURN node exporter
   kubernetes.core.k8s:
@@ -195,7 +190,6 @@
         relabelings: "{{ bbb_scrape_relabel_configs_ionos_turn }}"
         scrapeInterval: "{{ bbb_monitoring_scrape_interval }}"
         scrapeTimeout: "{{ bbb_monitoring_scrape_timeout }}"
-  when: not bbb_servers_only
 
 - name: Create ScrapeConfig for TURN coturn exporter
   kubernetes.core.k8s:
