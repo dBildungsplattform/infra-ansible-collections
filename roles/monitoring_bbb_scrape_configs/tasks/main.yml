@@ -43,7 +43,7 @@
           password:
             name: "{{ bbb_node_exporter_basic_auth_secret_name }}"
             key: password
-        ionosSDConfigs: "{{ bbb_datacenter_ionos_sd_configs | from_yaml }}"
+        ionosSDConfigs: "{{ bbb_datacenter_ionos_sd_configs | from_yaml | default([]) }}"
         relabelings: "{{ bbb_scrape_relabel_configs_ionos_bbb }}"
         scrapeInterval: "{{ bbb_monitoring_scrape_interval }}"
         scrapeTimeout: "{{ bbb_monitoring_scrape_timeout }}"
@@ -72,7 +72,7 @@
           password:
             name: "{{ bbb_node_exporter_basic_auth_secret_name }}"
             key: password
-        ionosSDConfigs: "{{ bbb_datacenter_ionos_sd_configs | from_yaml }}"
+        ionosSDConfigs: "{{ bbb_datacenter_ionos_sd_configs | from_yaml | default([]) }}"
         relabelings: "{{ bbb_scrape_relabel_configs_ionos_bbb }}"
         scrapeInterval: "{{ bbb_monitoring_scrape_interval }}"
         scrapeTimeout: "{{ bbb_monitoring_scrape_timeout }}"
@@ -95,7 +95,7 @@
         metricsPath: /probe
         params:
           module: ["http_2xx"]
-        ionosSDConfigs: "{{ bbb_datacenter_ionos_sd_configs | from_yaml }}"
+        ionosSDConfigs: "{{ bbb_datacenter_ionos_sd_configs | from_yaml | default([]) }}"
         relabelings: "{{ bbb_scrape_relabel_configs_blackbox }}"
         scrapeInterval: "{{ bbb_monitoring_scrape_interval }}"
         scrapeTimeout: "{{ bbb_monitoring_scrape_timeout }}"
@@ -186,7 +186,7 @@
           password:
             name: "{{ bbb_node_exporter_basic_auth_secret_name }}"
             key: password
-        ionosSDConfigs: "{{ bbb_turn_node_datacenter_ionos_sd_configs | from_yaml }}"
+        ionosSDConfigs: "{{ bbb_turn_node_datacenter_ionos_sd_configs | from_yaml | default([]) }}"
         relabelings: "{{ bbb_scrape_relabel_configs_ionos_turn }}"
         scrapeInterval: "{{ bbb_monitoring_scrape_interval }}"
         scrapeTimeout: "{{ bbb_monitoring_scrape_timeout }}"
@@ -215,7 +215,7 @@
           password:
             name: "{{ bbb_node_exporter_basic_auth_secret_name }}"
             key: password
-        ionosSDConfigs: "{{ bbb_turn_coturn_datacenter_ionos_sd_configs | from_yaml }}"
+        ionosSDConfigs: "{{ bbb_turn_coturn_datacenter_ionos_sd_configs | from_yaml | default([]) }}"
         relabelings: "{{ bbb_scrape_relabel_configs_ionos_turn }}"
         scrapeInterval: "{{ bbb_monitoring_scrape_interval }}"
         scrapeTimeout: "{{ bbb_monitoring_scrape_timeout }}"
@@ -246,7 +246,7 @@
           password:
             name: "{{ bbb_node_exporter_basic_auth_secret_name }}"
             key: password
-        ionosSDConfigs: "{{ bbb_turn_node_datacenter_ionos_sd_configs_cadvisor | from_yaml }}"
+        ionosSDConfigs: "{{ bbb_turn_node_datacenter_ionos_sd_configs_cadvisor | from_yaml | default([]) }}"
         relabelings: "{{ bbb_scrape_relabel_configs_ionos_turn }}"
         scrapeInterval: "{{ bbb_monitoring_scrape_interval }}"
         scrapeTimeout: "{{ bbb_monitoring_scrape_timeout }}"

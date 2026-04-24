@@ -9,7 +9,7 @@ scalelite_host: "{{ bbb_domain_name }}"
 # Address of the freeswitch server
 freeswitch_host: "freeswitch.{{ bbb_domain_name }}"
 # True if using the exporters from the EBBBA BBB role with metrics under /mon/node
-# and /mon/bbb otherwise /metrics on port 9100 is used
+# and /mon/bbb otherwise /metrics on port 9100 and 9688 is used
 bbb_ebbba_exporters: true
 # True if the coturn exporter is enabled on port 9642 /metrics
 bbb_turn_server_exporter_enabled: true
