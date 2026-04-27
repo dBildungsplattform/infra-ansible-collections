@@ -120,8 +120,6 @@ server_monitoring_extra_exporters: []
 # Gets added as YAML to the Docker-compose file
 # server_monitoring_extra_docker_services: {}
 
-delete_old_nginx_logrotate: true
-
 package_collector_cron_weekday: "*"
 package_collector_cron_hour: 0
 package_collector_cron_minute: 0
