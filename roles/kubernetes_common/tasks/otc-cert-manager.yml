@@ -18,7 +18,7 @@
 - name: Add otcdns chart repo
   kubernetes.core.helm_repository:
     name: otcdns
-    repo_url: "https://hpi-schul-cloud.github.io/infra-otc-cert-manager-webhook/"
+    repo_url: "https://dbildungsplattform.github.io/infra-otc-cert-manager-webhook/"
   check_mode: false
   changed_when: false
 
