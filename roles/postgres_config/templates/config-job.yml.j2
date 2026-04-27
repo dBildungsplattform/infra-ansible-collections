@@ -14,7 +14,7 @@ spec:
           defaultMode: 457
       containers:
       - name:  psql-config
-        image: schulcloud/infra-tools:{{ infra_tools_image_tag }}
+        image: ghcr.io/dbildungsplattform/cron-tools:{{ cron_tools_image_tag }}
         command:              
           - /bin/bash
           - -c
