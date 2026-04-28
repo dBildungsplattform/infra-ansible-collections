@@ -1,0 +1,445 @@
+---
+- name: Create BBB secrets
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    definition:
+      apiVersion: onepassword.com/v1
+      kind: OnePasswordItem
+      metadata:
+        name: "{{ secret }}"
+        namespace: monitoring
+      spec:
+        itemPath: "vaults/{{ bbb_vault }}/items/{{ secret }}"
+  loop:
+    - "{{ bbb_node_exporter_basic_auth_secret_name }}"
+    - "{{ bbb_ionos_bearer_token_secret_name }}"
+  loop_control:
+    loop_var: secret
+
+- name: Create ScrapeConfig for BBB servers
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    definition:
+      apiVersion: monitoring.coreos.com/v1alpha1
+      kind: ScrapeConfig
+      metadata:
+        name: "{{ bbb_instance_name }}"
+        namespace: monitoring
+        labels:
+          release: application
+      spec:
+        scheme: HTTPS
+        metricsPath: "{{ '/mon/bbb' if bbb_ebbba_exporters else '/metrics' }}"
+        basicAuth:
+          username:
+            name: "{{ bbb_node_exporter_basic_auth_secret_name }}"
+            key: username
+          password:
+            name: "{{ bbb_node_exporter_basic_auth_secret_name }}"
+            key: password
+        ionosSDConfigs: "{{ bbb_datacenter_ionos_sd_configs | from_yaml | default([]) }}"
+        relabelings: "{{ bbb_scrape_relabel_configs_ionos_bbb }}"
+        scrapeInterval: "{{ bbb_monitoring_scrape_interval }}"
+        scrapeTimeout: "{{ bbb_monitoring_scrape_timeout }}"
+
+- name: Create ScrapeConfig for BBB node exporter
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    definition:
+      apiVersion: monitoring.coreos.com/v1alpha1
+      kind: ScrapeConfig
+      metadata:
+        name: "{{ bbb_instance_name }}-node-exporter"
+        namespace: monitoring
+        labels:
+          release: application
+      spec:
+        scheme: HTTPS
+        metricsPath: "{{ '/mon/node' if bbb_ebbba_exporters else '/metrics' }}"
+        basicAuth:
+          username:
+            name: "{{ bbb_node_exporter_basic_auth_secret_name }}"
+            key: username
+          password:
+            name: "{{ bbb_node_exporter_basic_auth_secret_name }}"
+            key: password
+        ionosSDConfigs: "{{ bbb_datacenter_ionos_sd_configs | from_yaml | default([]) }}"
+        relabelings: "{{ bbb_scrape_relabel_configs_ionos_bbb }}"
+        scrapeInterval: "{{ bbb_monitoring_scrape_interval }}"
+        scrapeTimeout: "{{ bbb_monitoring_scrape_timeout }}"
+
+- name: Create ScrapeConfig for BBB blackbox exporter
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    definition:
+      apiVersion: monitoring.coreos.com/v1alpha1
+      kind: ScrapeConfig
+      metadata:
+        name: "{{ bbb_instance_name }}-blackbox-exporter"
+        namespace: monitoring
+        labels:
+          release: application
+      spec:
+        metricsPath: /probe
+        params:
+          module: ["http_2xx"]
+        ionosSDConfigs: "{{ bbb_datacenter_ionos_sd_configs | from_yaml | default([]) }}"
+        relabelings: "{{ bbb_scrape_relabel_configs_blackbox }}"
+        scrapeInterval: "{{ bbb_monitoring_scrape_interval }}"
+        scrapeTimeout: "{{ bbb_monitoring_scrape_timeout }}"
+
+- name: Create ScrapeConfig for Scalelite node exporter
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    definition:
+      apiVersion: monitoring.coreos.com/v1alpha1
+      kind: ScrapeConfig
+      metadata:
+        name: "{{ bbb_instance_name }}-scalelite"
+        namespace: monitoring
+        labels:
+          release: application
+      spec:
+        scheme: HTTPS
+        metricsPath: /metrics
+        basicAuth:
+          username:
+            name: "{{ bbb_node_exporter_basic_auth_secret_name }}"
+            key: username
+          password:
+            name: "{{ bbb_node_exporter_basic_auth_secret_name }}"
+            key: password
+        staticConfigs:
+          - targets:
+              - "{{ scalelite_host }}:9100"
+        relabelings: "{{ bbb_scrape_relabel_configs_scalelite }}"
+        scrapeInterval: "{{ bbb_monitoring_scrape_interval }}"
+        scrapeTimeout: "{{ bbb_monitoring_scrape_timeout }}"
+
+- name: Create ScrapeConfig for Scalelite autoscaler
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    definition:
+      apiVersion: monitoring.coreos.com/v1alpha1
+      kind: ScrapeConfig
+      metadata:
+        name: "{{ bbb_instance_name }}-scalelite-autoscaler"
+        namespace: monitoring
+        labels:
+          release: application
+      spec:
+        scheme: HTTPS
+        metricsPath: /metrics
+        basicAuth:
+          username:
+            name: "{{ bbb_node_exporter_basic_auth_secret_name }}"
+            key: username
+          password:
+            name: "{{ bbb_node_exporter_basic_auth_secret_name }}"
+            key: password
+        staticConfigs:
+          - targets:
+              - "{{ scalelite_host }}:9200"
+        relabelings: "{{ bbb_scrape_relabel_configs_scalelite }}"
+        scrapeInterval: "{{ bbb_monitoring_scrape_interval }}"
+        scrapeTimeout: "{{ bbb_monitoring_scrape_timeout }}"
+
+- name: Create ScrapeConfig for TURN node exporter
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    definition:
+      apiVersion: monitoring.coreos.com/v1alpha1
+      kind: ScrapeConfig
+      metadata:
+        name: "{{ bbb_instance_name }}-turn-node-exporter"
+        namespace: monitoring
+        labels:
+          release: application
+      spec:
+        scheme: HTTPS
+        metricsPath: /metrics
+        basicAuth:
+          username:
+            name: "{{ bbb_node_exporter_basic_auth_secret_name }}"
+            key: username
+          password:
+            name: "{{ bbb_node_exporter_basic_auth_secret_name }}"
+            key: password
+        ionosSDConfigs: "{{ bbb_turn_node_datacenter_ionos_sd_configs | from_yaml | default([]) }}"
+        relabelings: "{{ bbb_scrape_relabel_configs_ionos_turn }}"
+        scrapeInterval: "{{ bbb_monitoring_scrape_interval }}"
+        scrapeTimeout: "{{ bbb_monitoring_scrape_timeout }}"
+
+- name: Create ScrapeConfig for TURN coturn exporter
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    definition:
+      apiVersion: monitoring.coreos.com/v1alpha1
+      kind: ScrapeConfig
+      metadata:
+        name: "{{ bbb_instance_name }}-turn-coturn-exporter"
+        namespace: monitoring
+        labels:
+          release: application
+      spec:
+        scheme: HTTPS
+        metricsPath: /metrics
+        basicAuth:
+          username:
+            name: "{{ bbb_node_exporter_basic_auth_secret_name }}"
+            key: username
+          password:
+            name: "{{ bbb_node_exporter_basic_auth_secret_name }}"
+            key: password
+        ionosSDConfigs: "{{ bbb_turn_coturn_datacenter_ionos_sd_configs | from_yaml | default([]) }}"
+        relabelings: "{{ bbb_scrape_relabel_configs_ionos_turn }}"
+        scrapeInterval: "{{ bbb_monitoring_scrape_interval }}"
+        scrapeTimeout: "{{ bbb_monitoring_scrape_timeout }}"
+        fallbackScrapeProtocol: PrometheusText1.0.0
+  when: bbb_turn_server_exporter_enabled
+
+- name: Create ScrapeConfig for TURN coturn cAdvisor
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    definition:
+      apiVersion: monitoring.coreos.com/v1alpha1
+      kind: ScrapeConfig
+      metadata:
+        name: "{{ bbb_instance_name }}-turn-coturn-cadvisor"
+        namespace: monitoring
+        labels:
+          release: application
+      spec:
+        scheme: HTTPS
+        metricsPath: /metrics
+        basicAuth:
+          username:
+            name: "{{ bbb_node_exporter_basic_auth_secret_name }}"
+            key: username
+          password:
+            name: "{{ bbb_node_exporter_basic_auth_secret_name }}"
+            key: password
+        ionosSDConfigs: "{{ bbb_turn_node_datacenter_ionos_sd_configs_cadvisor | from_yaml | default([]) }}"
+        relabelings: "{{ bbb_scrape_relabel_configs_ionos_turn }}"
+        scrapeInterval: "{{ bbb_monitoring_scrape_interval }}"
+        scrapeTimeout: "{{ bbb_monitoring_scrape_timeout }}"
+  when: bbb_turn_server_cadvisor_enabled
+
+- name: Create ScrapeConfig for Scalelite cAdvisor
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    definition:
+      apiVersion: monitoring.coreos.com/v1alpha1
+      kind: ScrapeConfig
+      metadata:
+        name: "{{ bbb_instance_name }}-scalelite-cadvisor"
+        namespace: monitoring
+        labels:
+          release: application
+      spec:
+        scheme: HTTPS
+        metricsPath: /metrics
+        basicAuth:
+          username:
+            name: "{{ bbb_node_exporter_basic_auth_secret_name }}"
+            key: username
+          password:
+            name: "{{ bbb_node_exporter_basic_auth_secret_name }}"
+            key: password
+        staticConfigs:
+          - targets:
+              - "{{ scalelite_host }}:9300"
+        relabelings: "{{ bbb_scrape_relabel_configs_scalelite }}"
+        scrapeInterval: "{{ bbb_monitoring_scrape_interval }}"
+        scrapeTimeout: "{{ bbb_monitoring_scrape_timeout }}"
+  when: scalelite_cadvisor_enabled
+
+- name: Create ScrapeConfig for Scalelite postgres exporter
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    definition:
+      apiVersion: monitoring.coreos.com/v1alpha1
+      kind: ScrapeConfig
+      metadata:
+        name: "{{ bbb_instance_name }}-scalelite-postgresexporter"
+        namespace: monitoring
+        labels:
+          release: application
+      spec:
+        scheme: HTTPS
+        metricsPath: /metrics
+        basicAuth:
+          username:
+            name: "{{ bbb_node_exporter_basic_auth_secret_name }}"
+            key: username
+          password:
+            name: "{{ bbb_node_exporter_basic_auth_secret_name }}"
+            key: password
+        staticConfigs:
+          - targets:
+              - "{{ scalelite_host }}:9188"
+        relabelings: "{{ bbb_scrape_relabel_configs_scalelite }}"
+        scrapeInterval: "{{ bbb_monitoring_scrape_interval }}"
+        scrapeTimeout: "{{ bbb_monitoring_scrape_timeout }}"
+  when: scalelite_postgresexporter_enabled
+
+- name: Create ScrapeConfig for OWASP cAdvisor
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    definition:
+      apiVersion: monitoring.coreos.com/v1alpha1
+      kind: ScrapeConfig
+      metadata:
+        name: "{{ bbb_instance_name }}-owasp-cadvisor"
+        namespace: monitoring
+        labels:
+          release: application
+      spec:
+        scheme: HTTPS
+        metricsPath: /metrics
+        basicAuth:
+          username:
+            name: "{{ bbb_node_exporter_basic_auth_secret_name }}"
+            key: username
+          password:
+            name: "{{ bbb_node_exporter_basic_auth_secret_name }}"
+            key: password
+        staticConfigs:
+          - targets:
+              - "{{ scalelite_host }}:9301"
+        relabelings: "{{ bbb_scrape_relabel_configs_owasp }}"
+        scrapeInterval: "{{ bbb_monitoring_scrape_interval }}"
+        scrapeTimeout: "{{ bbb_monitoring_scrape_timeout }}"
+  when: owasp_cadvisor_enabled
+
+- name: Create ScrapeConfig for OWASP node exporter
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    definition:
+      apiVersion: monitoring.coreos.com/v1alpha1
+      kind: ScrapeConfig
+      metadata:
+        name: "{{ bbb_instance_name }}-owasp"
+        namespace: monitoring
+        labels:
+          release: application
+      spec:
+        scheme: HTTPS
+        metricsPath: /metrics
+        basicAuth:
+          username:
+            name: "{{ bbb_node_exporter_basic_auth_secret_name }}"
+            key: username
+          password:
+            name: "{{ bbb_node_exporter_basic_auth_secret_name }}"
+            key: password
+        staticConfigs:
+          - targets:
+              - "{{ scalelite_host }}:9101"
+        relabelings: "{{ bbb_scrape_relabel_configs_owasp }}"
+        scrapeInterval: "{{ bbb_monitoring_scrape_interval }}"
+        scrapeTimeout: "{{ bbb_monitoring_scrape_timeout }}"
+  when: owasp_cadvisor_enabled
+
+- name: Create ScrapeConfig for FreeSWITCH node exporter
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    definition:
+      apiVersion: monitoring.coreos.com/v1alpha1
+      kind: ScrapeConfig
+      metadata:
+        name: "{{ bbb_instance_name }}-freeswitch"
+        namespace: monitoring
+        labels:
+          release: application
+      spec:
+        scheme: HTTPS
+        metricsPath: /metrics
+        basicAuth:
+          username:
+            name: "{{ bbb_node_exporter_basic_auth_secret_name }}"
+            key: username
+          password:
+            name: "{{ bbb_node_exporter_basic_auth_secret_name }}"
+            key: password
+        staticConfigs:
+          - targets:
+              - "{{ freeswitch_host }}:9100"
+        relabelings: "{{ bbb_scrape_relabel_configs_freeswitch }}"
+        scrapeInterval: "{{ bbb_monitoring_scrape_interval }}"
+        scrapeTimeout: "{{ bbb_monitoring_scrape_timeout }}"
+  when: bbb_freeswitch_server_node_exporter_enabled
+
+- name: Create ScrapeConfig for FreeSWITCH cAdvisor
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    definition:
+      apiVersion: monitoring.coreos.com/v1alpha1
+      kind: ScrapeConfig
+      metadata:
+        name: "{{ bbb_instance_name }}-freeswitch-cadvisor"
+        namespace: monitoring
+        labels:
+          release: application
+      spec:
+        scheme: HTTPS
+        metricsPath: /metrics
+        basicAuth:
+          username:
+            name: "{{ bbb_node_exporter_basic_auth_secret_name }}"
+            key: username
+          password:
+            name: "{{ bbb_node_exporter_basic_auth_secret_name }}"
+            key: password
+        staticConfigs:
+          - targets:
+              - "{{ freeswitch_host }}:9300"
+        relabelings: "{{ bbb_scrape_relabel_configs_freeswitch }}"
+        scrapeInterval: "{{ bbb_monitoring_scrape_interval }}"
+        scrapeTimeout: "{{ bbb_monitoring_scrape_timeout }}"
+  when: bbb_freeswitch_server_cadvisor_enabled
