@@ -63,7 +63,7 @@
             apt-get install python3-setuptools -y
             apt-get install python3-pip -y
             python3 -m pip --version
-            git clone https://github.com/hpi-schul-cloud/infra-tools.git
+            git clone https://github.com/dBildungsplattform/infra-tools.git
             chmod +x ./infra-tools/s3-backup/s3-backup.py
             pip3 install -r ./infra-tools/s3-backup/requirements.txt
             mkdir -p /root/.config/rclone
