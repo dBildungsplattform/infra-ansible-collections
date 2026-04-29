@@ -3,7 +3,7 @@
   copy:
     content: |
       /var/log/clamav/*.log {
-        rotate 28
+        rotate 14
         daily
         compress
         missingok
