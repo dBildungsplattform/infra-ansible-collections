@@ -9,6 +9,8 @@
         missingok
         delaycompress
         copytruncate
+        create 640 clamav clamav
+        su clamav clamav
       }
     dest: /etc/logrotate.d/clamav
     mode: "0644"
