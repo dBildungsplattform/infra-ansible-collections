@@ -1,0 +1,16 @@
+---
+- name: Create clamav logrotate config
+  copy:
+    content: |
+      /var/log/clamav/*.log {
+        rotate 14
+        daily
+        compress
+        missingok
+        delaycompress
+        copytruncate
+        create 640 clamav clamav
+        su clamav clamav
+      }
+    dest: /etc/logrotate.d/clamav
+    mode: "0644"
