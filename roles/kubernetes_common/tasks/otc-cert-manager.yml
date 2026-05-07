@@ -25,7 +25,7 @@
 - name: Install otcdns webhook plugin
   kubernetes.core.helm:
     name: otcdns
-    chart_ref: otcdns/infra-otc-cert-manager-webhook
+    chart_ref: "dbildungsplattform/infra-otc-cert-manager-webhook"
     chart_version: "{{ otcdns_chart_version }}"
     kubeconfig: "{{ kubeconfig }}"
     release_namespace: cert-manager
