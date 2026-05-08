@@ -134,7 +134,7 @@
   file:
     path: /etc/logrotate.d/nginx
     state: absent
-  when: not server_monitoring_nginx_enabled
+  when: server_monitoring_nginx_enabled and delete_old_nginx_logrotate
 
 - name: Change ownership of files in /var/log/nginx
   file:
