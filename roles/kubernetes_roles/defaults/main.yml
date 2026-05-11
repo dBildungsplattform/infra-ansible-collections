@@ -11,9 +11,29 @@ kubeconfig: ""
 kubernetes_roles: []
 
 # Dict mapping user keys to their kubernetes permission configs.
-# Each value.kubernetes is a list of: { role, hosts, namespace (optional), namespaces (optional), namespace_excludes (optional) }
+# Each permission:
+# Permissions Template:
+# <name>:
+#   kubernetes: # Optional
+#     - hosts: <clusters where the user should have access>
+#       role: <Name of the role the serviceaccount should be bound to on the clusters>
+#       namespaces: <namespaces these role should be applied>            # Optional
+#       namespace_excludes: <namespaces these role should no be applied> # Optional
+#     - <further host-role combinations)>
+#   vms: # Optional 
+#     groups:
+#       - <list of user groups>
+#     hosts:
+#       - <list of allow host>
+#     allhosts: <true, alternative to listing all hosts>
 permissions: {}
 
 # List of present user objects referenced by the templates.
-# Each user: { name, serviceaccount_name (optional), permissions: { kubernetes: [...] } }
+# Each user: 
+# User Template
+# - name: <username>
+#   uid: <uid> # Only needed if user has permissions for VMs, see below for how to find a uid for a new user
+#   serviceaccount_name: <serviceaccount_name> # Optional, only when the serviceaccount should not be the name of the user
+#   permissions: "{{ permissions.<defined permissions>}}" # In case the permissions are only used for one special user you can also define them here directly
+#   personal:
 present_users: []
