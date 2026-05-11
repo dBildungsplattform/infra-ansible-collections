@@ -1,0 +1,19 @@
+---
+# Path to the kubeconfig file for cluster access
+kubeconfig: ""
+
+# Proxy settings (optional – omitted when not set)
+# proxy_url: ""
+# proxy_headers: {}
+
+# List of cluster roles to create.
+# Each item: { name, hosts, labels (optional), rules }
+kubernetes_roles: []
+
+# Dict mapping user keys to their kubernetes permission configs.
+# Each value.kubernetes is a list of: { role, hosts, namespace (optional), namespaces (optional), namespace_excludes (optional) }
+permissions: {}
+
+# List of present user objects referenced by the templates.
+# Each user: { name, serviceaccount_name (optional), permissions: { kubernetes: [...] } }
+present_users: []
