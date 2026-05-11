@@ -17,6 +17,22 @@
     label: "{{ item.name }}"
   when: inventory_hostname in (lookup('inventory_hostnames', item.hosts) | default('', true)).split(',')
 
+- name: Remove Kubernetes Cluster Roles
+  kubernetes.core.k8s:
+    state: absent
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    definition:
+      kind: ClusterRole
+      apiVersion: rbac.authorization.k8s.io/v1
+      metadata:
+        name: "{{ item.name }}"
+  loop: "{{ kubernetes_roles }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when: inventory_hostname not in (lookup('inventory_hostnames', item.hosts) | default('', true)).split(',')
+
 - name: Create Kyverno RoleBinding Policy
   loop: "{{ permissions | dict2items | subelements('value.kubernetes', skip_missing=True) }}"
   kubernetes.core.k8s:
