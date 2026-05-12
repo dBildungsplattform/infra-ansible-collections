@@ -50,6 +50,7 @@
   kubernetes.core.k8s:
     state: absent
     kind: ClusterPolicy
+    apiVersion: kyverno.io/v1
     name: "add-{{ item.0.key | regex_replace('_', '-') }}-{{ item.1.role }}-rolebinding"
     kubeconfig: "{{ kubeconfig }}"
     proxy: "{{ proxy_url | default(omit, true) }}"
@@ -73,6 +74,7 @@
   kubernetes.core.k8s:
     state: absent
     kind: ClusterRoleBinding
+    apiVersion: rbac.authorization.k8s.io/v1
     name: "{{ item.0.key | regex_replace('_', '-') }}-{{ item.1.role }}-clusterrolebinding"
     kubeconfig: "{{ kubeconfig }}"
     proxy: "{{ proxy_url | default(omit, true) }}"
