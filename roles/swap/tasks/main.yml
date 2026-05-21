@@ -17,12 +17,25 @@
     - Activate swapfile
   when: not stat_swapfile.stat.exists or (stat_swapfile.stat.size < swapfile_size_mb * 1024 * 1024)
 
+- name: "Set permissions"
+  ansible.builtin.file:
+    path: "{{ swapfile_path }}"
+    mode: "0600"
+
 - name: Set swappiness
   ansible.posix.sysctl:
     name: vm.swappiness
     value: "{{ vm_swappiness }}"
     state: present
   when: vm_swappiness is defined
+
+- name: "Persist swapfile"
+  ansible.posix.mount:
+    path: "none"
+    src: "{{ swapfile_path }}"
+    fstype: "swap"
+    opts: "sw"
+    state: "present"
 
 - name: Run handlers now because they might not run if Ansible gets an error later
   ansible.builtin.meta: flush_handlers
