@@ -1,0 +1,80 @@
+---
+- name: Create Kubernetes Cluster Roles
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    definition:
+      kind: ClusterRole
+      apiVersion: rbac.authorization.k8s.io/v1
+      metadata:
+        name: "{{ item.name }}"
+        labels: "{{ item.labels | default(omit) }}"
+      rules: "{{ item.rules }}"
+  loop: "{{ kubernetes_roles }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when: inventory_hostname in (lookup('inventory_hostnames', item.hosts) | default('', true)).split(',')
+
+- name: Remove Kubernetes Cluster Roles
+  kubernetes.core.k8s:
+    state: absent
+    api_version: rbac.authorization.k8s.io/v1
+    kind: ClusterRole
+    name: "{{ item.name }}"
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+  loop: "{{ kubernetes_roles }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when: inventory_hostname not in (lookup('inventory_hostnames', item.hosts) | default('', true)).split(',')
+
+- name: Create Kyverno RoleBinding ClusterPolicy
+  loop: "{{ permissions | dict2items | subelements('value.kubernetes', skip_missing=True) }}"
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    definition: "{{ lookup('template', 'cluster-access-kyverno-rb.yml.j2') }}"
+  when:
+    - inventory_hostname in (lookup('inventory_hostnames', item.1.hosts) | default('', true)).split(',')
+    - item.1.namespaces | default([]) | length > 0
+
+- name: Delete surplus Kyverno RoleBinding ClusterPolicy
+  loop: "{{ permissions | dict2items | subelements('value.kubernetes', skip_missing=True) }}"
+  kubernetes.core.k8s:
+    state: absent
+    api_version: kyverno.io/v1
+    kind: ClusterPolicy
+    name: "add-{{ item.0.key | regex_replace('_', '-') }}-{{ item.1.role }}-rolebinding"
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+  when: inventory_hostname not in (lookup('inventory_hostnames', permissions[item.0.key].kubernetes | default([]) | selectattr("namespaces", "defined") | selectattr("role", "equalto", item.1.role) | map(attribute='hosts') | join(':')) | default('', true)).split(',')
+
+- name: Create ClusterRoleBindings
+  loop: "{{ permissions | dict2items | subelements('value.kubernetes', skip_missing=True) }}"
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    definition: "{{ lookup('template', 'cluster-access-crb.yml.j2') }}"
+  when:
+    - inventory_hostname in (lookup('inventory_hostnames', item.1.hosts) | default('', true)).split(',')
+    - item.1.namespaces | default([]) | length == 0
+
+- name: Delete surplus ClusterRoleBindings
+  loop: "{{ permissions | dict2items | subelements('value.kubernetes', skip_missing=True) }}"
+  kubernetes.core.k8s:
+    state: absent
+    api_version: rbac.authorization.k8s.io/v1
+    kind: ClusterRoleBinding
+    name: "{{ item.0.key | regex_replace('_', '-') }}-{{ item.1.role }}-clusterrolebinding"
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+  when: inventory_hostname not in (lookup('inventory_hostnames', permissions[item.0.key].kubernetes | default([]) | selectattr("namespaces", "undefined") | selectattr("role", "equalto", item.1.role) | map(attribute='hosts') | join(':')) | default('', true)).split(',')

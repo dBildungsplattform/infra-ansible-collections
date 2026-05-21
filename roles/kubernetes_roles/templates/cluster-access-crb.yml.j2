@@ -1,0 +1,16 @@
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ item.0.key | regex_replace('_', '-') }}-{{ item.1.role }}-clusterrolebinding
+subjects:
+{% for user in present_users %}
+{% for kube in user.permissions.kubernetes | default([]) | selectattr('role', 'equalto', item.1.role) | selectattr('hosts', 'equalto', item.1.hosts) %}
+- kind: ServiceAccount
+  name: {{ user.serviceaccount_name | default(user.name, true) }}
+  namespace: {{ item.1.namespace | default('default', true) }}
+{% endfor %}
+{% endfor %}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ item.1.role }}
