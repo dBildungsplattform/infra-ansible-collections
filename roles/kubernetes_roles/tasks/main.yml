@@ -31,7 +31,7 @@
     label: "{{ item.name }}"
   when: inventory_hostname not in (lookup('inventory_hostnames', item.hosts) | default('', true)).split(',')
 
-- name: Create Kyverno RoleBinding Policy
+- name: Create Kyverno RoleBinding ClusterPolicy
   loop: "{{ permissions | dict2items | subelements('value.kubernetes', skip_missing=True) }}"
   kubernetes.core.k8s:
     state: present
