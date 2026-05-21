@@ -1,48 +1,61 @@
-kind: ClusterPolicy
-apiVersion: kyverno.io/v1
+apiVersion: policies.kyverno.io/v1
+kind: GeneratingPolicy
 metadata:
   name: add-{{ item.0.key | regex_replace('_', '-') }}-{{ item.1.role }}-rolebinding
   annotations:
     policies.kyverno.io/title: Add RoleBinding for users with permission {{ item.0.key }} to role {{ item.1.role }}
     policies.kyverno.io/subject: RoleBinding
 spec:
-  generateExisting: true
-  rules:
-    - generate:
-        kind: RoleBinding
-        apiVersion: rbac.authorization.k8s.io/v1
-        name: {{ item.0.key | regex_replace('_', '-') }}-{{ item.1.role }}-rolebinding
-        data:
-          roleRef:
-            apiGroup: rbac.authorization.k8s.io
-            kind: ClusterRole
-            name: {{ item.1.role }}
-          subjects:
+  evaluation:
+    synchronize:
+      enabled: true
+    generateExisting:
+      enabled: true
+  matchConstraints:
+    resourceRules:
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - namespaces
+  matchConditions:
+    - name: include-namespaces
+      expression: "object.metadata.name.matches('{{ item.1.namespaces }}')"
+{% if item.1.namespace_excludes | default([]) %}
+    - name: exclude-namespaces
+      expression: "!(object.metadata.name.matches('{{ item.1.namespace_excludes }}'))"
+{% endif %}
+  variables:
+    - name: targetNs
+      expression: object.metadata.name
+  generate:
+    - expression: |-
+        generator.Apply(variables.targetNs, [
+          {
+            "kind": dyn("RoleBinding"),
+            "apiVersion": dyn("rbac.authorization.k8s.io/v1"),
+            "metadata": dyn({
+              "name": dyn("{{ item.0.key | regex_replace('_', '-') }}-{{ item.1.role }}-rolebinding"),
+            }),
+            "roleRef": dyn({
+              "apiGroup": dyn("rbac.authorization.k8s.io"),
+              "kind": dyn("ClusterRole"),
+              "name": dyn("{{ item.1.role }}")
+            }),
+            "subjects": dyn([
 {% for user in present_users %}
 {% for kube in user.permissions.kubernetes | default([]) | selectattr('role', 'equalto', item.1.role) | selectattr('hosts', 'equalto', item.1.hosts) %}
-            - kind: ServiceAccount
-              name: {{ user.serviceaccount_name | default(user.name, true) }}
-              namespace: {{ item.1.namespace | default('default', true) }}
+              dyn({
+                "kind": dyn("ServiceAccount"),
+                "name": dyn("{{ user.serviceaccount_name | default(user.name, true) }}"),
+                "namespace": dyn("{{ item.1.namespace | default('default', true) }}")
+              }),
 {% endfor %}
 {% endfor %}
-{%- raw %}
-        namespace: '{{request.object.metadata.name}}'
-{% endraw %}
-        synchronize: true
-      match:
-        any:
-          - resources:
-              kinds:
-                - Namespace
-{% if item.1.namespaces | default([]) %}
-              names: {{ item.1.namespaces }}
-{% endif %}
-{% if item.1.namespace_excludes | default([]) %}
-      exclude:
-        any:
-          - resources:
-              kinds:
-                - Namespace
-              names: {{ item.1.namespace_excludes }}
-{% endif %}
-      name: generate-{{ item.0.key | regex_replace('_', '-') }}-{{ item.1.role }}-rolebinding
+            ])
+          }
+        ])
