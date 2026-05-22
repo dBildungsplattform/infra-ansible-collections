@@ -2,6 +2,8 @@
 # Namespace cloudprober will be installed Installed in
 cloudprober_namespace: "monitoring"
 
+cloudprober_additional_probes: 
+
 # Name of secret used for Cloudprober access tokens and other "secret" stuff
 # Here all secrets required in the environment should be defined.
 # E.g. with the config below we will need:
@@ -24,7 +26,7 @@ vmagent_user: ""
 cloudprober_configmap: "cloudprober"
 
 # Version tag for helm chart used
-cloudprober_chart_version: 1.13.21
+cloudprober_chart_version: 1.14.20
 
 # default port for LDAP probe
 LDAP_PORT: 636
@@ -254,7 +256,7 @@ cloudprober_values:
       http_probe {
         protocol: HTTP
         port: 2020
-        relative_url: "/api/v1/health"
+        relative_url: "/api/v2/health"
       }
       validator {
         name: "status_code_200"
@@ -358,4 +360,4 @@ cloudprober_values:
       timeout_msec: 1000   # 1s
     }
     {% endif %}
-
+    {{ cloudprober_additional_probes }}

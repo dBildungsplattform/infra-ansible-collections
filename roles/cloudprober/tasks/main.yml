@@ -1,38 +1,5 @@
 # Setup Cloudprober
 
-# Create OnePassword Item to store required info
-- name: Loki Data
-  set_fact:
-    loki_password: "{{ lookup('dbildungscloud.onepwd.onepwd', secret_name='loki', vault=vault, field='password', session_shorthand='ansible-run', credentials=op_credentials) }}"
-    loki_user: "{{ lookup('dbildungscloud.onepwd.onepwd', secret_name='loki', vault=vault, field='username', session_shorthand='ansible-run', credentials=op_credentials) }}"
-  when: cloudprober_fetch_from_loki
-  tags: cloudprober
-
-- name: Vmagent Data
-  set_fact:
-    vmagent_password: "{{ lookup('dbildungscloud.onepwd.onepwd', secret_name='victoriametrics', vault=vault, field='password', session_shorthand='ansible-run', credentials=op_credentials) }}"
-    vmagent_user: "{{ lookup('dbildungscloud.onepwd.onepwd', secret_name='victoriametrics', vault=vault, field='username', session_shorthand='ansible-run', credentials=op_credentials) }}"
-  when: cloudprober_fetch_from_loki
-  tags: cloudprober
-
-- name: Create cloudprober 1Password item
-  dbildungscloud.onepwd.item:
-    vault: "{{ vault }}"
-    category: "password"
-    name: "cloudprober"
-    state: present
-    credentials: "{{ op_credentials }}"
-    session_shorthand: ansible-run
-    fields:
-      - name: loki_secret
-        type: password
-        value: "{{ (loki_user, loki_password) | join(':') | b64encode }}"
-      - name: vmagent_secret
-        type: password
-        value: "{{ (vmagent_user , vmagent_password) | join(':') | b64encode }}"
-  when: cloudprober_fetch_from_loki        
-  tags: cloudprober        
-
 # Create Namespace
 - name: Create monitoring namespace
   kubernetes.core.k8s:
@@ -45,22 +12,6 @@
     kind: Namespace
   tags: cloudprober
     
-# Create Secret to store tokens and access data required
-- name: Create Cloudprober secret
-  kubernetes.core.k8s:
-    state: present
-    kubeconfig: "{{ kubeconfig }}"
-    proxy: "{{ proxy_url | default(omit, true) }}"
-    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
-    definition:
-      apiVersion: onepassword.com/v1
-      kind: OnePasswordItem
-      metadata:
-        name: "{{ cloudprober_secret }}"
-        namespace: "{{ cloudprober_namespace }}"
-      spec:
-        itemPath: "vaults/{{ vault }}/items/cloudprober"
-  tags: cloudprober
 
 # add helm chart location
 - name: Add Cloudprober chart repo
