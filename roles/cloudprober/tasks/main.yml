@@ -74,7 +74,7 @@
 - name: Install Cloudprober
   kubernetes.core.helm:
     name: cloudprober
-    chart_ref: cloudprober/cloudprober
+    chart_ref: oci://ghcr.io/cloudprober/charts/cloudprober
     update_repo_cache: true
     chart_version: "{{ cloudprober_chart_version }}"
     kubeconfig: "{{ kubeconfig }}"
