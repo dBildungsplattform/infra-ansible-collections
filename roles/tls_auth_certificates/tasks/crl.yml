@@ -1,7 +1,7 @@
 ---
 - name: Create revoked certificates list from 1Password
   vars:
-    revoked_certificate_content: "{{ lookup('community.general.onepassword', tls_auth_client_cert_secret_name, vault=tls_auth_clients_vault, service_account_token=op_credentials.OP_SERVICE_ACCOUNT_TOKEN) }}"
+    revoked_certificate_content: "{{ lookup('community.general.onepassword_doc', tls_auth_client_cert_secret_name, vault=tls_auth_clients_vault, service_account_token=op_credentials.OP_SERVICE_ACCOUNT_TOKEN) }}"
   set_fact:
     revoked_certificates: "{{ revoked_certificates | default([]) + [{'content': revoked_certificate_content, 'revocation_date': '+0s'}] }}"
   when: tls_auth_1password_enabled and revoked_certificate_content | length > 0
