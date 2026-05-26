@@ -3,15 +3,15 @@
 # Create OnePassword Item to store required info
 - name: Loki Data
   set_fact:
-    loki_password: "{{ lookup('dbildungscloud.onepwd.onepwd', secret_name='loki', vault=vault, field='password', session_shorthand='ansible-run', credentials=op_credentials) }}"
-    loki_user: "{{ lookup('dbildungscloud.onepwd.onepwd', secret_name='loki', vault=vault, field='username', session_shorthand='ansible-run', credentials=op_credentials) }}"
+    loki_password: "{{ lookup('community.general.onepassword', 'loki', vault=vault, field='password', service_account_token=op_credentials.OP_SERVICE_ACCOUNT_TOKEN) }}"
+    loki_user: "{{ lookup('community.general.onepassword', 'loki', vault=vault, field='username', service_account_token=op_credentials.OP_SERVICE_ACCOUNT_TOKEN) }}"
   when: cloudprober_fetch_from_loki
   tags: cloudprober
 
 - name: Vmagent Data
   set_fact:
-    vmagent_password: "{{ lookup('dbildungscloud.onepwd.onepwd', secret_name='victoriametrics', vault=vault, field='password', session_shorthand='ansible-run', credentials=op_credentials) }}"
-    vmagent_user: "{{ lookup('dbildungscloud.onepwd.onepwd', secret_name='victoriametrics', vault=vault, field='username', session_shorthand='ansible-run', credentials=op_credentials) }}"
+    vmagent_password: "{{ lookup('community.general.onepassword', 'victoriametrics', vault=vault, field='password', service_account_token=op_credentials.OP_SERVICE_ACCOUNT_TOKEN) }}"
+    vmagent_user: "{{ lookup('community.general.onepassword', 'victoriametrics', vault=vault, field='username', service_account_token=op_credentials.OP_SERVICE_ACCOUNT_TOKEN) }}"
   when: cloudprober_fetch_from_loki
   tags: cloudprober
 
@@ -21,8 +21,7 @@
     category: "password"
     name: "cloudprober"
     state: present
-    credentials: "{{ op_credentials }}"
-    session_shorthand: ansible-run
+    service_account_token: "{{ op_credentials.OP_SERVICE_ACCOUNT_TOKEN }}"
     fields:
       - name: loki_secret
         type: password
