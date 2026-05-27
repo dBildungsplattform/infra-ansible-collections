@@ -1,5 +1,4 @@
 ---
-op_session_shorthand: "ansible-run"
 # tls_auth_certs_dir:
 tls_auth_file_permissions:
   # owner:

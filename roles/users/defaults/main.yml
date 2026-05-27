@@ -26,7 +26,7 @@ present_users: []
 absent_users: []
 #  - name: hello.me
 #  - name: cute.dog
-technicaluser_password: "{{ lookup('dbildungscloud.onepwd.onepwd', secret_name='technicaluser', vault='Infrastructure', session_shorthand='ansible-run', credentials=op_credentials, field='password')| string | password_hash('sha512')}}"
+technicaluser_password: "{{ lookup('community.general.onepassword', 'technicaluser', field='password', vault='Infrastructure', service_account_token=op_credentials.OP_SERVICE_ACCOUNT_TOKEN)| string | password_hash('sha512')}}"
 technicaluser_sshkey: "{{ lookup('file', 'sshkeys/technicaluser.pub') }}"
 
 # Timeout of shell in seconds for auto logout

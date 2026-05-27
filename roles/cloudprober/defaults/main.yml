@@ -24,7 +24,7 @@ vmagent_user: ""
 cloudprober_configmap: "cloudprober"
 
 # Version tag for helm chart used
-cloudprober_chart_version: 1.13.21
+cloudprober_chart_version: 1.14.20
 
 # default port for LDAP probe
 LDAP_PORT: 636
