@@ -1,5 +1,4 @@
-# Setup Cloudprober
-
+---
 # Create Namespace
 - name: Create monitoring namespace
   kubernetes.core.k8s:
@@ -11,7 +10,6 @@
     name: "{{ cloudprober_namespace }}"
     kind: Namespace
   tags: cloudprober
-    
 
 # execute helm chart with values
 - name: Install Cloudprober
