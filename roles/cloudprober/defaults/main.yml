@@ -2,7 +2,7 @@
 # Namespace cloudprober will be installed Installed in
 cloudprober_namespace: "monitoring"
 
-cloudprober_additional_probes: 
+cloudprober_additional_probes: ""
 
 # Name of secret used for Cloudprober access tokens and other "secret" stuff
 # Here all secrets required in the environment should be defined.
