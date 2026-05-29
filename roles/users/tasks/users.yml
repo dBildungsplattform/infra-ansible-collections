@@ -23,6 +23,7 @@
     user:
       name: "{{ item.name }}"
       uid: "{{ item.uid }}"
+      group: "{{ item.uid }}"
       shell: /bin/bash
       state: present
     vars:
