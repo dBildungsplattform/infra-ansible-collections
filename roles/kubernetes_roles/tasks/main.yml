@@ -31,7 +31,7 @@
     label: "{{ item.name }}"
   when: inventory_hostname not in (lookup('inventory_hostnames', item.hosts) | default('', true)).split(',')
 
-- name: Create Kyverno RoleBinding ClusterPolicy
+- name: Create Kyverno RoleBinding GeneratingPolicy
   loop: "{{ permissions | dict2items | subelements('value.kubernetes', skip_missing=True) }}"
   kubernetes.core.k8s:
     state: present
@@ -43,12 +43,12 @@
     - inventory_hostname in (lookup('inventory_hostnames', item.1.hosts) | default('', true)).split(',')
     - item.1.namespaces | default([]) | length > 0
 
-- name: Delete surplus Kyverno RoleBinding ClusterPolicy
+- name: Delete surplus Kyverno RoleBinding GeneratingPolicy
   loop: "{{ permissions | dict2items | subelements('value.kubernetes', skip_missing=True) }}"
   kubernetes.core.k8s:
     state: absent
-    api_version: kyverno.io/v1
-    kind: ClusterPolicy
+    api_version: policies.kyverno.io/v1
+    kind: GeneratingPolicy
     name: "add-{{ item.0.key | regex_replace('_', '-') }}-{{ item.1.role }}-rolebinding"
     kubeconfig: "{{ kubeconfig }}"
     proxy: "{{ proxy_url | default(omit, true) }}"

@@ -27,8 +27,8 @@ kubernetes_roles: []
 #   kubernetes: # Optional
 #     - hosts: <clusters where the user should have access>
 #       role: <Name of the role the serviceaccount should be bound to on the clusters>
-#       namespaces: <namespaces these role should be applied>            # Optional
-#       namespace_excludes: <namespaces these role should no be applied> # Optional
+#       namespaces: <regular expression this role should be applied to, e.g. "^dev-.+$"> # Optional
+#       namespace_excludes: <regular expression this role should be applied to> # Optional
 #     - <further host-role combinations)>
 #   vms: # Optional 
 #     groups:
