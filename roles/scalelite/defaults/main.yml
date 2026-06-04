@@ -25,7 +25,7 @@ scalelite_certbot_resources:
     memory: 50M
   limits:
     cpus: '1'
-    memory: 200M
+    memory: 300M
 # scalelite_letsencrypt_email:
 
 
