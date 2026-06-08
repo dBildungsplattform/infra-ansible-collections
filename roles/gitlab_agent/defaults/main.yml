@@ -2,11 +2,11 @@
 gitlab_agent_chart_repo_name: "gitlab-io"
 gitlab_agent_chart_repo_url: "https://charts.gitlab.io"
 gitlab_agent_chart_name: "gitlab-agent"
-gitlab_agent_chart_version: "2.23.0"
+gitlab_agent_chart_version: "2.27.0"
 
 gitlab_agent_image_repository: "registry.gitlab.com/gitlab-org/cluster-integration/gitlab-agent"
 gitlab_agent_image_name: "agentk"
-gitlab_agent_image_tag: "v18.8.10@sha256:3e07d48c677d3eb452ef03ce62093f78340b99037741fb8a87eb0c641da8ba7b"
+gitlab_agent_image_tag: "v19.0.1@sha256:9b1f074e758263227c25abb6fc86af895ba672cb01fc8663c32c41af5a80af02"
 gitlab_agent_image_pull_policy: "IfNotPresent"
 gitlab_agent_image_pull_secrets: []
 
