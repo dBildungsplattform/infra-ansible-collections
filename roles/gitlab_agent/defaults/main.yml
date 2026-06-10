@@ -6,7 +6,7 @@ gitlab_agent_chart_version: "2.23.0"
 
 gitlab_agent_image_repository: "registry.gitlab.com/gitlab-org/cluster-integration/gitlab-agent"
 gitlab_agent_image_name: "agentk"
-gitlab_agent_image_tag: "v18.8.4"
+gitlab_agent_image_tag: "v18.8.10@sha256:3e07d48c677d3eb452ef03ce62093f78340b99037741fb8a87eb0c641da8ba7b"
 gitlab_agent_image_pull_policy: "IfNotPresent"
 gitlab_agent_image_pull_secrets: []
 
