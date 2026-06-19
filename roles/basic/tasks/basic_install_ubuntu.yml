@@ -26,3 +26,12 @@
       name: kernel.pid_max
       value: '100000'
       sysctl_file: /etc/sysctl.d/99-sysctl.conf
+
+  - name: Reboot if necessary cronjob
+    cron:
+      state: "{{ basic_reboot_cronjob_enabled | ternary('present', 'absent') }}"
+      name: "Weekly reboot for updates"
+      weekday: "{{ basic_reboot_cronjob_weekday }}"
+      hour: "{{ basic_reboot_cronjob_hour }}"
+      minute: "{{ basic_reboot_cronjob_minute }}"
+      job: "[ -f /var/run/reboot-required ] && /usr/sbin/reboot"
