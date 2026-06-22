@@ -5,7 +5,7 @@
     chart_ref: oci://ghcr.io/traefik/helm/traefik
     chart_version: "{{ ingress_traefik_chart_version }}"
     kubeconfig: "{{ kubeconfig }}"
-    release_namespace: ingress-controller-traefik
+    release_namespace: ingress-controller
     create_namespace: true
     values:
       "{{ ingress_traefik_chart_values }}"
