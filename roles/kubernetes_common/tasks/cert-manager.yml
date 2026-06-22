@@ -52,9 +52,8 @@
 - name: Install clusterissuer Helm chart
   kubernetes.core.helm:
     name: sc-cert-manager-clusterissuer
-    #chart_ref: dbildungsplattform/cert-manager-clusterissuer
-    chart_ref: ../../../../helm-charts/cert-manager-clusterissuer
-    #chart_version: "{{ cert_manager_clusterissuer_chart_version }}"
+    chart_ref: dbildungsplattform/cert-manager-clusterissuer
+    chart_version: "{{ cert_manager_clusterissuer_chart_version }}"
     kubeconfig: "{{ kubeconfig }}"
     release_namespace: cert-manager
     values: "{{ cert_manager_clusterissuer_values }}"
