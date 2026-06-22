@@ -1,6 +1,9 @@
 ---
 - import_tasks: network-policy.yml
-- import_tasks: ingress-controller.yml
+- import_tasks: ingress-controller-nginx.yml
+  when: ingress_nginx_enabled
+- import_tasks: ingress-controller-traefik.yml
+  when: ingress_traefik_enabled
 - import_tasks: cert-manager.yml
   when: cert_manager_enabled
 - import_tasks: otc-cert-manager.yml

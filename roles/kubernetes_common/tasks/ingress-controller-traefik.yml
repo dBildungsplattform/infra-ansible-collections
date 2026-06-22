@@ -1,0 +1,11 @@
+---
+- name: Install traefik Helm chart
+  kubernetes.core.helm:
+    name: traefik
+    chart_ref: oci://ghcr.io/traefik/helm/traefik
+    chart_version: "{{ ingress_traefik_chart_version }}"
+    kubeconfig: "{{ kubeconfig }}"
+    release_namespace: ingress-controller-traefik
+    create_namespace: true
+    values:
+      "{{ ingress_traefik_chart_values }}"

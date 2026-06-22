@@ -7,3 +7,6 @@ otcdns_wildcard_certificates: []
 # This is the default to keep backwards compatibility
 otc_cert_manager_enabled: "{{ otcdns_wildcard_certificates | length > 0 }}"
 fluentbit_enabled: true
+ingress_nginx_enabled: true
+ingress_traefik_enabled: false
+ingress_traefik_chart_version: 41.0.0
