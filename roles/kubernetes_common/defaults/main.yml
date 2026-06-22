@@ -10,3 +10,4 @@ fluentbit_enabled: true
 ingress_nginx_enabled: true
 ingress_traefik_enabled: false
 ingress_traefik_chart_version: 41.0.0
+ingress_traefik_chart_values: {}
