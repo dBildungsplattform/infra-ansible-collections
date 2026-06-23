@@ -28,9 +28,11 @@
       sysctl_file: /etc/sysctl.d/99-sysctl.conf
 
   - name: Reboot if necessary cronjob
-    cron:
+    ansible.builtin.cron:
       state: "{{ basic_reboot_cronjob_enabled | ternary('present', 'absent') }}"
-      name: "Weekly reboot for updates"
+      name: "basic: Weekly reboot for updates"
+      cron_file: basic-weekly-reboot
+      user: root
       weekday: "{{ basic_reboot_cronjob_weekday }}"
       hour: "{{ basic_reboot_cronjob_hour }}"
       minute: "{{ basic_reboot_cronjob_minute }}"
