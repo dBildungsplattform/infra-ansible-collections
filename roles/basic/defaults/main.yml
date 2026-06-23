@@ -13,3 +13,7 @@ basic_fail2ban_jail_sshd: |
   bantime = 3600
 basic_fail2ban_jail_sshd_path: /etc/fail2ban/jail.d/sshd_jail.local
 basic_install_python: true
+basic_reboot_cronjob_enabled: false
+basic_reboot_cronjob_weekday: 0
+basic_reboot_cronjob_hour: 0
+basic_reboot_cronjob_minute: 21
