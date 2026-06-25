@@ -1,4 +1,4 @@
 ---
 nfs_provider_chart_supported_types:
-  - nfs-provider
+  - nfs-subdir
   - csi-driver-nfs

@@ -15,3 +15,4 @@ ingress_traefik_chart_values: {}
 nfs_provider_chart: nfs-subdir
 nfs_provider_chart_version: v4.0.16
 nfs_provider_values: {}
+csi_driver_nfs_repo_url: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
