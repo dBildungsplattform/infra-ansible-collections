@@ -11,3 +11,7 @@ ingress_nginx_enabled: true
 ingress_traefik_enabled: false
 ingress_traefik_chart_version: 41.0.0
 ingress_traefik_chart_values: {}
+
+nfs_provider_chart: nfs-subdir
+nfs_provider_chart_version: v4.0.16
+nfs_provider_values: {}
