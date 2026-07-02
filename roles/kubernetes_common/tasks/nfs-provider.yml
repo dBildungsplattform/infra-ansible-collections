@@ -1,12 +1,17 @@
 ---
+- name: Check variables
+  assert:
+    that:
+      - nfs_provider_chart in nfs_provider_chart_supported_types
+    fail_msg: "nfs_provider_chart should be one of {{ nfs_provider_chart_supported_types | join(', ') }}"
+
 - name: Add nfs-subdir helm repo
   kubernetes.core.helm_repository:
     name: nfs-subdir
     repo_url: "https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner"
   check_mode: false
   changed_when: false
-  when: nfs_server_ip is defined
-  tags: nfs
+  when: nfs_server_ip is defined and nfs_provider_chart == "nfs-subdir"
 
 - name: Install nfs-subdir provider helm chart
   kubernetes.core.helm:
@@ -19,5 +24,25 @@
     release_namespace: nfs-provider
     create_namespace: true
     values: "{{ nfs_provider_values }}"
-  when: nfs_server_ip is defined
-  tags: nfs
+  when: nfs_server_ip is defined and nfs_provider_chart == "nfs-subdir"
+
+- name: Add csi-driver-nfs helm repo
+  kubernetes.core.helm_repository:
+    name: csi-driver-nfs
+    repo_url: "{{ csi_driver_nfs_repo_url  }}"
+  check_mode: false
+  changed_when: false
+  when: nfs_server_ip is defined and nfs_provider_chart == "csi-driver-nfs"
+
+- name: Install csi-driver-nfs provider helm chart
+  kubernetes.core.helm:
+    name: csi-driver-nfs
+    chart_ref: "csi-driver-nfs/csi-driver-nfs"
+    wait: true
+    wait_timeout: 10m
+    chart_version: "{{ nfs_provider_chart_version }}"
+    kubeconfig: "{{ kubeconfig }}"
+    release_namespace: nfs-provider
+    create_namespace: true
+    values: "{{ nfs_provider_values }}"
+  when: nfs_server_ip is defined and nfs_provider_chart == "csi-driver-nfs"
