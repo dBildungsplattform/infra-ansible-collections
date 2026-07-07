@@ -279,7 +279,7 @@ services:
       - REDIS_URL=redis://${GREENLIGHT_REDIS_USER}:${GREENLIGHT_REDIS_SECRET}@redis-greenlight:6379
       - CLAMAV_SCANNING={{ scalelite_clamav_enabled | string | lower }}
       - CLAMAV_DAEMONIZE=true
-{% if scalelite_greenlight_phone_number != '' %}
+{% if scalelite_greenlight_phone_number | length > 0 %}
       - VOICE_BRIDGE_PHONE_NUMBER={{ scalelite_greenlight_phone_number }}
 {% endif %}
 {% if scalelite_greenlight_allow_mail_notifications %}
