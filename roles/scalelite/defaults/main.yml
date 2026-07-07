@@ -48,6 +48,7 @@ scalelite_greenlight_allow_mail_notifications: true
 # scalelite_bbb_tenant_api_key:
 scalelite_greenlight_smtp_auth: plain
 scalelite_greenlight_smtp_starttls_auto: true
+scalelite_greenlight_phone_number: ""
 scalelite_greenlight_resources:
   reservations:
     cpus: '0.1'
