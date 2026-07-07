@@ -97,6 +97,8 @@ server_monitoring_cadvisor_command:
   - "--store_container_labels=false"
   - "--docker_only=true"
   - "--disable_root_cgroup_stats=true"
+  - "--disable_metrics=disk" # workaround for https://github.com/google/cadvisor/issues/3860
+
 # Exposes cAdvisor outside of the Docker compose network, useful when not using the included Nginx
 server_monitoring_cadvisor_expose_port: false
 server_monitoring_cadvisor_resources:
