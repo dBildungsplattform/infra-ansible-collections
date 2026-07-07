@@ -86,8 +86,7 @@ server_monitoring_node_exporter_healthcheck:
   retries: 3
 
 server_monitoring_cadvisor_enabled: true
-# gcr.io/cadvisor/cadvisor:v0.49.2
-server_monitoring_cadvisor_image: gcr.io/cadvisor/cadvisor@sha256:aea169b3b211216d9d61c33455ec3a85d2b6f63d8889b1ebf41b97163cffbbc5
+server_monitoring_cadvisor_image: ghcr.io/google/cadvisor:v0.60.3@sha256:c4c44a8d178a1f3985d4aec9f0876a313cc7833ee07fe1d0d8ec63707ef7d69f
 server_monitoring_cadvisor_public_port: 9300
 server_monitoring_cadvisor_private_port: 9299
 server_monitoring_cadvisor_user_id: 0
@@ -98,6 +97,7 @@ server_monitoring_cadvisor_command:
   - "--docker_only=true"
   - "--disable_root_cgroup_stats=true"
   - "--disable_metrics=disk" # workaround for https://github.com/google/cadvisor/issues/3860
+  - "--disable_metrics=referenced_memory" # workaround for https://github.com/google/cadvisor/issues/3139
 
 # Exposes cAdvisor outside of the Docker compose network, useful when not using the included Nginx
 server_monitoring_cadvisor_expose_port: false
