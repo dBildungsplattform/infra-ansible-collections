@@ -27,6 +27,11 @@
       value: '100000'
       sysctl_file: /etc/sysctl.d/99-sysctl.conf
 
+  - name: Install cron
+    ansible.builtin.apt:
+      name: cron
+      state: latest
+
   - name: Reboot if necessary cronjob
     ansible.builtin.cron:
       state: "{{ basic_reboot_cronjob_enabled | ternary('present', 'absent') }}"
