@@ -65,7 +65,7 @@
             python3 -m pip --version
             git clone https://github.com/dBildungsplattform/infra-tools.git
             chmod +x ./infra-tools/s3-backup/s3-backup.py
-            pip3 install -r ./infra-tools/s3-backup/requirements.txt
+            pip3 install -r ./infra-tools/s3-backup/requirements.txt --break-system-packages
             mkdir -p /root/.config/rclone
             envsubst < /scripts/rclone.conf > /root/.config/rclone/rclone.conf
             mkdir /infra-tools/s3-backup/logs
