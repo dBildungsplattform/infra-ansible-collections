@@ -7,13 +7,4 @@
   changed_when: false
   tags: kube-events
 
-- name: Deploy latest version of kubernetes-event-exporter inside monitoring namespace
-  kubernetes.core.helm:
-    name: kube-events
-    chart_ref: bitnami/kubernetes-event-exporter
-    chart_version: "{{ kubernetes_event_exporter_chart_version }}"
-    update_repo_cache: true
-    kubeconfig: "{{ kubeconfig }}"
-    release_namespace: monitoring
-    values: "{{ kube_events_logger_values }}"
-  tags: kube-events
+
