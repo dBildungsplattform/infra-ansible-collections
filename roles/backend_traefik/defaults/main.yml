@@ -1,0 +1,3 @@
+backend_ingress_traefik_enabled: false
+backend_ingress_traefik_chart_version: 41.0.0
+backend_ingress_traefik_chart_values: {}
