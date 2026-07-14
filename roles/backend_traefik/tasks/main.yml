@@ -1,0 +1,14 @@
+---
+- name: Install Traefik Ingress Controller for Backend
+  kubernetes.core.helm:
+    name: traefik-backend
+    chart_ref: oci://ghcr.io/traefik/helm/traefik
+    chart_version: "{{ backend_ingress_traefik_chart_version }}"
+    kubeconfig: "{{ kubeconfig }}"
+    release_namespace: ingress-controller
+    create_namespace: true
+    values:
+      "{{ backend_ingress_traefik_chart_values }}"
+    when: backend_ingress_traefik_enabled
+    tags: 
+    - ingress-controller
