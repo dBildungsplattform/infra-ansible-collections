@@ -15,6 +15,7 @@
     OP_SERVICE_ACCOUNT_TOKEN: "{{ op_credentials.OP_SERVICE_ACCOUNT_TOKEN | default(omit) }}"
   community.general.terraform:
     project_path: '{{ playbook_dir }}/../terraform/resource-pools/{{ resource_pool }}'
+    binary_path: "{{ terraform_binary_path | default(omit) }}
     state: "{{ 'planned' if terraform_plan else 'present' }}"
     plan_file: "{{ '/tmp/tf-plan' if terraform_plan else omit }}"
     workspace: "{{ terraform_workspace }}"
