@@ -32,7 +32,7 @@ scalelite_certbot_resources:
 
 scalelite_greenlight_enabled: false
 scalelite_greenlight_image_repository: greenlight
-scalelite_greenlight_image_tag: v3.1.0.2
+scalelite_greenlight_image_tag: v3.8.2.3.0@sha256:4602740d9eea29095b876c1ef40e3abee053e9d6bac086db8ba93cf6b2b547a3
 scalelite_greenlight_user_id: 999
 scalelite_greenlight_extra_instances: []
 scalelite_greenlight_default_locale: de
@@ -278,7 +278,7 @@ scalelite_clamav_resources:
     cpus: '0.05'
     memory: '1G'
 
-scalelite_greenlight_extra_instances_login_locale: "https://raw.githubusercontent.com/bigbluebutton/greenlight/refs/tags/{{ scalelite_greenlight_image_tag| regex_replace('^v', 'release-') | regex_replace('\\.\\d+$', '') }}/app/assets/locales/de.json"
+scalelite_greenlight_extra_instances_login_locale: "https://raw.githubusercontent.com/bigbluebutton/greenlight/refs/tags/{{ scalelite_greenlight_image_tag | regex_replace('^v', 'release-') | regex_replace('@sha256:\\w+$', '') | regex_replace('\\.\\d+$', '') }}/app/assets/locales/de.json"
 
 # bbb_instances_dbp:
 #   dp:
