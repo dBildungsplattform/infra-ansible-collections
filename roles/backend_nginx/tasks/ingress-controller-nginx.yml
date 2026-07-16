@@ -1,0 +1,26 @@
+---
+  - name: Add ingress-nginx chart repo
+    kubernetes.core.helm_repository:
+      name: ingress-nginx
+      repo_url: "https://kubernetes.github.io/ingress-nginx"
+    check_mode: false
+    changed_when: false
+    when: backend_ingress_enabled
+    tags: 
+      - ingress-controller
+
+  - name: Install Nginx Ingress Controller for Backend
+    kubernetes.core.helm:
+      name: backend-ingress
+      chart_ref: ingress-nginx/ingress-nginx
+      update_repo_cache: true
+      chart_version: "{{ backend_ingress_chart_version }}"
+      kubeconfig: "{{ kubeconfig }}"
+      release_namespace: ingress-controller
+      wait: true
+      wait_timeout: 10m
+      values:
+        "{{ backend_ingress_values }}"
+    when: backend_ingress_enabled
+    tags: 
+    - ingress-controller
