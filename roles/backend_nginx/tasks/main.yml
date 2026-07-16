@@ -1,4 +1,4 @@
 - import_tasks: ingress-controller-nginx.yml
-  when: ingress_nginx_enabled
+  when: backend_ingress_nginx_enabled and backend_ingress_enabled
 - import_tasks: ingress-controller-traefik.yml
-  when: ingress_traefik_enabled
+  when: backend_ingress_traefik_enabled

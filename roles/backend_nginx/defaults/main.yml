@@ -1,0 +1,8 @@
+backend_ingress_nginx_enabled: true
+backend_ingress_traefik_enabled: false
+backend_ingress_traefik_chart_version: 41.0.0
+backend_ingress_traefik_chart_values: {}
+
+backend_ingress_chart_version: 4.14.3
+backend_ingress_values: {}
+# backend_ingress_enabled:     # TODO not sure whether we want to keep this variable, for compatibilty reasons kept for now

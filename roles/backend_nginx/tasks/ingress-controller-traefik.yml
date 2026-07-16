@@ -9,6 +9,5 @@
     create_namespace: true
     values:
       "{{ backend_ingress_traefik_chart_values }}"
-    when: backend_ingress_enabled
     tags: 
       - ingress-controller
