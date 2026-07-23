@@ -12,7 +12,7 @@
         name: "{{ otc_cert_manager_secret_name }}"
         namespace: cert-manager
       spec:
-        itemPath: "vaults/{{ vault }}/items/{{ otc_cert_manager_secret_name }}"
+        itemPath: "vaults/{{ vault }}/items/{{ otc_cert_manager_onepassword_item_name }}"
   when: otc_cert_manager_enabled
 
 - name: Add otcdns chart repo
