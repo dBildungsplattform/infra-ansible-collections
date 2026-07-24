@@ -13,9 +13,6 @@
   check_mode: false
   changed_when: false
 
-- debug:
-    var: _onepassword_connector_credentials_json_encoded
-
 # The onepassword credentials json file is used by the connector to connect to central 1password service
 # See https://docs.ansible.com/ansible/latest/collections/kubernetes/core/k8s_module.html
 - name: Create onepassword credentials secret

@@ -1,8 +1,8 @@
 ---
 # chart 2.3.0 has a breaking change that changes the way credentials are handled 
-_onepassword_connector_credentials_json_encoded: >-
-  {% if onepassword_connector_chart_version is version('2.3.0', '>=') %}
+_onepassword_connector_credentials_json_encoded: |-
+  {%- if onepassword_connector_chart_version is version('2.3.0', '>=') %}
   {{ onepassword_connector_credentials_json | b64encode }}
-  {% else %}
+  {%- else %}
   {{ onepassword_connector_credentials_json | b64encode | b64encode }}
-  {% endif %}
+  {%- endif %}
