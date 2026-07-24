@@ -29,7 +29,7 @@
         name: "{{ onepassword_connector_credentials_name }}"
         namespace: default
       data:
-        1password-credentials.json: "{{ onepassword_connector_credentials_json | b64encode | b64encode }}"
+        1password-credentials.json: "{{ _onepassword_connector_credentials_json_encoded }}"
 
 - name: Create Image pull secret token
   kubernetes.core.k8s:
@@ -66,6 +66,9 @@
       data:
         token: "{{ onepassword_connector_token_value | b64encode}}"
   when: stage not in ["prod", "staging"] or "schulcloud" not in group_names
+
+- debug:
+    var: _onepassword_connector_credentials_json_encoded
 
 # This clusterrolebinding is used in the dev environment to grant access for the 1password operator to all namespaces
 # See https://docs.ansible.com/ansible/latest/collections/kubernetes/core/k8s_module.html
