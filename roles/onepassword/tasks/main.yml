@@ -29,7 +29,7 @@
         name: "{{ onepassword_connector_credentials_name }}"
         namespace: default
       data:
-        1password-credentials.json: "{{ onepassword_connector_credentials_json | b64encode | b64encode }}"
+        1password-credentials.json: "{{ _onepassword_connector_credentials_json_encoded }}"
 
 - name: Create Image pull secret token
   kubernetes.core.k8s:
