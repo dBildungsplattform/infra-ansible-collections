@@ -3,3 +3,4 @@
 image_pull_token_enabled: true
 ## image_pull_token_secret secret value is added via playbook on deployment, secret needs to be base64 encoded.
 # image_pull_token_secret:
+onepassword_connector_namespace: default
