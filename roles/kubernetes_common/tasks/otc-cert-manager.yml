@@ -9,10 +9,10 @@
       apiVersion: onepassword.com/v1
       kind: OnePasswordItem
       metadata:
-        name: otcdns-credentials
+        name: "{{ otc_cert_manager_secret_name }}"
         namespace: cert-manager
       spec:
-        itemPath: "vaults/{{ vault }}/items/otcdns-credentials"
+        itemPath: "vaults/{{ vault }}/items/{{ otc_cert_manager_onepassword_item_name }}"
   when: otc_cert_manager_enabled
 
 - name: Add otcdns chart repo
