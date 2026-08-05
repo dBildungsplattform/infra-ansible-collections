@@ -1,12 +1,12 @@
 ---
 # Prometheus Operator can only get additional scrape configs, volumes and volume mounts
 # from one secret or one Helm value each so we have to add entries to the
-# prometheus_additional_scrape_configs, prometheus_volume_mounts and prometheus_volume_mounts variable
+# prometheus_additional_scrapeConfigs, prometheus_volumeMounts and prometheus_volumeMounts variable
 - name: Add BBB scrape configs
   set_fact:
-    prometheus_additional_scrape_configs: "{{ prometheus_additional_scrape_configs + bbb_prometheus_scrape_config }}"
+    prometheus_additional_scrapeConfigs: "{{ prometheus_additional_scrapeConfigs + bbb_prometheus_scrape_config }}"
     prometheus_volumes: "{{ prometheus_volumes + bbb_prometheus_volumes }}"
-    prometheus_volume_mounts: "{{ prometheus_volume_mounts + bbb_prometheus_volume_mounts }}"
+    prometheus_volumeMounts: "{{ prometheus_volumeMounts + bbb_prometheus_volumeMounts }}"
 
 - name: Create BBB secrets
   kubernetes.core.k8s:
