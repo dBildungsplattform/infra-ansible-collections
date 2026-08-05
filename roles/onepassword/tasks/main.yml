@@ -15,7 +15,7 @@
 
 # The onepassword credentials json file is used by the connector to connect to central 1password service
 # See https://docs.ansible.com/ansible/latest/collections/kubernetes/core/k8s_module.html
-- name: Create onepassword credentials secret
+- name: Create onepassword Connector credentials secret
   kubernetes.core.k8s:
     state: present
     kubeconfig: "{{ kubeconfig }}"
@@ -27,7 +27,7 @@
       type: Opaque
       metadata:
         name: "{{ onepassword_connector_credentials_name }}"
-        namespace: default
+        namespace: "{{ onepassword_connector_namespace }}"
       data:
         1password-credentials.json: "{{ _onepassword_connector_credentials_json_encoded }}"
 
@@ -43,14 +43,14 @@
       type: Opaque
       metadata:
         name: "{{ image_pull_secrets_name }}"
-        namespace: default
+        namespace: "{{ onepassword_connector_namespace }}"
       data:
         .dockerconfigjson: "{{ image_pull_token_secret }}"
   when: image_pull_token_enabled
 
 # The onepassword token is used by the operator to retrieve the secrets from the connector
 # See https://docs.ansible.com/ansible/latest/collections/kubernetes/core/k8s_module.html
-- name: Create onepassword servicecenter token secret
+- name: Create onepassword token secret
   kubernetes.core.k8s:
     state: present
     kubeconfig: "{{ kubeconfig }}"
@@ -62,33 +62,10 @@
       type: Opaque
       metadata:
         name: "{{ onepassword_connector_token_name }}"
-        namespace: default
+        namespace: "{{ onepassword_connector_namespace }}"
       data:
         token: "{{ onepassword_connector_token_value | b64encode}}"
-  when: stage not in ["prod", "staging"] or "schulcloud" not in group_names
-
-# This clusterrolebinding is used in the dev environment to grant access for the 1password operator to all namespaces
-# See https://docs.ansible.com/ansible/latest/collections/kubernetes/core/k8s_module.html
-- name: Create onepassword ClusterRoleBinding
-  kubernetes.core.k8s:
-    state: present
-    kubeconfig: "{{ kubeconfig }}"
-    proxy: "{{ proxy_url | default(omit, true) }}"
-    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
-    definition:
-      kind: ClusterRoleBinding
-      apiVersion: rbac.authorization.k8s.io/v1
-      metadata:
-        name: onepassword-connect-operator-default
-      subjects:
-        - kind: ServiceAccount
-          name: onepassword-connect-operator
-          namespace: default
-      roleRef:
-        kind: ClusterRole
-        name: onepassword-connect-operator
-        apiGroup: rbac.authorization.k8s.io
-  when: stage not in ["prod", "staging"] or "schulcloud" not in group_names
+  when: onepassword_connector_values.operator.create | default(true)
 
 # See https://docs.ansible.com/ansible/latest/collections/kubernetes/core/helm_module.html
 - name: Install 1password connector and operator
@@ -97,7 +74,7 @@
     chart_ref: 1password/connect
     chart_version: "{{ onepassword_connector_chart_version }}"
     kubeconfig: "{{ kubeconfig }}"
-    release_namespace: default
+    release_namespace: "{{ onepassword_connector_namespace }}"
     update_repo_cache: true
     values:
       "{{ onepassword_connector_values }}"
