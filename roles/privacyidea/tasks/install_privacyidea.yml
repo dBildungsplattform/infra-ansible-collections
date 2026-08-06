@@ -24,3 +24,4 @@
   pip:
     virtualenv: "{{ privacyidea_dir }}/virtualenv"
     requirements: "{{ privacyidea_dir }}/privacyidea-requirement.txt"
+    extra_args: --require-hashes
