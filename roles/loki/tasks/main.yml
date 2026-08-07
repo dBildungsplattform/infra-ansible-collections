@@ -2,7 +2,7 @@
 - name: Add grafana chart repo
   kubernetes.core.helm_repository:
     name: grafana
-    repo_url: "https://grafana.github.io/helm-charts"
+    repo_url: "{{ loki_helm_repo_url }}"
   check_mode: false
   changed_when: false
   tags: loki
