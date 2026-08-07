@@ -15,6 +15,7 @@
       - "gitlab_agent_image_pull_policy is in ['Always', 'IfNotPresent', 'Never']"
       - "gitlab_agent_image_pull_secrets is sequence"
       - "gitlab_agent_replicas is integer"
+      - "gitlab_agent_service_monitor_enabled is boolean"
 
 - name: "Assert that mandatory instance parameters are defined and have the correct type"
   ignore_errors: false
