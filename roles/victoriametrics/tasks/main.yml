@@ -36,10 +36,11 @@
       spec:
         accessModes:
           - ReadWriteOnce
-        storageClassName: "{{ victoriametrics_vmstorage_persistentVolume.persistentVolume.storageClass }}"
+        # TODO: does victoriametrics_vmstorage_persistent_volume need to be included in victoriametrics_values
+        storageClassName: "{{ victoriametrics_vmstorage_persistent_volume.persistentVolume.storageClass }}"
         resources:
           requests:
-            storage: "{{ victoriametrics_vmstorage_persistentVolume.persistentVolume.size }}"
+            storage: "{{ victoriametrics_vmstorage_persistent_volume.persistentVolume.size }}"
   # End is less than or equal so we have to substract 1
   with_sequence: start=0 end="{{ victoriametrics_vmstorage_replica_count -1 }}"
 
