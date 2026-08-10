@@ -1,7 +1,7 @@
 
 ---
 ######################################### Victoriametrics Agent #######################################
-- name: Install configmap for config of Vmagent 
+- name: Install configmap for config of Vmagent
   kubernetes.core.k8s:
     state: present
     kubeconfig: "{{ kubeconfig }}"
@@ -14,13 +14,13 @@
         name: vmagent-configs
         namespace: "{{ monitoring_namespace }}"
       data:
-        relabelConfig.yml: 
-          "{{ relabelConfig_values | to_yaml }}"
-        relabelConfig-longterm.yml: 
-          "{{ relabelConfig_longterm_values | to_yaml }}"
-  when: victoriametrics_longterm_enabled 
+        relabelConfig.yml:
+          "{{ relabel_config_values | to_yaml }}"
+        relabelConfig-longterm.yml:
+          "{{ relabel_config_longterm_values | to_yaml }}"
+  when: victoriametrics_longterm_enabled
   register: task_install_configmap_vmagent_result
-  tags: 
+  tags:
   - victoriametrics
   - victoriametrics-l
   - vmagent
@@ -37,19 +37,19 @@
     release_namespace: "{{ monitoring_namespace }}"
     values:
       "{{ vm_agent_values }}"
-  when: victoriametrics_longterm_enabled 
+  when: victoriametrics_longterm_enabled
   register: task_vmagent_helm_chart_result
-  tags: 
+  tags:
   - victoriametrics
   - victoriametrics-l
   - vmagent
 
-- name: Restart Vmagent on change of configmap 
+- name: Restart Vmagent on change of configmap
   shell: /bin/bash -c "kubectl rollout restart deployment vmagent-victoria-metrics-agent -n {{ monitoring_namespace }}"
   environment:
     KUBECONFIG: "{{ kubeconfig }}"
   when: victoriametrics_longterm_enabled and task_install_configmap_vmagent_result.changed and not task_vmagent_helm_chart_result.changed
-  tags: 
+  tags:
   - victoriametrics
   - victoriametrics-l
   - vmagent

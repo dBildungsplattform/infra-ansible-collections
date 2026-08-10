@@ -67,9 +67,8 @@
 # Store the access key, access secret, bucket_name and url in one 1PW item.
 - name: "Push credentials to 1password"
   dbildungscloud.onepwd.item:
-    credentials: "{{ op_credentials }}"
+    service_account_token: "{{ op_credentials.OP_SERVICE_ACCOUNT_TOKEN }}"
     vault: "{{ s3_create_bucket_1pw_target.vault }}"
-    session_shorthand: ansible-run
     name: "{{ s3_create_bucket_1pw_target.item }}"
     fields:
       - name: "{{ s3_create_bucket_1pw_target.bucket_name_1pw_field_name }}"

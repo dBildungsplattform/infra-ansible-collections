@@ -25,14 +25,14 @@ scalelite_certbot_resources:
     memory: 50M
   limits:
     cpus: '1'
-    memory: 200M
+    memory: 150M
 # scalelite_letsencrypt_email:
 
 
 
 scalelite_greenlight_enabled: false
 scalelite_greenlight_image_repository: greenlight
-scalelite_greenlight_image_tag: v3.1.0.2
+scalelite_greenlight_image_tag: v3.8.2.3.0@sha256:4602740d9eea29095b876c1ef40e3abee053e9d6bac086db8ba93cf6b2b547a3
 scalelite_greenlight_user_id: 999
 scalelite_greenlight_extra_instances: []
 scalelite_greenlight_default_locale: de
@@ -48,6 +48,7 @@ scalelite_greenlight_allow_mail_notifications: true
 # scalelite_bbb_tenant_api_key:
 scalelite_greenlight_smtp_auth: plain
 scalelite_greenlight_smtp_starttls_auto: true
+scalelite_greenlight_phone_number: ""
 scalelite_greenlight_resources:
   reservations:
     cpus: '0.1'
@@ -154,8 +155,8 @@ scalelite_modsec_before: |
   # Dummy comment
 
 scalelite_modsec_after: |
-  SecRule REMOTE_ADDR "@ipMatch {{ scalelite_docker_net }}"                     "id:1001, phase:1, pass, nolog,   allow"    
-  SecRule REQUEST_URI "@beginsWith /fsapi"                                      "id:1002, phase:1, pass, nolog,   ctl:ruleRemoveById=932230"  
+  SecRule REMOTE_ADDR "@ipMatch {{ scalelite_docker_net }}"                     "id:1001, phase:1, pass, nolog,   allow"
+  SecRule REQUEST_URI "@beginsWith /fsapi"                                      "id:1002, phase:1, pass, nolog,   ctl:ruleRemoveById=932230"
   SecRule REQUEST_URI "@beginsWith /fsapi"                                      "id:1003, phase:1, pass, nolog,   ctl:ruleRemoveById=932250"
   SecRule REQUEST_URI "@beginsWith /fsapi"                                      "id:1004, phase:1, pass, nolog,   ctl:ruleRemoveById=949110"
   SecRule REQUEST_URI "@contains /greenlight/api/v1/rooms"                      "id:1005, phase:1, pass, nolog,   allow"
@@ -166,6 +167,7 @@ scalelite_modsec_after: |
   SecRule REQUEST_URI "@contains /greenlight/api/v1/admin/rooms_configurations" "id:1010, phase:1, pass, nolog,   allow"
   SecRule REQUEST_URI "@contains /greenlight/api/v1/admin/users"                "id:1011, phase:1, pass, nolog,   allow"
   SecRule REQUEST_URI "@contains /greenlight/api/v1/admin/invitations"          "id:1012, phase:1, pass, nolog,   allow"
+  SecRule REQUEST_URI "@contains /greenlight/api/v1/admin/roles"                "id:1013, phase:1, pass, nolog,   allow"
   SecAction "id:980145,phase:5,pass,t:none,log,noauditlog, msg:'Incoming and Outgoing Score: %{TX.ANOMALY_SCORE} %{TX.OUTBOUND_ANOMALY_SCORE}'"
   SecRuleRemoveById 980130
 
@@ -276,7 +278,7 @@ scalelite_clamav_resources:
     cpus: '0.05'
     memory: '1G'
 
-scalelite_greenlight_extra_instances_login_locale: "https://raw.githubusercontent.com/bigbluebutton/greenlight/refs/tags/{{ scalelite_greenlight_image_tag| regex_replace('^v', 'release-') | regex_replace('\\.\\d+$', '') }}/app/assets/locales/de.json"
+scalelite_greenlight_extra_instances_login_locale: "https://raw.githubusercontent.com/bigbluebutton/greenlight/refs/tags/{{ scalelite_greenlight_image_tag | regex_replace('^v', 'release-') | regex_replace('@sha256:\\w+$', '') | regex_replace('\\.\\d+$', '') }}/app/assets/locales/de.json"
 
 # bbb_instances_dbp:
 #   dp:

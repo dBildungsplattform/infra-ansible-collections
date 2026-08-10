@@ -1,9 +1,19 @@
-kubernetes_event_exporter_enabled: true
-kubernetes_event_exporter_chart_version: 2.1.2
 cert_manager_clusterissuer_enabled: false
 cert_manager_clusterissuer_chart_version: 1.0.0
 cert_manager_clusterissuer_values: {}
 otcdns_wildcard_certificates: []
 # This is the default to keep backwards compatibility
 otc_cert_manager_enabled: "{{ otcdns_wildcard_certificates | length > 0 }}"
+otc_cert_manager_secret_name: otcdns-credentials
+otc_cert_manager_onepassword_item_name: "{{ otc_cert_manager_secret_name }}"
+
 fluentbit_enabled: true
+ingress_nginx_enabled: true
+ingress_traefik_enabled: false
+ingress_traefik_chart_version: 41.0.0
+ingress_traefik_chart_values: {}
+
+nfs_provider_chart: nfs-subdir
+nfs_provider_chart_version: v4.0.16
+nfs_provider_values: {}
+csi_driver_nfs_repo_url: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
