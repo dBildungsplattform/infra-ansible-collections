@@ -1,0 +1,45 @@
+{% for rule in kyverno_namespace_label_policies | default([]) %}
+---
+apiVersion: policies.kyverno.io/v1beta1
+kind: MutatingPolicy
+metadata:
+  name: label-namespaces-{{ rule.rule_name }}
+  annotations:
+    policies.kyverno.io/subject: Namespace
+    policies.kyverno.io/title: Label {{ rule.rule_name | default('namespace') }} namespaces
+spec:
+  evaluation:
+    admission:
+      enabled: true
+    mutateExisting:
+      enabled: true
+  matchConditions:
+{% if rule.namespace_includes | default('') %}
+    - name: include-namespaces
+      expression: 'object.metadata.name.matches("{{ rule.namespace_includes }}")'
+{% endif %}
+{% if rule.namespace_excludes | default('') %}
+    - name: exclude-namespaces
+      expression: '!(object.metadata.name.matches("{{ rule.namespace_excludes }}"))'
+{% endif %}
+  matchConstraints:
+    resourceRules:
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - namespaces
+  mutations:
+    - applyConfiguration:
+        expression: |
+          Object{
+            metadata: Object.metadata{
+              labels: {{ rule.labels }}
+            }
+          }
+      patchType: ApplyConfiguration
+{% endfor %}

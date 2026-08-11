@@ -16,3 +16,9 @@
     kubeconfig: "{{ kubeconfig }}"
     release_namespace: "{{ kyverno_namespace }}"
     values: "{{ kyverno_values }}"
+
+- name: Install namespace label policy
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    definition: "{{ lookup('template', 'namespace-label-policy.yml.j2') }}"
