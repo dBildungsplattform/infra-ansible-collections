@@ -5,6 +5,8 @@ bettermarks_proxy_enabled_instances:
   - events
   - csp-report
   - helpdesk
+  - video
+  - desk
 bettermarks_subdomains:
   apm: apm
   school: school
@@ -12,6 +14,8 @@ bettermarks_subdomains:
   events: events
   csp-report: csp-report
   helpdesk: helpdesk
+  video: video
+  desk: desk
 bettermarks_proxy_subdomains:
   apm: apm
   school: school
