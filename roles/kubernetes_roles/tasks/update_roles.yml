@@ -1,0 +1,31 @@
+- name: Create Kubernetes Cluster Roles
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    definition:
+      kind: ClusterRole
+      apiVersion: rbac.authorization.k8s.io/v1
+      metadata:
+        name: "{{ item.name }}"
+        labels: "{{ item.labels | default(omit) }}"
+      rules: "{{ item.rules }}"
+  loop: "{{ kubernetes_roles }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when: inventory_hostname in (lookup('inventory_hostnames', item.hosts) | default('', true)).split(',')
+
+- name: Remove Kubernetes Cluster Roles
+  kubernetes.core.k8s:
+    state: absent
+    api_version: rbac.authorization.k8s.io/v1
+    kind: ClusterRole
+    name: "{{ item.name }}"
+    kubeconfig: "{{ kubeconfig }}"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+  loop: "{{ kubernetes_roles }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when: inventory_hostname not in (lookup('inventory_hostnames', item.hosts) | default('', true)).split(',')

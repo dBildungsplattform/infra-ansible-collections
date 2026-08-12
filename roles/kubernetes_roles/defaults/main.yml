@@ -1,4 +1,9 @@
 ---
+# Subtask toggles — set to false to skip a phase
+update_roles: true
+update_serviceaccounts: true
+update_role_bindings: true
+
 # Path to the kubeconfig file for cluster access
 kubeconfig: ""
 
