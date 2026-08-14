@@ -22,3 +22,4 @@
     state: present
     kubeconfig: "{{ kubeconfig }}"
     definition: "{{ lookup('template', 'namespace-label-policy.yml.j2') }}"
+  when: kyverno_namespace_label_policies | default([]) | length > 0
