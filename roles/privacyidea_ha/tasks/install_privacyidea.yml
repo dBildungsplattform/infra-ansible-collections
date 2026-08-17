@@ -26,5 +26,5 @@
     virtualenv: "{{ privacyidea_dir }}/virtualenv"
     requirements: "{{ privacyidea_dir }}/privacyidea-requirement.txt"
     extra_args: --require-hashes
-  register: install_privacyidea
+  register: install_privacyidea_result
   notify: restart uwsgi
