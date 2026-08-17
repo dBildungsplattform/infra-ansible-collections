@@ -34,15 +34,10 @@
   include_role:
     name: mrlesmithjr.ansible-mariadb-galera-cluster 
 
-- name: Set wsrep_auto_increment_control in galera-privacyidea.cnf
-  ansible.builtin.copy:
-    content: |
-      [galera]
-      wsrep_auto_increment_control=off
-    dest: /etc/mysql/conf.d/galera-privacyidea.cnf
-    owner: root
-    group: root
-    mode: 0644
+- name: Do not set wsrep_auto_increment_control in galera-privacyidea.cnf
+  ansible.builtin.file:
+    path: /etc/mysql/conf.d/galera-privacyidea.cnf
+    state: absent
   register: wsrep_config_changed
 
 - name: Ensure 'wsrep_auto_increment_control' is not set in galera.cnf
