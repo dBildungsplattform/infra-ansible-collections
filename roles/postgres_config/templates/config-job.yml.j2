@@ -1,21 +1,21 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: "psql-{{ psql_name }}-config-{{ lookup('community.general.random_string', min_lower=10, length=10)}}"
-  namespace: "{{ psql_namespace }}" 
+  name: "psql-{{ postgres_config_name }}-config-{{ lookup('community.general.random_string', min_lower=10, length=10)}}"
+  namespace: "{{ postgres_config_nameconfig_namespace }}"
 spec:
-  template:        
+  template:
     spec:
       volumes:
       - name: config-script
         configMap:
-          name: "psql-{{ psql_name }}-config-script"   
+          name: "psql-{{ postgres_config_name }}-config-script"
           # 711 in decimal is 457
           defaultMode: 457
       containers:
       - name:  psql-config
         image: ghcr.io/dbildungsplattform/cron-tools:{{ cron_tools_image_tag }}
-        command:              
+        command:
           - /bin/bash
           - -c
         args:
@@ -25,29 +25,29 @@ spec:
             cpu: 1000m
             memory: 2Gi
           requests:
-            cpu: 100m  
+            cpu: 100m
             memory: 1Gi
         volumeMounts:
         - name: config-script
           mountPath: /scripts/
         envFrom:
           - secretRef:
-              name: "psql-{{ psql_name }}-config"
+              name: "psql-{{ postgres_config_name }}-config"
 {% if existing_secret is defined %}
         env:
-{% if psql_pass_key is defined %}
+{% if postgres_config_pass_key is defined %}
           - name: "PGPASSWORD"
             valueFrom:
               secretKeyRef:
                 name: "{{ existing_secret }}"
-                key: "{{ psql_pass_key }}"
+                key: "{{ postgres_config_pass_key }}"
 {% endif %}
-{% if psql_user_key is defined %}
+{% if postgres_config_user_key is defined %}
           - name: "PGUSER"
             valueFrom:
               secretKeyRef:
                 name: "{{ existing_secret }}"
-                key: "{{ psql_user_key }}"
+                key: "{{ postgres_config_user_key }}"
 {% endif %}
 {% endif %}
       restartPolicy: Never
