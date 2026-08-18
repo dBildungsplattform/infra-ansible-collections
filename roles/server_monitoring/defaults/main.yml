@@ -96,14 +96,13 @@ server_monitoring_cadvisor_command:
   - "--store_container_labels=false"
   - "--docker_only=true"
   - "--disable_root_cgroup_stats=true"
-  - "--disable_metrics=disk" # workaround for https://github.com/google/cadvisor/issues/3860
-  - "--disable_metrics=referenced_memory" # workaround for https://github.com/google/cadvisor/issues/3139
+  - "--disable_metrics=disk,referenced_memory" # workaround for https://github.com/google/cadvisor/issues/3860 and https://github.com/google/cadvisor/issues/3139
 
 # Exposes cAdvisor outside of the Docker compose network, useful when not using the included Nginx
 server_monitoring_cadvisor_expose_port: false
 server_monitoring_cadvisor_resources:
   limits:
-    cpus: '0.1'
+    cpus: '0.25'
     memory: '100M'
   reservations:
     cpus: '0.05'
