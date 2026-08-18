@@ -14,8 +14,17 @@
   pip:
     virtualenv: "{{ privacyidea_dir }}/virtualenv"
     requirements: "https://raw.githubusercontent.com/privacyidea/privacyidea/v{{ privacyidea_version }}/requirements.txt"
+  notify: restart uwsgi
+
+- name: Render privacyIDEA requirements file
+  template:
+    src: privacyidea-requirement.txt.j2
+    dest: "{{ privacyidea_dir }}/privacyidea-requirement.txt"
 
 - name: Install privacyIDEA {{ privacyidea_version }}
   pip:
     virtualenv: "{{ privacyidea_dir }}/virtualenv"
-    name: "privacyIDEA=={{ privacyidea_version }}"
+    requirements: "{{ privacyidea_dir }}/privacyidea-requirement.txt"
+    extra_args: --require-hashes
+  register: install_privacyidea_result
+  notify: restart uwsgi

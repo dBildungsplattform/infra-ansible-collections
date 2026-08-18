@@ -34,6 +34,9 @@
   include_role:
     name: mrlesmithjr.ansible-mariadb-galera-cluster 
 
+# In a primary-replica environment, can be set to OFF. (https://mariadb.com/docs/galera-cluster/reference/galera-cluster-system-variables)
+# If indexes are incremented by > 1, the audit trail column "missing line" is set to FAILED in privacyidea, so make sure to only increment by 1 for cosmetic reasons
+# see https://github.com/privacyidea/privacyidea/issues/5785
 - name: Set wsrep_auto_increment_control in galera-privacyidea.cnf
   ansible.builtin.copy:
     content: |
