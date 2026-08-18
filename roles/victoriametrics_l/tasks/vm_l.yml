@@ -1,6 +1,6 @@
 ---
 # Create Victoriametrics Longterm
-- name: Create Victoriametrics PVCs for longterm storage 
+- name: Create Victoriametrics PVCs for longterm storage
   kubernetes.core.k8s:
     state: present
     kubeconfig: "{{ kubeconfig }}"
@@ -15,14 +15,14 @@
       spec:
         accessModes:
           - ReadWriteOnce
-        storageClassName: "{{ victoriametrics_vmstorage_longterm_persistentVolume.persistentVolume.storageClass }}"
+        storageClassName: "{{ victoriametrics_vmstorage_longterm_persistent_volume.persistentVolume.storageClass }}"
         resources:
           requests:
-            storage: "{{ victoriametrics_vmstorage_longterm_persistentVolume.persistentVolume.size }}"
+            storage: "{{ victoriametrics_vmstorage_longterm_persistent_volume.persistentVolume.size }}"
   # End is less than or equal so we have to substract 1
   with_sequence: start=0 end="{{ victoriametrics_vmstorage_longterm_replica_count -1 }}"
   when: victoriametrics_longterm_enabled
-  tags: 
+  tags:
   - victoriametrics-l
 
 - name: Install Longterm Victoriametrics
@@ -38,5 +38,5 @@
     values:
       "{{ victoriametrics_longterm_values }}"
   when: victoriametrics_longterm_enabled
-  tags: 
+  tags:
   - victoriametrics-l

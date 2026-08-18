@@ -24,3 +24,5 @@ gitlab_agent_instances: []
 #    service_account_create: true # optional, defaults to true
 #    service_account_annotations: {} # optional, defaults to {}
 #    service_account_name: "" # optional, defaults to '' (empty -> generated via helm)
+
+gitlab_agent_service_monitor_enabled: true
