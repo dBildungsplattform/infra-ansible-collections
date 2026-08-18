@@ -1,0 +1,68 @@
+_gitlab_agent_instance_defaults:
+  rbac_create: true
+  rbac_role: ""
+  state: "present"
+  service_account_create: true
+  service_account_annotations: {}
+  service_account_name: ""
+  use_default_roles: true
+
+_gitlab_agent_instances_with_defaults: |-
+  {%- set output = [] %}
+  {%- for gli in gitlab_agent_instances %}
+    {%- set item = _gitlab_agent_instance_defaults | combine(gli, recursive=True) %}
+    {%- set _ = output.append(item) %}
+  {%- endfor %}
+  {{ output }}
+
+
+gitlab_agent_roles:
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: Role
+    metadata:
+      name: "{{ item.release_name }}-role"
+      namespace: "{{ item.target_namespace }}"
+    rules:
+      - apiGroups: ["*"]
+        resources: ["*"]
+        verbs: ["*"]
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: Role
+    metadata:
+      name: "{{ item.release_name }}-leases-role"
+      namespace: "{{ item.namespace }}"
+    rules:
+      - apiGroups: ["coordination.k8s.io"]
+        resources: ["leases"]
+        verbs: ["get", "watch", "list", "create", "update", "patch", "delete"]
+      - apiGroups: [""]
+        resources: ["events"]
+        verbs: ["get", "list", "watch", "create"]
+
+gitlab_agent_rolebindings:
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: RoleBinding
+    metadata:
+      name: "{{ item.release_name }}-binding"
+      namespace: "{{ item.target_namespace }}"
+    subjects:
+      - kind: ServiceAccount
+        name: "{{ item.release_name }}"
+        namespace: "{{ item.namespace }}"
+    roleRef:
+      kind: Role
+      name: "{{ item.release_name }}-role"
+      apiGroup: rbac.authorization.k8s.io
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: RoleBinding
+    metadata:
+      name: "{{ item.release_name }}-leases-role-binding"
+      namespace: "{{ item.namespace }}"
+    subjects:
+      - kind: ServiceAccount
+        name: "{{ item.release_name }}"
+        namespace: "{{ item.namespace }}"
+    roleRef:
+      kind: Role
+      name: "{{ item.release_name }}-leases-role"
+      apiGroup: rbac.authorization.k8s.io
