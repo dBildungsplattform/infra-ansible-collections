@@ -29,9 +29,10 @@
   become: true
   ignore_errors: true
 
+# keep for compatibility to non-ha role
 - name: reload nginx
   command:
-    cmd: /usr/sbin/pcs resource reload nginx
+    cmd: /usr/sbin/pcs resource restart nginx
   become: true
   ignore_errors: true
 
