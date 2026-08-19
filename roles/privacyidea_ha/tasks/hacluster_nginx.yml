@@ -17,7 +17,7 @@
     resource_type: 'systemd:uwsgi'
     options: >-
       meta failure-timeout=15m migration-threshold=2
-      op start timeout=300
+      op start timeout=300s
       --group {{ cluster_name }}_group
   when: is_main_node
 
