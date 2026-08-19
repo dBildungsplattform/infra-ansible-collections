@@ -36,6 +36,8 @@
 
 - name: Ensure database schema is up to date
   command: "{{ privacyidea_dir }}/virtualenv/bin/privacyidea-schema-upgrade -d {{ privacyidea_dir }}/virtualenv/lib/privacyidea/migrations/"
+  environment:
+    PATH: "{{ privacyidea_dir }}/virtualenv/bin:{{ ansible_env.PATH }}"
   when:
     - install_privacyidea_result is changed
     - is_main_node
