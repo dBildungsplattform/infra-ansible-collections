@@ -31,8 +31,6 @@
     label: "{{ item.namespace }}/{{ item.release_name }}"
   loop: "{{ _gitlab_agent_instances_with_defaults }}"
   when:
-    - "item.use_default_roles"
-    - "item.target_namespace is defined"
     - "item.target_namespace != ''"
 
 - name: "Ensure agent roles are present"
@@ -45,6 +43,9 @@
   loop_control:
     label: "{{ item.namespace }}/{{ item.release_name }}"
   loop: "{{ _gitlab_agent_instances_with_defaults }}"
+  when:
+    - "item.use_default_roles"
+    - "item.target_namespace != ''"
 
 - name: "Ensure agent rolebindings are present"
   kubernetes.core.k8s:
@@ -56,6 +57,9 @@
   loop_control:
     label: "{{ item.namespace }}/{{ item.release_name }}"
   loop: "{{ _gitlab_agent_instances_with_defaults }}"
+  when:
+    - "item.use_default_roles"
+    - "item.target_namespace != ''"
 
 - name: "Install Gitlab Agents"
   kubernetes.core.helm:
