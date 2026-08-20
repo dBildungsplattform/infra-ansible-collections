@@ -1,3 +1,4 @@
 ---
 terraform_plan: false
 terraform_workspace: "{{ stage }}"
+terraform_provider_upgrade: true
