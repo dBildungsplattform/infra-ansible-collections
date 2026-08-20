@@ -18,7 +18,6 @@
     dest: /etc/systemd/system/uwsgi.service
   notify: restart uwsgi
 
-
 - name: Copy PrivacyIDEA WSGI script
   template:
     src: privacyideaapp.py.j2
@@ -28,16 +27,17 @@
 - name: Reload systemd to recognize uwsgi service
   command: systemctl daemon-reload
   become: true
+
 # The 'pi-manage create_tables' command only creates new database tables if they do not already exist
 # It will not modify or overwrite any existing tables.
 - name: Create database tables
   command: "{{ privacyidea_dir }}/virtualenv/bin/pi-manage create_tables"
 
-# The 'pi-manage db stamp head' command ensures that the database schema is marked as up-to-date 
-# with the latest migration version without performing any actual migrations
-- name: Stamping the database to the current database schema
-  command: "{{ privacyidea_dir }}/virtualenv/bin/pi-manage db stamp head -d {{ privacyidea_dir }}/virtualenv/lib/privacyidea/migrations/"
-      
+- name: Ensure database schema is up to date
+  command: "{{ privacyidea_dir }}/virtualenv/bin/privacyidea-schema-upgrade -d {{ privacyidea_dir }}/virtualenv/lib/privacyidea/migrations/"
+  when: install_privacyidea_result is changed
+  notify: restart uwsgi
+
 - name: Copy admin SQL resolver configuration file
   template:
     src: admin_sql_resolver_config.ini.j2
