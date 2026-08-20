@@ -31,7 +31,7 @@
     label: "{{ item.namespace }}/{{ item.release_name }}"
   loop: "{{ _gitlab_agent_instances_with_defaults }}"
   when:
-    - "use_default_roles"
+    - "item.use_default_roles"
     - "item.target_namespace is defined"
     - "item.target_namespace != ''"
 
