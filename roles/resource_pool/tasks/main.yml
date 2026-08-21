@@ -20,7 +20,7 @@
     plan_file: "{{ '/tmp/tf-plan' if terraform_plan else omit }}"
     workspace: "{{ terraform_workspace }}"
     force_init: true
-    provider_upgrade: true
+    provider_upgrade: "{{ terraform_provider_upgrade }}"
     # Variable is unset by default to still work with community.general < 5.7.0
     complex_vars: "{{ terraform_complex_vars | default(omit) }}"
     # A group of key-values to override template variables or those in variables files.
