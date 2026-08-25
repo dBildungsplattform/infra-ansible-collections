@@ -16,10 +16,10 @@ _gitlab_agent_instances_with_defaults: |-
     {# workaround required as directly referencing _gitlab_agent__roles within #}
     {# the instances dict does not work due to referenced variables #}
     {%- if item.roles is none %}
-      {%- set item = item | combine({'roles': _gitlab_agent_roles}, recursive=True) %}
+      {%- set titem = item | combine({'roles': _gitlab_agent_roles}, recursive=True) %}
     {%- endif %}
     {%- if item.rolebindings is none %}
-      {%- set item = item | combine({'rolebindings': _gitlab_agent_rolebindings}, recursive=True) %}
+      {%- set titem = item | combine({'rolebindings': _gitlab_agent_rolebindings}, recursive=True) %}
     {%- endif %}
     {%- set _ = output.append(item) %}
   {%- endfor %}
