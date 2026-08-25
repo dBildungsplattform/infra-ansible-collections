@@ -20,9 +20,10 @@ gitlab_agent_instances: []
 #    release_name: ""
 #    namespace: ""
 #    target_namespace: "" # only used when use_default_roles is true
-#    use_default_roles: true 
 #    rbac_create: true
 #    rbac_role: "cluster-admin" # optional, defaults to ''
+#    roles: {} # optional, defaults to _gitlab_agent_roles from vars/main.yml
+#    rolebindings: {} # optional, defaults to _gitlab_agent_rolebindings from vars/main.yml
 #    state: "present" # optional, defaults to 'present'
 #    service_account_create: true # optional, defaults to true
 #    service_account_annotations: {} # optional, defaults to {}

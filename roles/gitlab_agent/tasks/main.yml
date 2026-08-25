@@ -38,28 +38,26 @@
     state: "present"
     proxy: "{{ proxy_url | default(omit, true) }}"
     proxy_headers: "{{ proxy_headers | default(omit, true) }}"
-    resource_definition: "{{ gitlab_agent_roles }}"
+    resource_definition: "{{ item.roles }}"
     kubeconfig: "{{ kubeconfig }}"
   loop_control:
     label: "{{ item.namespace }}/{{ item.release_name }}"
   loop: "{{ _gitlab_agent_instances_with_defaults }}"
   when:
-    - "item.use_default_roles"
-    - "item.target_namespace != ''"
+    - "item.roles != {}"
 
 - name: "Ensure agent rolebindings are present"
   kubernetes.core.k8s:
     state: "present"
     proxy: "{{ proxy_url | default(omit, true) }}"
     proxy_headers: "{{ proxy_headers | default(omit, true) }}"
-    resource_definition: "{{ gitlab_agent_rolebindings }}"
+    resource_definition: "{{ item.rolebindings }}"
     kubeconfig: "{{ kubeconfig }}"
   loop_control:
     label: "{{ item.namespace }}/{{ item.release_name }}"
   loop: "{{ _gitlab_agent_instances_with_defaults }}"
   when:
-    - "item.use_default_roles"
-    - "item.target_namespace != ''"
+    - "item.rolebindings != {}"
 
 - name: "Install Gitlab Agents"
   kubernetes.core.helm:

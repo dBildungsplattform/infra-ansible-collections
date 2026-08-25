@@ -5,18 +5,27 @@ _gitlab_agent_instance_defaults:
   service_account_create: true
   service_account_annotations: {}
   service_account_name: ""
-  use_default_roles: true
+  roles: null
+  rolebindings: null
   target_namespace: ""
 
 _gitlab_agent_instances_with_defaults: |-
   {%- set output = [] %}
   {%- for gli in gitlab_agent_instances %}
     {%- set item = _gitlab_agent_instance_defaults | combine(gli, recursive=True) %}
+    {# workaround required as directly referencing _gitlab_agent__roles within #}
+    {# the instances dict does not work due to referenced variables #}
+    {%- if item.roles is none %}
+      {%- set item = item | combine({'roles': _gitlab_agent_roles}, recursive=True) %}
+    {%- endif %}
+    {%- if item.rolebindings is none %}
+      {%- set item = item | combine({'rolebindings': _gitlab_agent_rolebindings}, recursive=True) %}
+    {%- endif %}
     {%- set _ = output.append(item) %}
   {%- endfor %}
   {{ output }}
 
-gitlab_agent_roles:
+_gitlab_agent_roles:
   - apiVersion: rbac.authorization.k8s.io/v1
     kind: Role
     metadata:
@@ -39,7 +48,7 @@ gitlab_agent_roles:
         resources: ["events"]
         verbs: ["get", "list", "watch", "create"]
 
-gitlab_agent_rolebindings:
+_gitlab_agent_rolebindings:
   - apiVersion: rbac.authorization.k8s.io/v1
     kind: RoleBinding
     metadata:
