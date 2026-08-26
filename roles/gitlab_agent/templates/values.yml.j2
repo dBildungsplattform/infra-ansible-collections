@@ -18,7 +18,7 @@ config:
 
 podAnnotations: []
 serviceMonitor:
-  enabled: true
+  enabled: {{ gitlab_agent_service_monitor_enabled }}
 
 serviceAccount:
   create: {{ item.service_account_create | default(true) }}
