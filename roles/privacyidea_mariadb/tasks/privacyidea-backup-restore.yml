@@ -35,7 +35,8 @@
       {{ privacyidea_backup_schedule }}  root /root/PrivacyIdea-backup.sh > /var/log/backup.log 2>&1 
     dest: /etc/cron.d/privacyidea-backup
     mode: "0600"
-  when: stage == "prod" or stage == "staging" and is_last_node
+//  when: stage == "prod" or stage == "staging" and is_last_node
+  when: is_last_node
 
 
 - name: Create Duply folder
