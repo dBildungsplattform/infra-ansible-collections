@@ -32,9 +32,10 @@
       - "item.service_account_create is boolean"
       - "item.service_account_annotations is mapping"
       - "item.service_account_name is string"
-      - "item.use_default_roles is boolean"
       - "item.target_namespace is string"
       - "item.use_default_roles is false or item.target_namespace != ''"
+      - "item.roles is none or item.roles is sequence"
+      - "item.rolebindings is none or item.rolebindings is sequence"
   loop_control:
     label: "{{ item.namespace }}/{{ item.release_name }}"
   loop: "{{ _gitlab_agent_instances_with_defaults }}"
