@@ -46,8 +46,7 @@
   command: "{{ privacyidea_dir }}/virtualenv/bin/pi-manage audit rotate --age {{ privacyidea_audit_rotate_days }}"
   environment:
     PATH: "{{ privacyidea_dir }}/virtualenv/bin:{{ ansible_env.PATH }}"
-  when: privacyidea_audit_rotate_days | length == 1
-  notify: restart uwsgi
+  when: privacyidea_audit_rotate_days | length > 0
 
 - name: Copy admin SQL resolver configuration file
   template:

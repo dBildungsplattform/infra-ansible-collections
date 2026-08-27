@@ -51,8 +51,7 @@
     PATH: "{{ privacyidea_dir }}/virtualenv/bin:{{ ansible_env.PATH }}"
   when:
     - is_main_node
-    - privacyidea_audit_rotate_days | length == 1
-  notify: restart uwsgi
+    - privacyidea_audit_rotate_days | length > 0
 
 - name: Copy admin SQL resolver configuration file
   template:
