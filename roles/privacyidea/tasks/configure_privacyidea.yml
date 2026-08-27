@@ -32,8 +32,6 @@
 # It will not modify or overwrite any existing tables.
 - name: Create database tables
   command: "{{ privacyidea_dir }}/virtualenv/bin/pi-manage create_tables"
-  environment:
-    PATH: "{{ privacyidea_dir }}/virtualenv/bin:{{ ansible_env.PATH }}"
 
 - name: Ensure database schema is up to date
   command: "{{ privacyidea_dir }}/virtualenv/bin/privacyidea-schema-upgrade -d {{ privacyidea_dir }}/virtualenv/lib/privacyidea/migrations/"
