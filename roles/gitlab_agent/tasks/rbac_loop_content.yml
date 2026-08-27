@@ -8,7 +8,7 @@
     kubeconfig: "{{ kubeconfig }}"
   loop_control:
     loop_var: "role"
-  loop: "{{ item.roles | default(lookup('ansible.builtin.template', 'templates/default_roles.j2.yml') | from_yaml) }}"
+  loop: "{{ item.roles | default(lookup('ansible.builtin.template', 'templates/default_roles.j2.yml') | from_yaml, true) }}"
 
 - name: "Ensure agent rolebindings are present"
   kubernetes.core.k8s:
@@ -19,4 +19,4 @@
     kubeconfig: "{{ kubeconfig }}"
   loop_control:
     loop_var: "rolebinding"
-  loop: "{{ item.rolebindings | default(lookup('ansible.builtin.template', 'templates/default_rolebindings.j2.yml') | from_yaml) }}"
+  loop: "{{ item.rolebindings | default(lookup('ansible.builtin.template', 'templates/default_rolebindings.j2.yml') | from_yaml, true) }}"
