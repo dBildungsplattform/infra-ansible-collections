@@ -45,10 +45,11 @@
     - is_main_node
   notify: restart uwsgi
 
-- name: Configure audit log rotation
-  command: "{{ privacyidea_dir }}/virtualenv/bin/pi-manage audit rotate --age {{ privacyidea_audit_rotate_days }}"
-  environment:
-    PATH: "{{ privacyidea_dir }}/virtualenv/bin:{{ ansible_env.PATH }}"
+- name: Configure audit log rotation cronjob
+  ansible.builtin.cron:
+    name: "rotate privacyidea audit logs"
+    special_time: "daily"
+    job: "{{ privacyidea_dir }}/virtualenv/bin/pi-manage audit rotate --age {{ privacyidea_audit_rotate_days }}"
   when:
     - is_main_node
     - privacyidea_audit_rotate_days | length > 0
