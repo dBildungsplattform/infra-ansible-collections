@@ -43,6 +43,16 @@
     - is_main_node
   notify: restart uwsgi
 
+- name: Configure audit log rotation cronjob
+  ansible.builtin.cron:
+    name: "rotate privacyidea audit logs"
+    special_time: "daily"
+    user: www-data
+    cron_file: privacyidea-audit-rotate
+    job: "{{ privacyidea_dir }}/virtualenv/bin/pi-manage audit rotate --age {{ privacyidea_audit_rotate_days | int }}"
+  when:
+    - is_main_node
+    - (privacyidea_audit_rotate_days | int) > 0
 - name: Copy admin SQL resolver configuration file
   template:
     src: admin_sql_resolver_config.ini.j2
@@ -58,7 +68,7 @@
     owner: www-data
     group: www-data
     mode: '0644'
-    
+
 # /etc/privacyidea/enckey is copied from /data/privacyidea
 - name: Set PrivacyIDEA file permissions
   ansible.builtin.file:
