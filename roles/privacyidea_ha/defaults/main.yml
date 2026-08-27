@@ -94,4 +94,4 @@ privacyidea_galera_mysql_node_exporter: ""
 privacyidea_audit_privatekey: ""
 privacyidea_audit_publickey: ""
 
-privacyidea_audit_rotate_days: "30"
+privacyidea_audit_rotate_days: 30

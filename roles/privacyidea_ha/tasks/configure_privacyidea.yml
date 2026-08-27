@@ -47,11 +47,12 @@
   ansible.builtin.cron:
     name: "rotate privacyidea audit logs"
     special_time: "daily"
-    job: "{{ privacyidea_dir }}/virtualenv/bin/pi-manage audit rotate --age {{ privacyidea_audit_rotate_days }}"
+    user: www-data
+    cron_file: privacyidea-audit-rotate
+    job: "{{ privacyidea_dir }}/virtualenv/bin/pi-manage audit rotate --age {{ privacyidea_audit_rotate_days | int }}"
   when:
     - is_main_node
-    - privacyidea_audit_rotate_days | length > 0
-
+    - (privacyidea_audit_rotate_days | int) > 0
 - name: Copy admin SQL resolver configuration file
   template:
     src: admin_sql_resolver_config.ini.j2
