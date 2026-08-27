@@ -32,6 +32,8 @@
 # It will not modify or overwrite any existing tables.
 - name: Create database tables
   command: "{{ privacyidea_dir }}/virtualenv/bin/pi-manage create_tables"
+  environment:
+    PATH: "{{ privacyidea_dir }}/virtualenv/bin:{{ ansible_env.PATH }}"
   when: is_main_node
 
 - name: Ensure database schema is up to date
@@ -41,6 +43,15 @@
   when:
     - install_privacyidea_result is changed
     - is_main_node
+  notify: restart uwsgi
+
+- name: Configure audit log rotation
+  command: "{{ privacyidea_dir }}/virtualenv/bin/pi-manage audit rotate --age {{ privacyidea_audit_rotate_days }}"
+  environment:
+    PATH: "{{ privacyidea_dir }}/virtualenv/bin:{{ ansible_env.PATH }}"
+  when:
+    - is_main_node
+    - privacyidea_audit_rotate_days | length == 1
   notify: restart uwsgi
 
 - name: Copy admin SQL resolver configuration file
@@ -58,7 +69,7 @@
     owner: www-data
     group: www-data
     mode: '0644'
-    
+
 # /etc/privacyidea/enckey is copied from /data/privacyidea
 - name: Set PrivacyIDEA file permissions
   ansible.builtin.file:

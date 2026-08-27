@@ -32,10 +32,21 @@
 # It will not modify or overwrite any existing tables.
 - name: Create database tables
   command: "{{ privacyidea_dir }}/virtualenv/bin/pi-manage create_tables"
+  environment:
+    PATH: "{{ privacyidea_dir }}/virtualenv/bin:{{ ansible_env.PATH }}"
 
 - name: Ensure database schema is up to date
   command: "{{ privacyidea_dir }}/virtualenv/bin/privacyidea-schema-upgrade -d {{ privacyidea_dir }}/virtualenv/lib/privacyidea/migrations/"
+  environment:
+    PATH: "{{ privacyidea_dir }}/virtualenv/bin:{{ ansible_env.PATH }}"
   when: install_privacyidea_result is changed
+  notify: restart uwsgi
+
+- name: Configure audit log rotation
+  command: "{{ privacyidea_dir }}/virtualenv/bin/pi-manage audit rotate --age {{ privacyidea_audit_rotate_days }}"
+  environment:
+    PATH: "{{ privacyidea_dir }}/virtualenv/bin:{{ ansible_env.PATH }}"
+  when: privacyidea_audit_rotate_days | length == 1
   notify: restart uwsgi
 
 - name: Copy admin SQL resolver configuration file
