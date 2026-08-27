@@ -28,7 +28,7 @@
     chart_version: "{{ gitlab_agent_chart_version }}"
     kubeconfig: "{{ kubeconfig | default(omit) }}"
     state: "{{ item.state | default('present') }}"
-    values: "{{ lookup('template', 'values.yml.j2') | from_yaml }}"
+    values: "{{ lookup('template', 'values.j2.yml') | from_yaml }}"
   loop_control:
     label: "{{ item.namespace }}/{{ item.release_name }}"
   loop: "{{ _gitlab_agent_instances_with_defaults }}"
