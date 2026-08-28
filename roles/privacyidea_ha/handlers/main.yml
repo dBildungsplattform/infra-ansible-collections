@@ -28,6 +28,7 @@
     cmd: /usr/sbin/pcs resource restart custom-exporter
   become: true
   when: is_main_node
+
 # keep for compatibility to non-ha role
 - name: reload nginx
   command:
