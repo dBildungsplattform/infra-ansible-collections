@@ -1,0 +1,135 @@
+#!/bin/bash
+set -e
+
+# defaults
+DB_NAME=""
+DRY_RUN=0
+DB_CONTAINER_NAME=db
+LOG_FILE=/var/log/greenlight_mail_change.log
+
+usage() {
+    echo "Usage:"
+    echo "  $0 -d <DATABASE> <OLD_MAIL> <NEW_MAIL> [--dry-run]"
+    echo "  $0 --list-dbs"
+    exit 1
+}
+
+list_dbs() {
+    local QUERY
+    QUERY="SELECT datname FROM pg_database WHERE datistemplate = false AND datname NOT IN ('postgres', 'scalelite');"
+    docker exec "$DB_CONTAINER_NAME" psql -U postgres -d "$DB_NAME" -A -t -c "$QUERY"
+}
+
+check_db_running() {
+    if ! docker ps --filter "name=$DB_CONTAINER_NAME" | grep -q "$DB_CONTAINER_NAME"; then
+        echo "Database is not running!"
+        exit 1
+    fi
+}
+
+get_id_by_mail() {
+    local GLID
+    local QUERY
+
+    if [[ -z $1 ]]; then
+        echo "get_id_by_mail(): invalid argument"
+        exit 1
+    fi
+
+    QUERY="SELECT id FROM users WHERE email='$1';"
+    GLID=$(docker exec "$DB_CONTAINER_NAME" psql -U postgres -d "$DB_NAME" -A -t -c "$QUERY" | tr -d '[:space:]')
+    echo "$GLID"
+}
+
+clear_sessions_for_user_id() {
+    local QUERY
+
+    if [[ -z $1 ]]; then
+        echo "clear_sessions_for_user_id(): invalid argument"
+        exit 1
+    fi
+
+    echo "Clearing Sessions for User id $1"
+    QUERY="UPDATE users SET session_token = NULL, session_expiry = NOW() WHERE id = '$1';"
+    docker exec "$DB_CONTAINER_NAME" psql -U postgres -d "$DB_NAME" -c "$QUERY"
+}
+
+# Parse arguments
+POSITIONAL=()
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -d|--database)
+            DB_NAME="$2"
+            shift 2
+            ;;
+        --list-dbs)
+            list_dbs
+            exit 0
+            ;;
+        --dry-run)
+            DRY_RUN=1
+            shift
+            ;;
+        -*)
+            usage
+            ;;
+        *)
+            POSITIONAL+=("$1")
+            shift
+            ;;
+    esac
+done
+
+# restore positional parameters
+set -- "${POSITIONAL[@]}"
+
+# check params
+if [[ -z "$DB_NAME" || $# -lt 2 ]]; then
+    usage
+fi
+
+check_db_running
+
+OLD_MAIL="$1"
+NEW_MAIL="$2"
+
+if [[ "$OLD_MAIL" == "$NEW_MAIL" ]]; then
+    echo "Error: New mail is equal to old mail"
+    exit 1
+fi
+
+# check if mail is already used
+EXISTING_ID=$(get_id_by_mail "$NEW_MAIL")
+if [[ -n $EXISTING_ID ]]; then
+    echo "Error: New mail '$NEW_MAIL' is already used by user ID $EXISTING_ID."
+    exit 1
+fi
+
+# get user id
+GL_USER_ID=$(get_id_by_mail "$OLD_MAIL")
+
+# check if we have a user id
+if [[ -z $GL_USER_ID ]]; then
+    echo "User not found."
+    exit 1
+fi
+
+echo "User ID: $GL_USER_ID"
+QUERY="UPDATE users SET email='$NEW_MAIL' WHERE id='$GL_USER_ID' AND email='$OLD_MAIL';"
+if [[ $DRY_RUN -eq 1 ]]; then
+    echo "[DRY RUN] Would execute:"
+    echo "docker exec \"$DB_CONTAINER_NAME\" psql -U postgres -d \"$DB_NAME\" -c \"$QUERY\""
+else
+    docker exec "$DB_CONTAINER_NAME" psql -U postgres -d "$DB_NAME" -c "$QUERY"
+    echo "$(date): Mail change in $DB_NAME: $OLD_MAIL -> $NEW_MAIL (user ID $GL_USER_ID)" >> $LOG_FILE
+
+    # final check
+    NEW_GL_USER_ID=$(get_id_by_mail "$NEW_MAIL")
+    if ! [ "$GL_USER_ID" == "$NEW_GL_USER_ID" ]; then
+        echo "Error: User ID for $NEW_MAIL does not match User ID pre-change. Expected: $GL_USER_ID, got: $NEW_GL_USER_ID"
+        exit 1
+    fi
+
+    echo "Changed mail for $GL_USER_ID from $OLD_MAIL to $NEW_MAIL"
+    clear_sessions_for_user_id "$GL_USER_ID"
+fi

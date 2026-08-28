@@ -250,9 +250,10 @@
     dest: "/root/{{ item }}"
     mode: "0700"
   loop:
-    - register-servers.sh
-    - delete-servers.sh
-    - cordon-servers.sh
+    - "register-servers.sh"
+    - "delete-servers.sh"
+    - "cordon-servers.sh"
+    - "change-mail.sh"
 
 - name: Create Node Exporter textfile collector directory
   file:
