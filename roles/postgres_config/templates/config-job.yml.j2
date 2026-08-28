@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: "psql-{{ postgres_config_name }}-config-{{ lookup('community.general.random_string', min_lower=10, length=10)}}"
-  namespace: "{{ postgres_config_nameconfig_namespace }}"
+  namespace: "{{ postgres_config_namespace }}"
 spec:
   template:
     spec:

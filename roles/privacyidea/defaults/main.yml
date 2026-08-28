@@ -64,3 +64,5 @@ desired_token_count: 37986
 #sql_resolver_service: "service"
 #sql_resolver_ucs_users: "ucs_users"
 #sql_resolver_ucs_domain_admins: "ucs_domain_admins"
+
+privacyidea_audit_rotate_days: 30
