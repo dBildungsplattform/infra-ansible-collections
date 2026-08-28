@@ -53,6 +53,7 @@
   when:
     - is_main_node
     - (privacyidea_audit_rotate_days | int) > 0
+
 - name: Copy admin SQL resolver configuration file
   template:
     src: admin_sql_resolver_config.ini.j2
