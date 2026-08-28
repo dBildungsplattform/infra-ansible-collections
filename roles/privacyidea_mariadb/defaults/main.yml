@@ -16,3 +16,6 @@ privacyidea_inventory_hostname: ""
 privacyidea_galera_mysql_node_exporter: ""
 mariadb_password: ""
 login_username: root
+# Run backup every 8 hours, starting at 1am, 9am and 5pm. The backup will be run by cron on the last node of the cluster.
+privacyidea_backup_schedule: "0 1-23/8 * * *"
+duplicity_version: "0.8.23"
