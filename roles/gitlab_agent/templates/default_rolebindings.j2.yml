@@ -1,0 +1,27 @@
+---
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    name: "{{ item.release_name }}-binding"
+    namespace: "{{ item.target_namespace }}"
+  subjects:
+    - kind: ServiceAccount
+      name: "{{ item.release_name }}"
+      namespace: "{{ item.namespace }}"
+  roleRef:
+    kind: Role
+    name: "{{ item.release_name }}-role"
+    apiGroup: rbac.authorization.k8s.io
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    name: "{{ item.release_name }}-leases-role-binding"
+    namespace: "{{ item.namespace }}"
+  subjects:
+    - kind: ServiceAccount
+      name: "{{ item.release_name }}"
+      namespace: "{{ item.namespace }}"
+  roleRef:
+    kind: Role
+    name: "{{ item.release_name }}-leases-role"
+    apiGroup: rbac.authorization.k8s.io
