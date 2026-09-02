@@ -37,7 +37,7 @@
     - name: Check that port 22 is open
       assert:
         that:
-          - nmap_output.stdout | regex_search("2222/tcp\s*open")
+          - nmap_output.stdout is match("2222/tcp\s*open")
 
 # Test SRE user SSH connection
     - name: Connect as SRE user
