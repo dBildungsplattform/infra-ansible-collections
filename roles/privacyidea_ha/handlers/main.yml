@@ -21,23 +21,23 @@
   command:
     cmd: /usr/sbin/pcs resource restart uwsgi
   become: true
-  ignore_errors: true
+  when: is_main_node
 
 - name: Restart exporter
   command:
-    cmd: /usr/sbin/pcs resource restart privacyidea-exporter
+    cmd: /usr/sbin/pcs resource restart custom-exporter
   become: true
-  ignore_errors: true
+  when: is_main_node
 
 # keep for compatibility to non-ha role
 - name: reload nginx
   command:
     cmd: /usr/sbin/pcs resource restart nginx
   become: true
-  ignore_errors: true
+  when: is_main_node
 
 - name: restart nginx
   command:
     cmd: /usr/sbin/pcs resource restart nginx
   become: true
-  ignore_errors: true
+  when: is_main_node

@@ -1,0 +1,22 @@
+---
+- name: "Ensure agent roles are present"
+  kubernetes.core.k8s:
+    state: "present"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    resource_definition: "{{ role }}"
+    kubeconfig: "{{ kubeconfig }}"
+  loop_control:
+    loop_var: "role"
+  loop: "{{ item.roles | default(lookup('ansible.builtin.template', 'templates/default_roles.j2.yml') | from_yaml, true) }}"
+
+- name: "Ensure agent rolebindings are present"
+  kubernetes.core.k8s:
+    state: "present"
+    proxy: "{{ proxy_url | default(omit, true) }}"
+    proxy_headers: "{{ proxy_headers | default(omit, true) }}"
+    resource_definition: "{{ rolebinding }}"
+    kubeconfig: "{{ kubeconfig }}"
+  loop_control:
+    loop_var: "rolebinding"
+  loop: "{{ item.rolebindings | default(lookup('ansible.builtin.template', 'templates/default_rolebindings.j2.yml') | from_yaml, true) }}"
